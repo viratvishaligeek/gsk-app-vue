@@ -89,7 +89,7 @@ onMounted(async () => {
         @click="pushPermissionNotice = ''">Dismiss</button>
     </div>
     <Transition name="launch-splash">
-      <div v-if="showSplash" class="launch-splash" role="status" aria-label="Loading gali satta kings">
+      <div v-if="showSplash" class="launch-splash" role="status" aria-label="Loading GSK Play">
         <div class="launch-splash__glow launch-splash__glow--one"></div>
         <div class="launch-splash__glow launch-splash__glow--two"></div>
         <div class="launch-splash__content">
@@ -97,7 +97,7 @@ onMounted(async () => {
             <img src="../assets/icon.png" style="height: 200px;" alt="">
           </div>
           <p class="launch-splash__eyebrow">WELCOME TO</p>
-          <h1>gali satta kings</h1>
+          <h1>GSK Play</h1>
           <p class="launch-splash__tagline">Fast results. Smooth play.</p>
           <div class="launch-splash__loader" aria-hidden="true"><span></span><span></span><span></span></div>
           <p class="launch-splash__status">Preparing your experience…</p>
