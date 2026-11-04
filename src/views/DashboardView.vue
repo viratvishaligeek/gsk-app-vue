@@ -7,7 +7,7 @@
 
     <section v-else-if="errorMessage && games.length === 0" class="dashboard-empty">
       <span class="dashboard-empty-emoji">📡</span>
-      <h1>We couldn't load the markets</h1>
+      <h1>We couldn't load the game board</h1>
       <p>{{ errorMessage }}</p>
       <button class="btn btn-primary rounded-pill px-4" @click="fetchGames">↻ Try again</button>
     </section>
@@ -25,7 +25,19 @@
         <ul><li v-for="(line,index) in noticeLines" :key="index">{{ line }}</li></ul>
       </section>
 
-      <section v-if="banners.length" class="dashboard-promotions" aria-label="Featured promotions">
+      <section class="dashboard-hero-v3">
+        <div class="dashboard-hero-copy">
+          <span class="dashboard-hero-kicker">YOUR GAME ZONE · {{ serverNow.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) }}</span>
+          <h1>Welcome back, <em>{{ authStore.name || 'Player' }}</em></h1>
+          <p>Your games, wallet and latest market updates in one place.</p>
+        </div>
+        <div class="dashboard-wallet-glance">
+          <div><small>💰 WALLET BALANCE</small><strong>₹{{ Number(authStore.amount || 0).toLocaleString('en-IN') }}</strong></div>
+          <router-link to="/wallet" aria-label="Open wallet">↗</router-link>
+        </div>
+      </section>
+
+      <section v-if="banners.length" class="dashboard-promotions-v3" aria-label="Featured promotions">
         <div id="heroCarousel" ref="heroCarouselElement" class="carousel slide">
           <div class="carousel-indicators" v-if="banners.length > 1">
             <button v-for="(banner,index) in banners" :key="banner.id" type="button"
@@ -50,55 +62,54 @@
         </div>
       </section>
 
-      <section class="dashboard-welcome">
-        <div><span class="eyebrow">YOUR GAME ZONE</span><h1>Play. Track. Stay updated.</h1>
-          <p>Everything you need, right here.</p></div>
-        <span class="welcome-emoji" aria-hidden="true">🎮</span>
-      </section>
-
-      <nav class="dashboard-actions" aria-label="Wallet and support shortcuts">
-        <router-link to="/wallet/add" class="dashboard-action action-add"><span>💰</span><b>Add money</b><small>Top up wallet</small></router-link>
-        <router-link to="/wallet/withdraw" class="dashboard-action action-withdraw"><span>🏦</span><b>Withdraw</b><small>Request payout</small></router-link>
-        <router-link to="/live-support" class="dashboard-action action-support"><span>💬</span><b>Live support</b><small>We're here to help</small></router-link>
+      <nav class="dashboard-action-grid-v3" aria-label="Quick actions">
+        <router-link to="/games"><span>🎮</span><strong>Play games</strong><small>Explore markets</small></router-link>
+        <router-link to="/wallet/add"><span>➕</span><strong>Add money</strong><small>Top up wallet</small></router-link>
+        <router-link to="/wallet/withdraw"><span>🏦</span><strong>Withdraw</strong><small>Request payout</small></router-link>
+        <router-link to="/notifications"><span>🔔</span><strong>Updates</strong><small>Stay informed</small></router-link>
       </nav>
 
-      <section class="featured-result-section">
-        <div class="section-heading"><div><span class="eyebrow">LATEST UPDATE</span><h2>🏆 Today's featured result</h2></div>
+      <section class="featured-result-section-v3">
+        <div class="section-heading"><div><span class="eyebrow">LATEST MARKET UPDATE</span><h2>🏆 Featured result</h2></div>
           <span class="market-count">{{ marketCount }} markets</span></div>
         <div v-if="isLoading && !featuredGame" class="py-2"><LoadingState variant="featured" /></div>
-        <article v-else-if="featuredGame" class="featured-result-card">
-          <div class="featured-result-top"><span>⭐ FEATURED MARKET</span><span>🕒 {{ formatTime(featuredGame.result_time) }}</span></div>
+        <article v-else-if="featuredGame" class="featured-result-card-v3">
+          <div class="featured-result-top"><span>⭐ MOST RECENT MARKET</span><span>🕒 {{ formatTime(featuredGame.result_time) }}</span></div>
           <h3>{{ featuredGame.name }}</h3>
           <div class="featured-result-bottom">
             <div><small>Today's result</small><strong>{{ featuredGame.latest_result?.date === todayDate ? (featuredGame.latest_result?.number ?? '--') : '--' }}</strong></div>
             <span v-if="featuredGame.latest_result?.date === todayDate" class="result-live">● Published</span>
             <span v-else class="result-pending">⌛ Awaiting result</span>
           </div>
+          <router-link :to="{name:'monthly-chart',query:{game:featuredGame.id}}">Open result history <b>→</b></router-link>
         </article>
         <div v-else class="dashboard-inline-empty"><span>🗓️</span><p>No featured result is available yet.</p></div>
       </section>
 
-      <section class="market-section lobby-preview">
-        <div class="section-heading"><div><span class="eyebrow">YOUR NEXT MOVE</span><h2>🎮 Markets to explore</h2></div>
-          <router-link to="/games" class="section-link">Open game lobby →</router-link></div>
+      <section class="market-section lobby-preview-v3">
+        <div class="section-heading"><div><span class="eyebrow">DISCOVER YOUR NEXT GAME</span><h2>🎮 Open markets</h2></div>
+          <router-link to="/games" class="section-link">Full game lobby →</router-link></div>
         <div v-if="errorMessage" class="alert alert-danger rounded-4">{{ errorMessage }}
           <button class="btn btn-sm btn-outline-danger ms-2" @click="fetchGames">Retry</button></div>
         <div v-else-if="isLoading" class="py-2"><LoadingState variant="market-list" :count="2" /></div>
         <div v-else-if="games.length === 0" class="dashboard-inline-empty"><span>🎲</span><h3>No markets available</h3><p>Please check again later.</p></div>
         <div v-else class="lobby-preview-track" aria-label="Featured markets">
-          <article v-for="game in games.slice(0, 5)" :key="game.id" class="lobby-preview-card"
+          <article v-for="game in games.slice(0, 6)" :key="game.id" class="lobby-preview-card-v3"
             :class="{ 'is-closed': !isGamePlayable(game) }">
             <div class="lobby-preview-top"><span>🎯</span><small :class="isGamePlayable(game) ? 'is-open' : 'is-closed-label'">{{ isGamePlayable(game) ? 'OPEN NOW' : 'CLOSED' }}</small></div>
             <h3>{{ game.name }}</h3>
             <div class="lobby-preview-result"><small>Today's result</small><strong>{{ game.latest_result?.date === todayDate ? (game.latest_result?.number ?? '--') : '--' }}</strong></div>
-            <router-link v-if="isGamePlayable(game)" :to="{ name: 'play-game', params: { id: game.id } }">Play market →</router-link>
-            <router-link v-else :to="{ name: 'monthly-chart', query: { game: game.id } }">View chart →</router-link>
+            <router-link v-if="isGamePlayable(game)" :to="{ name: 'play-game', params: { id: game.id } }">Enter game <b>→</b></router-link>
+            <router-link v-else :to="{ name: 'monthly-chart', query: { game: game.id } }">View history <b>→</b></router-link>
           </article>
         </div>
-        <router-link to="/games" class="lobby-preview-all">Explore all {{ marketCount }} markets <span>→</span></router-link>
       </section>
-      <section class="dashboard-bottom-link"><span>📊</span><div><strong>Explore monthly charts</strong><small>Browse historical market results</small></div>
-        <router-link to="/monthly-chart" aria-label="Open monthly charts">→</router-link></section>
+
+      <section class="dashboard-service-grid-v3">
+        <router-link to="/play-history"><span>📜</span><div><strong>My play history</strong><small>Review your entries</small></div><b>→</b></router-link>
+        <router-link to="/monthly-chart"><span>📊</span><div><strong>Monthly charts</strong><small>Explore saved results</small></div><b>→</b></router-link>
+        <router-link to="/live-support"><span>💬</span><div><strong>Need a hand?</strong><small>Contact live support</small></div><b>→</b></router-link>
+      </section>
     </template>
   </main>
 </template>
@@ -108,8 +119,10 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Carousel } from 'bootstrap'
 import api from '../plugins/axios'
 import LoadingState from '@/components/LoadingState.vue'
+import { useAuthStore } from '@/utils/auth'
 import GameCountdown from '@/components/GameCountdown.vue'
 
+const authStore = useAuthStore()
 const games = ref([])
 const featuredGame = ref(null)
 const banners = ref([])
@@ -545,4 +558,54 @@ onUnmounted(() => {
 @media(prefers-reduced-motion:reduce){.announcement-track{animation:none}}
 .lobby-preview-track{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}.lobby-preview-track::-webkit-scrollbar{display:none}.lobby-preview-card{display:flex;flex:0 0 min(68vw,220px);flex-direction:column;gap:9px;padding:13px;border:1px solid #e3eaf3;border-radius:16px;background:#fff;box-shadow:0 5px 15px #213b5b09;scroll-snap-align:start}.lobby-preview-card.is-closed{background:#fafbfd}.lobby-preview-top{display:flex;align-items:center;justify-content:space-between}.lobby-preview-top>span{font-size:22px}.lobby-preview-top small{font-size:8px;font-weight:900;color:#239667}.lobby-preview-top small.is-closed-label{color:#8b96a7}.lobby-preview-card h3{margin:0;font-size:13px;font-weight:900}.lobby-preview-result{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:10px;background:#f1f5fa}.lobby-preview-result small{color:#78869a;font-size:9px}.lobby-preview-result strong{font-size:21px;font-weight:950;color:#182d4d}.lobby-preview-card>a{margin-top:auto;color:#315f9f;font-size:10px;font-weight:900}.lobby-preview-all{display:flex;align-items:center;justify-content:space-between;margin-top:3px;padding:13px 14px;border:1px solid #dce6f2;border-radius:13px;background:#edf3fc;color:#244e83;font-size:11px;font-weight:900;text-decoration:none}
 .dashboard-promotions .carousel{position:relative}.gsk-banner-control{width:38px;height:38px;top:50%;bottom:auto;transform:translateY(-50%);border:1px solid #ffffff80;border-radius:50%;background:#142b4b80;opacity:.95}.gsk-banner-control.carousel-control-prev{left:10px}.gsk-banner-control.carousel-control-next{right:10px}.gsk-banner-control .carousel-control-prev-icon,.gsk-banner-control .carousel-control-next-icon{width:14px;height:14px}
+</style>
+
+
+<style scoped>
+.gsk-dashboard{--gsk-navy:#e9edff;--gsk-blue:#a99bff;--gsk-sky:#24244b;--gsk-ink:#f4f6ff;--gsk-muted:#9ba9c8;min-height:100dvh;padding:13px 13px calc(105px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0,#342b70 0,transparent 27%),#080d1b;color:#f4f6ff;overflow-x:clip}
+.dashboard-announcement{border-color:#34415f;background:#111a2e;color:#d9e2f7}.announcement-track span{color:#c6d1e8}
+.dashboard-notice{border-color:#66502b;background:#2c251a;color:#f8e6bc}.notice-heading strong{color:#ffe4a2}.notice-heading small,.dashboard-notice ul{color:#cbb98e}
+.dashboard-hero-v3{position:relative;overflow:hidden;margin:7px 0 14px;padding:19px;border:1px solid #7166c35c;border-radius:22px;background:radial-gradient(circle at 100% 0,#7b66ff54 0,transparent 40%),linear-gradient(135deg,#211e4b,#152c52 72%,#12405b);box-shadow:0 17px 40px #00000040}
+.dashboard-hero-v3:after{position:absolute;right:-44px;bottom:-100px;width:210px;height:210px;border:1px solid #ffffff15;border-radius:50%;content:"";box-shadow:0 0 0 25px #ffffff08,0 0 0 50px #ffffff05}
+.dashboard-hero-copy{position:relative;z-index:1}.dashboard-hero-kicker{color:#b9b2ff;font-size:8px;font-weight:950;letter-spacing:.16em}
+.dashboard-hero-copy h1{margin:7px 0;color:#fff;font-size:clamp(23px,6vw,30px);font-weight:950;letter-spacing:-.045em;line-height:1.12}
+.dashboard-hero-copy h1 em{color:#ffc96d;font-style:normal}.dashboard-hero-copy p{max-width:330px;margin:0;color:#c2cde6;font-size:11px}
+.dashboard-wallet-glance{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;padding:12px 13px;border:1px solid #ffffff26;border-radius:15px;background:#ffffff10;backdrop-filter:blur(8px)}
+.dashboard-wallet-glance>div{display:grid;gap:3px}.dashboard-wallet-glance small{color:#c5c7ee;font-size:8px;font-weight:900;letter-spacing:.12em}.dashboard-wallet-glance strong{color:#fff;font-size:22px;font-weight:950;font-variant-numeric:tabular-nums}
+.dashboard-wallet-glance>a{display:grid;place-items:center;width:37px;height:37px;border-radius:12px;background:linear-gradient(145deg,#8a72ff,#326fe8);color:#fff;font-size:21px}
+.dashboard-promotions-v3{margin:14px 0 16px;overflow:hidden;border:1px solid #46517c;border-radius:19px;background:#111a2e;box-shadow:0 13px 30px #00000035}
+.dashboard-promotions-v3 .carousel,.dashboard-promotions-v3 .carousel-inner,.dashboard-promotions-v3 img{overflow:hidden;border-radius:18px}
+.dashboard-promotions-v3 img{display:block;width:100%;aspect-ratio:16/6;object-fit:cover}
+.dashboard-promotions-v3 .carousel-indicators{z-index:4;margin-bottom:8px}.dashboard-promotions-v3 .carousel-indicators button{width:7px;height:7px;border:0;border-radius:30px;background:#ffffff9c}.dashboard-promotions-v3 .carousel-indicators button.active{width:22px;background:#ffc96d}
+.dashboard-action-grid-v3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 20px}
+.dashboard-action-grid-v3>a{display:grid;justify-items:center;gap:5px;min-width:0;padding:12px 5px;border:1px solid #2c3b5b;border-radius:15px;background:linear-gradient(155deg,#17223c,#111a2e);color:#e8edff;text-align:center;box-shadow:0 8px 20px #00000022}
+.dashboard-action-grid-v3>a>span{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#28264f;font-size:20px}
+.dashboard-action-grid-v3>a strong{font-size:9px;font-weight:900}.dashboard-action-grid-v3>a small{color:#8e9fbe;font-size:8px}
+.dashboard-action-grid-v3>a:active,.lobby-preview-card-v3:active{transform:scale(.97)}
+.featured-result-section-v3,.lobby-preview-v3{margin:17px 0 19px}
+.featured-result-section-v3 .section-heading h2,.lobby-preview-v3 .section-heading h2{color:#f4f6ff;font-size:18px;font-weight:950}
+.featured-result-section-v3 .eyebrow,.lobby-preview-v3 .eyebrow{color:#9a8cff}
+.featured-result-section-v3 .market-count{border:1px solid #34415f;border-radius:30px;background:#151f38;color:#b7c6e4}
+.featured-result-card-v3{position:relative;overflow:hidden;padding:17px;border:1px solid #6c61b75c;border-radius:20px;background:radial-gradient(circle at 100% 0,#765cf533 0,transparent 40%),linear-gradient(145deg,#18284a,#111b31);box-shadow:0 14px 32px #00000030}
+.featured-result-card-v3 .featured-result-top{color:#a99bff}.featured-result-card-v3 h3{margin:10px 0;color:#fff;font-size:17px;font-weight:950}
+.featured-result-card-v3 .featured-result-bottom{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:12px;border:1px solid #ffffff12;border-radius:14px;background:#080f20}
+.featured-result-card-v3 .featured-result-bottom small{color:#8e9fbe}.featured-result-card-v3 .featured-result-bottom strong{color:#fff;font-size:36px;font-weight:950;letter-spacing:.04em}
+.featured-result-card-v3 .result-live{border:1px solid #286b5a;border-radius:30px;background:#123a34;color:#76e4bf}.featured-result-card-v3 .result-pending{border:1px solid #806333;border-radius:30px;background:#3b301d;color:#ffd17b}
+.featured-result-card-v3>a{display:flex;justify-content:space-between;margin-top:12px;color:#b8adff;font-size:10px;font-weight:900}
+.lobby-preview-v3 .section-heading{align-items:center}.lobby-preview-v3 .section-link{color:#b6aaff;font-size:10px;font-weight:850}
+.lobby-preview-v3 .lobby-preview-track{gap:10px;padding-bottom:12px;scroll-snap-type:x mandatory}
+.lobby-preview-card-v3{display:flex;flex:0 0 min(66vw,225px);flex-direction:column;gap:9px;padding:13px;border:1px solid #2e3d5e;border-radius:17px;background:linear-gradient(155deg,#18233d,#101a2e);box-shadow:0 10px 25px #00000024;scroll-snap-align:start;transition:transform .18s,border-color .18s}
+.lobby-preview-card-v3.is-closed{background:linear-gradient(155deg,#151d31,#101827);opacity:.88}
+.lobby-preview-card-v3 .lobby-preview-top>span{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#292650}
+.lobby-preview-card-v3 h3{margin:0;color:#f4f6ff;font-size:13px;font-weight:950}
+.lobby-preview-card-v3 .lobby-preview-result{border:1px solid #2d3c5b;background:#0b1428}
+.lobby-preview-card-v3 .lobby-preview-result small{color:#8d9dbd}.lobby-preview-card-v3 .lobby-preview-result strong{color:#fff}
+.lobby-preview-card-v3>a{display:flex;justify-content:space-between;margin-top:auto;color:#b7aaff;font-size:10px;font-weight:900}
+.dashboard-service-grid-v3{display:grid;gap:8px;margin:17px 0 6px}
+.dashboard-service-grid-v3>a{display:flex;align-items:center;gap:11px;min-height:62px;padding:11px 13px;border:1px solid #293754;border-radius:15px;background:#121b31;color:#f4f6ff}
+.dashboard-service-grid-v3>a>span{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#25264c;font-size:21px}
+.dashboard-service-grid-v3>a>div{display:grid;flex:1;gap:2px}.dashboard-service-grid-v3 strong{font-size:11px;font-weight:900}.dashboard-service-grid-v3 small{color:#91a0bf;font-size:9px}.dashboard-service-grid-v3>a>b{color:#a99bff;font-size:19px}
+.dashboard-empty,.dashboard-inline-empty{border-color:#34415f;background:#111a2e;color:#c3cde1}.dashboard-empty h1,.dashboard-inline-empty h3{color:#f4f6ff}.dashboard-empty p,.dashboard-inline-empty p{color:#9ba9c8}
+@media(max-width:360px){.dashboard-hero-v3{padding:15px}.dashboard-action-grid-v3{gap:6px}.dashboard-action-grid-v3>a{padding:10px 3px}.dashboard-action-grid-v3>a strong{font-size:8px}.lobby-preview-card-v3{flex-basis:72vw}}
+@media(prefers-reduced-motion:reduce){.dashboard-action-grid-v3>a,.lobby-preview-card-v3{transition:none}}
 </style>

@@ -202,3 +202,48 @@ onMounted(() => {
 @media(min-width:620px){.wallet-quick-actions{gap:12px}.wallet-quick-actions>a{padding:15px}}
 @media(prefers-reduced-motion:reduce){.wallet-quick-actions>a{transition:none}}
 </style>
+
+<style scoped>
+.gsk-screen{min-height:100dvh;padding:17px 13px calc(110px + env(safe-area-inset-bottom));background:radial-gradient(circle at 92% 0,#342b70 0,transparent 30%),#080d1b;color:#f4f6ff}
+.wallet-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.wallet-quick-actions>a{display:grid;justify-items:center;gap:4px;min-width:0;padding:12px 6px;border:1px solid #34415f;border-radius:15px;background:#131e35;color:#e7ebff;text-align:center;box-shadow:0 8px 20px #0000001c}
+.wallet-quick-actions>a>span{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#292550;color:#d2caff;font-size:20px}
+.wallet-quick-actions>a strong{font-size:10px;font-weight:900}
+.wallet-quick-actions>a small{color:#91a0bf;font-size:8px}
+.wallet-balance-card{position:relative;overflow:hidden;margin-top:13px;padding:21px;border:1px solid #8175db66;border-radius:22px;background:radial-gradient(circle at 92% 0,#8b72ff55 0,transparent 36%),linear-gradient(125deg,#262252,#173d72 70%,#124c68);color:#fff;box-shadow:0 18px 42px #05081788}
+.wallet-balance-card:after{position:absolute;right:-30px;bottom:-75px;width:190px;height:190px;border:1px solid #ffffff1a;border-radius:50%;content:"";box-shadow:0 0 0 22px #ffffff08,0 0 0 45px #ffffff05}
+.wallet-balance-head{position:relative;z-index:1;color:#d3d3ff}
+.wallet-balance-head button{border:1px solid #ffffff35;border-radius:30px;background:#ffffff14;color:#fff}
+.wallet-balance-amount{position:relative;z-index:1;color:#fff;font-size:clamp(32px,9vw,42px);font-weight:950;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.wallet-balance-actions{position:relative;z-index:1}
+.wallet-balance-actions a{border:1px solid #ffffff2b;background:#ffffffed;color:#28316b;box-shadow:0 5px 14px #0000001c}
+.wallet-metrics{gap:9px;margin:13px 0 20px}
+.wallet-metrics article{border-color:#293754;border-radius:15px;background:#121b31;color:#f4f6ff;box-shadow:0 8px 22px #00000020}
+.wallet-metrics article>span{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#25264c}
+.wallet-metrics small{color:#91a0bf}
+.wallet-metrics strong{color:#f4f6ff;font-size:14px;font-variant-numeric:tabular-nums}
+.wallet-activity{padding:15px;border:1px solid #293754;border-radius:19px;background:#111a2e;color:#f4f6ff;box-shadow:0 14px 32px #00000024}
+.wallet-activity-heading h2{color:#fff;font-size:19px;font-weight:950}
+.wallet-activity-heading>small{color:#91a0bf}
+.wallet-filter-tabs{border:1px solid #2d3b59;background:#0a1326}
+.wallet-filter-tabs button{color:#8f9fbe}
+.wallet-filter-tabs button.active{background:linear-gradient(110deg,#765cf5,#326ce5);color:#fff;box-shadow:0 5px 14px #4f5ee633}
+.wallet-transaction{border-color:#283552}
+.transaction-symbol{background:#25264c;color:#d0c7ff}
+.transaction-copy>strong{color:#f1f4ff}
+.transaction-copy small{color:#8393b5}
+.transaction-status{width:max-content;padding:4px 7px;border:1px solid #39496c;border-radius:30px;background:#1a2946;color:#b9c8e4;font-size:8px;font-weight:850}
+.transaction-status.bg-success-subtle{border-color:#286b5a;background:#123a34!important;color:#76e4bf!important}
+.transaction-status.bg-warning-subtle{border-color:#806333;background:#3b301d!important;color:#ffd17b!important}
+.transaction-status.bg-danger-subtle{border-color:#824252;background:#3c202f!important;color:#ff9eae!important}
+.transaction-status.bg-secondary-subtle{border-color:#405174;background:#1a2946!important;color:#b9c8e4!important}
+.transaction-amount{font-variant-numeric:tabular-nums}
+.transaction-amount.credit{color:#5fe0b0}
+.transaction-amount.debit{color:#ff8b9e}
+.wallet-pagination{border-color:#283552}
+.wallet-pagination small{color:#91a0bf}
+.wallet-pagination button{border-color:#39496c;background:#182541;color:#c6d1e8}
+.wallet-pagination button.active{border-color:#8b72ff;background:#765cf5;color:#fff}
+.wallet-pagination button:disabled{opacity:.4}
+@media(max-width:360px){.wallet-quick-actions>a{padding:10px 4px}.wallet-quick-actions>a strong{font-size:9px}.wallet-activity{padding:12px}}
+</style>

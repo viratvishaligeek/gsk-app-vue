@@ -1,55 +1,57 @@
-# GSK Play v2 redesign progress
+# GSK Play — complete product redesign v3
 
-Working branch: `redesign/gsk-product-experience-v2`
-Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/3
+Base: `main` at `51a24cb7bc871f4c4f15d7abb8bd376101ddd0ff`
+Working branch: `redesign/gsk-complete-product-v3`
+Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/4
 
-## Completed implementation
+## Implemented in v3
 
-### Product shell and discovery
-- [x] Dedicated authenticated Games discovery screen with search and All / Open / Closed filters.
-- [x] Game counts, schedule/result summaries and contextual Play / View results actions.
-- [x] Games added to drawer and five-destination bottom navigation.
-- [x] Dashboard market preview changed from vertically stacked full market cards to a horizontal swipeable rail.
-- [x] Today's result labels use the API server date and timezone.
-- [x] Explicit previous/next banner controls added; Bootstrap carousel swipe, indicators, wrapping, auto-rotation and reduced-motion support retained.
+### Android application shell
+- [x] Replaced non-matching scoped selectors with styles for the actual `gsk-app-shell`, `gsk-drawer`, `gsk-topbar`, `gsk-main-content` and `gsk-bottom-navigation` markup.
+- [x] Added a midnight navy visual system with violet / electric-blue accents, styled drawer, wallet shortcut, active navigation treatment, safe-area spacing and reduced-motion handling.
+- [x] Added lightweight route transitions and kept primary bottom navigation visible on Monthly Charts and Live Support.
+- [x] Added dark global surface, form, modal, alert and Bootstrap control tokens.
+
+### Dashboard and Games
+- [x] Recomposed the dashboard around a personalized welcome, wallet glance, promotion slider, quick actions, featured result, market rail and service shortcuts.
+- [x] Kept the existing Bootstrap Carousel instance, touch support, automatic cycling, indicators, previous/next controls, pause-on-hover and reduced-motion behavior. Physical Android interaction testing remains pending.
+- [x] Rebuilt Games discovery around a spotlight market, market counts, search, All / Open / Closed filters and schedule/result cards.
+- [x] Spotlight market is excluded from the card grid only when it is actually visible; search and active filters continue to show matching markets.
 
 ### Gameplay
-- [x] Replaced the old Jodi / Harup / Crossing tab panel with a step-based Game Studio.
-- [x] New play-mode selector, amount selection, number/digit grids, crossing combination preview, review summary and persistent confirmation dock.
-- [x] Kept the existing gameplay script intact: mode selection, selection state, calculation rules, min/max settings validation, confirmation dialog, API endpoint and payload, balance synchronization and success/error handling.
+- [x] Added a v3 visual pass to the existing step-based Game Studio: midnight selection surfaces, animated number selection, mode states, amount controls, generated combinations, review panel and fixed submit dock.
+- [x] No gameplay script or game-rule calculation was changed in v3.
 
 ### Wallet and payments
-- [x] Add Money UI now presents a guided amount → method → confirmation journey, security context and improved payment choice hierarchy.
-- [x] Withdraw UI now presents a destination → amount → request journey, clearer payout destination selection and improved request history presentation.
-- [x] Wallet overview has direct Add Money / Withdraw / History actions and a clearer transaction destination.
-- [x] The complete `<script setup>` block in `src/views/wallet/Add.vue` was preserved byte-for-byte during the UI update. Gateway order creation, UPIGateway verification, manual UPI, UTR, screenshot validation/upload, pending payments, resume, polling, app lifecycle and wallet refresh logic were not rewritten.
-- [x] The complete existing `<script setup>` blocks in Withdraw.vue and wallet View.vue were preserved during their UI updates.
+- [x] Restyled Wallet overview with a high-contrast balance panel, transaction totals, credit/debit filters, status chips and pagination.
+- [x] Restyled Add Money and Withdraw journeys with dark payment surfaces, selected-method states, clearer amount controls, security context and request/history presentation.
+- [x] Add Money, Withdraw and Wallet overview script blocks were not edited in v3. Existing payment methods, UPIGateway, manual UPI, UTR, screenshot upload, verification, polling, withdrawal validation, API payloads and wallet synchronization remain in their original scripts.
 
-### Other account screens
-- [x] Profile: direct navigation between personal details and password/security sections; responsive two-column desktop layout.
-- [x] Play history: shortcuts to result charts and Games, stronger date-ledger hierarchy.
-- [x] Monthly charts: shortcuts to history and Games; improved horizontal market strip and sticky date column on narrow screens.
-- [x] Notifications: direct wallet/history destinations and grouped inbox presentation; existing push permission toggle and update flow retained.
-- [x] Referrals: clearer Share → Friend joins → Earn journey; copy/share/apply-code logic preserved.
-- [x] Live support: FAQ-first workspace and improved full-height conversation layout; real-time messaging, media upload and voice recording script preserved.
-- [x] Authentication screens (Login, SignUp, ForgotPassword) reviewed; existing separate branded authentication architecture and API/form logic retained.
-- [x] Existing dynamic CMS page remains route-backed and available.
+### Remaining customer screens
+- [x] Profile / Edit Profile: dark personal-details and security sections, responsive navigation and form states.
+- [x] Play History: dark date-ledger, daily totals, slip cards and status states.
+- [x] Monthly Charts: dark period filters, market strip and responsive result matrix.
+- [x] Notifications: dark push preference, app update and notification inbox surfaces.
+- [x] Referrals: dark invite code, reward summary, referral steps and people list.
+- [x] Live Support: dark FAQ workspace and chat surfaces; real-time messaging, media upload and voice recording script preserved.
+- [x] Login, registration and password recovery: consistent dark branded auth surfaces; existing auth/API form logic preserved.
+- [x] Dynamic CMS page: dark responsive content container.
 
-## Validation status
-- [x] GitHub Actions unit tests passed on the earlier gameplay commit.
-- [x] Static lint passed on the earlier gameplay commit.
-- [x] Production Vite build passed on the earlier gameplay commit.
-- [x] Capacitor Android sync passed on the earlier gameplay commit.
-- [x] Unit tests, lint, Vite production build and Capacitor sync passed on source commit `2a77b6e` (GitHub Actions run 41911997422).
-- [x] Android debug APK build and artifact upload passed on source commit `2a77b6e`; artifact `gsk-app-debug-apk` (7,312,076 bytes, SHA-256 `d3e17c4589607ce1807156f628052a07fafb4aecae5509c4160170eeda2dd9b7`).
-- [ ] Test Games discovery, filters and navigation on physical Android devices.
-- [ ] Test each gameplay mode end-to-end with the live API and wallet.
-- [ ] Verify gateway and manual UPI end-to-end, including Android app resume/back behavior.
-- [ ] Verify withdrawals, payment history and wallet synchronization.
-- [ ] Verify carousel touch, previous/next, indicators and auto-slide on Android.
-- [ ] Capture genuine before/after screenshots at supported device widths.
+## Validation
+- [x] Unit tests passed on GitHub Actions run #47.
+- [x] Static lint passed on GitHub Actions run #47.
+- [x] Production Vite build passed on GitHub Actions run #47.
+- [x] Capacitor Android sync passed on GitHub Actions run #47.
+- [x] Android debug APK build and artifact upload passed on GitHub Actions run #47.
+- [ ] Physical-device verification of navigation, safe areas, carousel gestures, gameplay and payment flows.
+- [ ] Genuine before/after screenshots.
 
-Latest documentation-only commit `2847a83` has a separate validation run in progress; all source changes listed above were included in the successful `2a77b6e` Android build.\n\n## Guardrails
-- No API services, Axios configuration, Pinia stores, authentication guards, push/presence services or Android native configuration were changed in this increment.
-- Wallet Add Money business logic was retained; only its template and scoped presentation were changed.
-- Do not merge to `main` until latest CI, real-device workflows and visual review are complete.
+Build: [GitHub Actions run #47](https://github.com/viratvishaligeek/gsk-app-vue/actions/runs/41919525449)
+
+APK artifact: `gsk-app-debug-apk` · 7,329,596 bytes · artifact ZIP SHA-256 `37b1f8eb741a472cba73fae228de495d025190b5bf0082108e2c10676c851fa2`.
+
+## Guardrails
+- v3 is based on current `main`; no changes were pushed to `main`.
+- No API services, Axios configuration, Pinia stores, auth guards, payment service code, push services, presence services or Android native configuration were changed in this v3 increment.
+- No new payment methods or payment APIs were invented. The current router has no separate payment-method management route.
+- Do not merge until physical-device testing, visual review and end-to-end checks are complete.
