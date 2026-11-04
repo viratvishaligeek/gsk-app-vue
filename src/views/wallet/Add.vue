@@ -485,15 +485,6 @@ onBeforeUnmount(async () => {
     appBackButtonListener = null
   }
 
-  if (activityTimer) {
-
-    clearInterval(
-      activityTimer
-    )
-
-    activityTimer = null
-  }
-
 
   if (pendingTimer) {
 
