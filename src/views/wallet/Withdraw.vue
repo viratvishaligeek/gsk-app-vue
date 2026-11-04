@@ -19,7 +19,7 @@
                 from wallet
               </div>
               <small>
-                <i class="bi bi-check-circle-fill"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✅</span>
                 Withdrawal completed • Just now
               </small>
             </div>
@@ -35,10 +35,7 @@
           : 'message-success'
           ">
           <div class="message-icon">
-            <i :class="apiMessage.type === 'error'
-              ? 'bi bi-exclamation-circle-fill'
-              : 'bi bi-check-circle-fill'
-              "></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </div>
           <div class="flex-grow-1">
             {{ apiMessage.text }}
@@ -69,7 +66,7 @@
               selected: transferMode === 'upi'
             }" @click="transferMode = 'upi'">
               <span class="destination-icon upi">
-                <i class="bi bi-qr-code"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">▦</span>
               </span>
               <span class="destination-text">
                 <strong>UPI</strong>
@@ -85,7 +82,7 @@
               selected: transferMode === 'bank'
             }" @click="transferMode = 'bank'">
               <span class="destination-icon bank">
-                <i class="bi bi-building"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
               </span>
               <span class="destination-text">
                 <strong>Bank Account</strong>
@@ -120,7 +117,7 @@
               </span>
             </div>
             <div v-if="errors.amount" class="field-error">
-              <i class="bi bi-exclamation-circle"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">❗</span>
               {{ errors.amount }}
             </div>
           </div>
@@ -141,7 +138,7 @@
           <div v-if="transferMode === 'bank'" class="details-panel">
             <div class="details-heading">
               <span class="details-heading-icon">
-                <i class="bi bi-bank"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🏦</span>
               </span>
               <div>
                 <strong>Bank details</strong>
@@ -155,7 +152,7 @@
                 Account holder name
               </label>
               <div class="text-input">
-                <i class="bi bi-person"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">👤</span>
                 <input type="text" v-model="form.accountName" placeholder="Name as per bank account"
                   autocomplete="name" />
               </div>
@@ -165,7 +162,7 @@
                 Account number
               </label>
               <div class="text-input">
-                <i class="bi bi-credit-card"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">💳</span>
                 <input type="text" v-model="form.accountNumber" class="font-monospace"
                   placeholder="Enter account number" autocomplete="off" />
               </div>
@@ -175,7 +172,7 @@
                 IFSC code
               </label>
               <div class="text-input">
-                <i class="bi bi-upc-scan"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">📷</span>
                 <input type="text" v-model="form.ifsc" class="text-uppercase font-monospace"
                   placeholder="e.g. SBIN0001234" autocomplete="off" />
               </div>
@@ -184,7 +181,7 @@
           <div v-else class="details-panel">
             <div class="details-heading">
               <span class="details-heading-icon upi-heading">
-                <i class="bi bi-phone"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">📱</span>
               </span>
               <div>
                 <strong>UPI details</strong>
@@ -198,7 +195,7 @@
                 UPI ID
               </label>
               <div class="text-input">
-                <i class="bi bi-at"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✉️</span>
                 <input type="text" v-model="form.upiId" placeholder="username@upi" autocomplete="off" />
               </div>
             </div>
@@ -218,17 +215,17 @@
                 <div v-if="qrPreviewUrl" class="qr-preview-wrap">
                   <img :src="qrPreviewUrl" alt="UPI QR Preview" class="qr-preview" />
                   <button type="button" class="qr-remove" @click="removeQrCode">
-                    <i class="bi bi-x-lg"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                   </button>
                   <div class="qr-preview-label">
-                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✅</span>
                     QR selected
                   </div>
                 </div>
                 <label v-else class="qr-empty">
                   <input type="file" accept="image/png,image/jpeg,image/webp" @change="handleQrUpload" />
                   <div class="qr-upload-icon">
-                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">☁️</span>
                   </div>
                   <strong>
                     Upload UPI QR
@@ -242,7 +239,7 @@
                 </label>
               </div>
               <div v-if="errors.qrImage" class="field-error">
-                <i class="bi bi-exclamation-circle"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">❗</span>
                 {{ errors.qrImage }}
               </div>
             </div>
@@ -251,17 +248,17 @@
             <span v-if="isLoading" class="spinner-border spinner-border-sm"></span>
             <template v-else>
               <span class="withdraw-button-left">
-                <i class="bi bi-shield-lock-fill"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🔐</span>
                 Secure Withdrawal
               </span>
               <span class="withdraw-button-right">
                 ₹{{ formatCurrency(form.amount) }}
-                <i class="bi bi-arrow-right"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">→</span>
               </span>
             </template>
           </button>
           <div class="secure-note">
-            <i class="bi bi-shield-check"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🛡️</span>
             Your withdrawal request is processed securely.
           </div>
         </section>
@@ -277,7 +274,7 @@
           <button type="button" class="refresh-btn" :class="{
             spinning: pendingLoading
           }" @click="loadPendingWithdrawals">
-            <i class="bi bi-arrow-clockwise"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">↻</span>
           </button>
         </div>
         <!-- Loading -->
@@ -296,7 +293,7 @@
           pendingWithdrawals.length === 0
         " class="empty-pending">
           <div class="empty-icon">
-            <i class="bi bi-arrow-up-right-square"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">↗️</span>
           </div>
           <strong>
             No pending withdrawals
@@ -310,7 +307,7 @@
           <div v-for="withdrawal in pendingWithdrawals" :key="withdrawal.id" class="pending-item">
             <div class="pending-left">
               <div class="pending-icon">
-                <i class="bi bi-arrow-up-right"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">↗️</span>
               </div>
               <div>
                 <strong>
@@ -345,7 +342,7 @@
         </div>
       </section>
       <div class="page-footer-note">
-        <i class="bi bi-info-circle"></i>
+        <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
         Withdrawal requests are reviewed and processed securely.
       </div>
     </main>
