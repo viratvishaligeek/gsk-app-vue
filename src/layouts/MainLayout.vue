@@ -50,7 +50,13 @@
       </div>
     </header>
 
-    <main class="gsk-main-content"><router-view /></main>
+    <main class="gsk-main-content">
+      <router-view v-slot="{ Component }">
+        <Transition name="gsk-page" mode="out-in">
+          <component :is="Component" :key="route.path" />
+        </Transition>
+      </router-view>
+    </main>
 
     <nav v-if="!hideBottomNav" class="gsk-bottom-navigation" aria-label="Primary navigation">
       <router-link to="/dashboard" active-class="is-active" exact-active-class="is-active"><span>🏠</span><small>Home</small></router-link>
@@ -198,5 +204,8 @@ const handleLogout = async () => {
 @media(min-width:681px){.gsk-app-shell{border-right:1px solid #ffffff0c;border-left:1px solid #ffffff0c}.gsk-bottom-navigation{border-right:1px solid #ffffff12;border-left:1px solid #ffffff12}}
 @media(max-width:360px){.gsk-topbar{min-height:62px;padding-right:10px;padding-left:10px}.gsk-wordmark small{display:none}.topbar-actions{gap:5px}.topbar-wallet{padding:0 8px;font-size:10px}.gsk-bottom-navigation a>small{font-size:8px}}
 @keyframes gsk-backdrop-in{from{opacity:0}to{opacity:1}}
+.gsk-page-enter-active,.gsk-page-leave-active{transition:opacity .18s ease,transform .18s ease}
+.gsk-page-enter-from{opacity:0;transform:translateY(7px)}
+.gsk-page-leave-to{opacity:0;transform:translateY(-4px)}
 @media(prefers-reduced-motion:reduce){.gsk-drawer,.drawer-navigation a,.menu-trigger,.gsk-bottom-navigation a,.gsk-bottom-navigation a>span{transition:none!important;animation:none!important}}
 </style>
