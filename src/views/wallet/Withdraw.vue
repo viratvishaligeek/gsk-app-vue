@@ -433,58 +433,6 @@ const quickWithdrawAmounts = computed(() => {
 
 
 
-const demoWithdrawActivities = [
-  {
-    name: 'Rahul',
-    amount: '500',
-    initials: 'R',
-  },
-  {
-    name: 'Aman',
-    amount: '1,000',
-    initials: 'A',
-  },
-  {
-    name: 'Vikas',
-    amount: '2,000',
-    initials: 'V',
-  },
-  {
-    name: 'Neha',
-    amount: '500',
-    initials: 'N',
-  },
-  {
-    name: 'Rohit',
-    amount: '1,500',
-    initials: 'R',
-  },
-  {
-    name: 'Pooja',
-    amount: '1,000',
-    initials: 'P',
-  },
-  {
-    name: 'Arjun',
-    amount: '2,500',
-    initials: 'A',
-  },
-]
-
-
-const withdrawActivityIndex =
-  ref(0)
-
-
-const currentWithdrawActivity =
-  computed(() => {
-    return demoWithdrawActivities[
-      withdrawActivityIndex.value
-    ]
-  })
-
-
-let activityTimer = null
 let pendingTimer = null
 
 
@@ -917,26 +865,6 @@ const loadPendingWithdrawals =
 
 
 
-const startActivityRotation =
-  () => {
-    if (activityTimer) {
-      clearInterval(
-        activityTimer
-      )
-    }
-    activityTimer =
-      setInterval(() => {
-        withdrawActivityIndex.value =
-          (
-            withdrawActivityIndex.value +
-            1
-          ) %
-          demoWithdrawActivities.length
-      }, 4500)
-  }
-
-
-
 
 const startPendingRefresh =
   () => {
@@ -963,21 +891,12 @@ onMounted(async () => {
     ]),
     loadPendingWithdrawals(),
   ])
-
-  startActivityRotation()
-  startPendingRefresh()
+startPendingRefresh()
 
 })
 
 
 onBeforeUnmount(() => {
-  if (activityTimer) {
-    clearInterval(
-      activityTimer
-    )
-    activityTimer = null
-  }
-
   if (pendingTimer) {
     clearInterval(
       pendingTimer
