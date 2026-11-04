@@ -48,7 +48,7 @@
               </span>
 
               <span v-if="hasTodayResult(game.id)" class="fs-8 text-success fw-bold">
-                <i class="bi bi-lightning-charge-fill me-1"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">⚡</span>
                 आज
               </span>
               <span v-else class="fs-8 text-danger fw-bold">
@@ -71,7 +71,7 @@
         </div>
 
         <div v-else-if="!gameHeaders.length" class="text-center py-5">
-          <i class="bi bi-bar-chart-line text-muted fs-1"></i>
+          <span class="gsk-emoji-icon" aria-hidden="true">📊</span>
 
           <p class="text-muted mt-2 mb-0">
             No games available.
@@ -132,12 +132,12 @@
           class="card-footer bg-light p-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2 fs-8 text-muted">
           <div class="d-flex align-items-center gap-3">
             <span>
-              <i class="bi bi-square-fill text-warning me-1"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">🟦</span>
               Today's Live Row
             </span>
 
             <span>
-              <i class="bi bi-dash-lg me-1"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">—</span>
               Result Awaited
             </span>
           </div>
