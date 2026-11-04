@@ -1413,3 +1413,77 @@ onBeforeUnmount(async () => {
 .add-money-page .amount-card{border-color:#d8e6f5;background:linear-gradient(145deg,#fff,#f5f9ff)}.add-money-page .amount-input-box{min-height:68px;border:1px solid #dce7f4;border-radius:14px;background:#fff}.add-money-page .quick-amounts button{min-height:39px;border-radius:11px}.add-money-page .payment-card{border-radius:18px}.add-money-page .gateway-option,.add-money-page .manual-option{border-radius:15px;transition:border-color .18s,box-shadow .18s,transform .18s}.add-money-page .gateway-option.selected,.add-money-page .manual-option.selected{border-color:#315f9f;box-shadow:0 0 0 3px #315f9f14}.add-money-page .pay-button{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:5;box-shadow:0 9px 24px #244f8230}.add-money-page .pending-section{border-radius:18px}
 @media(prefers-reduced-motion:reduce){.add-money-page .gateway-option,.add-money-page .manual-option{transition:none}}
 </style>
+
+<style scoped>
+.add-money-page{min-height:100dvh;padding-bottom:calc(120px + env(safe-area-inset-bottom));background:radial-gradient(circle at 90% 0,#372d79 0,transparent 34%),linear-gradient(180deg,#0b1225,#080d1b 52%);color:#f4f6ff}
+.add-money-page .gsk-payment-flow{width:min(100%,720px);margin-inline:auto;padding-top:14px}
+.add-money-page .payment-screen-header{display:flex;align-items:center;gap:13px;margin:2px 0 16px}
+.add-money-page .payment-back{display:grid;place-items:center;width:43px;height:43px;flex:0 0 43px;border:1px solid #ffffff20;border-radius:14px;background:#ffffff0b;color:#fff;font-size:22px}
+.add-money-page .payment-screen-heading{display:grid;gap:2px}
+.add-money-page .payment-screen-heading>small{color:#a89bff;font-size:9px;font-weight:950;letter-spacing:.16em}
+.add-money-page .payment-screen-heading h1{margin:0;color:#fff;font-size:25px;font-weight:950;letter-spacing:-.04em}
+.add-money-page .payment-screen-heading p{margin:0;color:#9ba9c8;font-size:11px}
+.add-money-page .payment-journey,.add-money-page .payment-security-strip{border-color:#354164;background:#121d36;color:#e8edff;box-shadow:0 10px 28px #00000022}
+.add-money-page .payment-journey>div span{border-color:#39496c;background:#1b2947;color:#aab7d3}
+.add-money-page .payment-journey>div.is-current span{border-color:#8b72ff;background:linear-gradient(145deg,#8b72ff,#4f72ec);color:#fff;box-shadow:0 0 0 4px #8b72ff25}
+.add-money-page .payment-journey>div small{color:#aab7d3}
+.add-money-page .payment-journey>i{background:#39496c}
+.add-money-page .payment-security-strip{border-color:#554b8e;background:linear-gradient(110deg,#25244d,#172a4b)}
+.add-money-page .payment-security-strip>div strong{color:#f2efff}
+.add-money-page .payment-security-strip>div small{color:#aab7d3}
+.add-money-page .payment-security-tag{background:#342d65;color:#c9beff}
+.add-money-page .amount-card,.add-money-page .payment-card,.add-money-page .pending-section{margin-top:13px;padding:17px;border:1px solid #293754;border-radius:20px;background:linear-gradient(155deg,#151f38,#10182b);color:#f4f6ff;box-shadow:0 15px 35px #00000024}
+.add-money-page .section-label strong,.add-money-page .section-heading h6{color:#fff;font-size:14px;font-weight:900}
+.add-money-page .section-label small,.add-money-page .section-heading span{color:#9ba9c8}
+.add-money-page .section-icon.green{background:#1a3d46;color:#6fe4ca}
+.add-money-page .amount-input-box{display:flex;align-items:center;gap:9px;min-height:76px;margin-top:15px;padding:0 15px;border:1px solid #39496c;border-radius:16px;background:#0b1428;box-shadow:inset 0 1px #ffffff08}
+.add-money-page .amount-input-box .rupee-symbol{color:#a99bff;font-size:25px;font-weight:900}
+.add-money-page .amount-input-box input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#fff;font-size:34px;font-weight:950;font-variant-numeric:tabular-nums}
+.add-money-page .amount-input-box input::placeholder{color:#5f6e8d}
+.add-money-page .amount-suffix{color:#8090b2;font-size:9px;font-weight:900;letter-spacing:.1em}
+.add-money-page .quick-amounts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.add-money-page .quick-amounts button{min-height:40px;padding:0 14px;border:1px solid #39496c;border-radius:12px;background:#182541;color:#c6d1e8;font-size:11px;font-weight:850}
+.add-money-page .quick-amounts button.selected{border-color:#8b72ff;background:linear-gradient(120deg,#765cf5,#356ce8);color:#fff;box-shadow:0 7px 20px #765cf533}
+.add-money-page .payment-card .section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+.add-money-page .payment-card .section-heading h6{margin:0 0 3px}
+.add-money-page .secured-pill{border:1px solid #245c52;border-radius:30px;background:#123b35;color:#6ce3b7}
+.add-money-page .gateway-option,.add-money-page .manual-option{border:1px solid #34415f;background:#0d172c;color:#f4f6ff;box-shadow:none}
+.add-money-page .gateway-option.selected,.add-money-page .manual-option.selected{border-color:#927cff;background:linear-gradient(140deg,#28234f,#172b4b);box-shadow:0 0 0 2px #8b72ff25,0 12px 28px #00000024}
+.add-money-page .gateway-main strong,.add-money-page .manual-content strong{color:#fff}
+.add-money-page .gateway-main small,.add-money-page .manual-content small{color:#9ba9c8}
+.add-money-page .gateway-radio{border-color:#63749a;background:#111b30}
+.add-money-page .gateway-option.selected .gateway-radio,.add-money-page .manual-option.selected .gateway-radio{border-color:#9b8bff}
+.add-money-page .gateway-option.selected .gateway-radio span,.add-money-page .manual-option.selected .gateway-radio span{background:#9b8bff}
+.add-money-page .recommended-badge{background:#443b78;color:#d8d0ff}
+.add-money-page .upi-app{color:#aebbd5}
+.add-money-page .upi-icon,.add-money-page .manual-icon{border:1px solid #34415f;background:#1b2945}
+.add-money-page .gateway-note,.add-money-page .manual-instruction{border:1px solid #354b71;background:#142744;color:#b7c8e5}
+.add-money-page .api-message{border-radius:14px}
+.add-money-page .message-error{border:1px solid #864458;background:#351d30;color:#ffb3c0}
+.add-money-page .message-success{border:1px solid #286d5b;background:#123a34;color:#8af0cb}
+.add-money-page .pay-button,.add-money-page .manual-submit-btn{min-height:54px;border:1px solid #9b8aff;border-radius:16px;background:linear-gradient(105deg,#795cf5,#286ee9);color:#fff;box-shadow:0 12px 28px #4e54d944;font-size:12px;font-weight:950}
+.add-money-page .pay-button:disabled{opacity:.55}
+.add-money-page .secure-footer{color:#8999bb}
+.add-money-page .pending-section{margin-top:18px}
+.add-money-page .pending-heading strong,.add-money-page .pending-heading h6{color:#fff}
+.add-money-page .pending-heading small,.add-money-page .pending-item small{color:#8f9fbe}
+.add-money-page .pending-item{border-color:#293754;background:transparent}
+.add-money-page .pending-payment-icon,.add-money-page .pending-item-left>span:first-child{background:#24264d;color:#c5baff}
+.add-money-page .status-pill{border:1px solid #405174;background:#1a2946;color:#c2cde3}
+.add-money-page .status-pill.status-success{border-color:#286b5a;background:#123a34;color:#76e4bf}
+.add-money-page .status-pill.status-danger{border-color:#824252;background:#3c202f;color:#ff9eae}
+.add-money-page .status-pill.status-pending{border-color:#806333;background:#3b301d;color:#ffd17b}
+.add-money-page .refresh-btn{border-color:#39496c;background:#1b2945;color:#c4baff}
+.add-money-page .empty-pending,.add-money-page .pending-loading{border-color:#34415f;background:#0d172b;color:#9ba9c8}
+.add-money-page .empty-pending strong{color:#f4f6ff}
+.add-money-page .qr-container,.add-money-page .qr-placeholder,.add-money-page .upload-box{border-color:#39496c;background:#0d172b;color:#aab7d3}
+.add-money-page .upi-copy{border-color:#51488a;background:#24244b;color:#c8beff}
+.add-money-page .field-with-icon{border-color:#39496c;background:#0d172b;color:#fff}
+.add-money-page .field-with-icon input{color:#fff}
+.add-money-page .gateway-payment-modal,.add-money-page .manual-modal{border:1px solid #39496c;background:#111b30;color:#f4f6ff;box-shadow:0 25px 80px #000b}
+.add-money-page .modal-header-custom{border-color:#34415f;background:#182541;color:#fff}
+.add-money-page .modal-body-custom{color:#c3cde1}
+.add-money-page .modal-close{color:#dbe3f6}
+@media(max-width:380px){.add-money-page .payment-screen-heading h1{font-size:22px}.add-money-page .amount-input-box input{font-size:29px}.add-money-page .amount-card,.add-money-page .payment-card,.add-money-page .pending-section{padding:14px}}
+@media(prefers-reduced-motion:reduce){.add-money-page *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
