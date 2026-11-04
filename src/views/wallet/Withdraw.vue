@@ -1,6 +1,7 @@
 <template>
   <div class="withdraw-page pb-5">
-    <main class="container-fluid px-3 gsk-payment-flow">\n      <header class="payment-screen-header"><router-link to="/wallet" class="payment-back" aria-label="Back to wallet">←</router-link><div class="payment-screen-heading"><small>WALLET SERVICES</small><h1>Withdraw money</h1><p>Choose a payout method and enter your details.</p></div></header>
+    <main class="container-fluid px-3 gsk-payment-flow">
+      <header class="payment-screen-header"><router-link to="/wallet" class="payment-back" aria-label="Back to wallet">←</router-link><div class="payment-screen-heading"><small>WALLET SERVICES</small><h1>Withdraw money</h1><p>Choose a payout method and enter your details.</p></div></header>
       
       <transition name="slide-fade">
         <div v-if="apiMessage.text" class="api-message" :class="apiMessage.type === 'error'
