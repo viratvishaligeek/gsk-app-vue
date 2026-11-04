@@ -35,14 +35,14 @@
         </div>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-lock text-success"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
           </span>
           <input :type="showPassword ? 'text' : 'password'" class="form-control border-start-0 border-end-0"
             :class="{ 'is-invalid': errors.password }" id="password" v-model="form.password"
             placeholder="Enter your password" @input="clearFieldError('password')" />
           <button type="button" class="input-group-text bg-transparent border-start-0" id="togglePassword"
             @click="showPassword = !showPassword" aria-label="Toggle password visibility">
-            <i :class="['bi', showPassword ? 'bi-eye-slash' : 'bi-eye', 'text-info']"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </button>
         </div>
         <div v-if="errors.password" class="invalid-feedback d-block small mt-1">
