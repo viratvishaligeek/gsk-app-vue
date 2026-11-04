@@ -82,6 +82,7 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 const searchTerm = ref('')
 const activeFilter = ref('all')
+const serverToday = ref('')
 
 const filters = [
   { value: 'all', label: 'All markets' },
@@ -107,9 +108,9 @@ const filteredGames = computed(() => {
   })
 })
 
-const hasTodayResult = game => Boolean(game.today_result?.number ?? game.latest_result?.number)
+const hasTodayResult = game => Boolean(game.today_result?.number ?? (game.latest_result?.date === serverToday.value ? game.latest_result?.number : null))
 const resultNumber = game => {
-  const result = game.today_result ?? game.latest_result
+  const result = game.today_result ?? (game.latest_result?.date === serverToday.value ? game.latest_result : null)
   return result?.number ?? '--'
 }
 
@@ -136,6 +137,9 @@ const loadGames = async () => {
       headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
     })
     if (!response.data?.status) throw new Error(response.data?.message || 'Unable to load games.')
+    const timezone = response.data.timezone || 'Asia/Kolkata'
+    const serverTime = response.data.server_time ? new Date(response.data.server_time) : new Date()
+    serverToday.value = new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(serverTime)
     games.value = Array.isArray(response.data.games) ? response.data.games : []
   } catch (error) {
     errorMessage.value = error.response?.data?.message || error.message || 'Unable to load games.'
