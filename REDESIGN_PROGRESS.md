@@ -44,11 +44,15 @@ Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/4
 - [ ] Capture genuine before/after screenshots.
 
 ## Validation
-- [ ] Run unit tests, lint and production Vite build against the v3 branch.
-- [ ] Run Capacitor sync and Android debug APK build against the v3 branch.
+- [x] Unit tests passed on GitHub Actions run #43.
+- [x] Static lint passed on GitHub Actions run #43.
+- [x] Production Vite build passed on GitHub Actions run #43.
+- [x] Capacitor Android sync passed on GitHub Actions run #43.
+- [x] Android debug APK build and artifact upload passed on GitHub Actions run #43.
+- [ ] Physical-device verification remains pending.
 - [ ] Verify native navigation and Android back behavior after the shell styling change.
 
-## Guardrails
+Build: [GitHub Actions run #43](https://github.com/viratvishaligeek/gsk-app-vue/actions/runs/41918464721)\n\nAPK artifact: `gsk-app-debug-apk` · 7,331,307 bytes · artifact ZIP SHA-256 `8a355aafe1f96881bc9873bb29a461d2645848797db0073fbba8272fd260a528`.\n\n## Guardrails
 - v3 is based on current `main`; no changes were pushed to `main`.
 - No API services, Axios configuration, Pinia stores, auth guards, payment service code, push services, presence services or Android native configuration were changed in this v3 increment.
 - No new payment methods or API endpoints were invented. The current router has no separate payment-method management route.
