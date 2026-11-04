@@ -1,0 +1,92 @@
+/* GSK mobile application design system — visual layer only.
+   Existing Vue templates, routes, API clients, stores and event contracts remain intact. */
+:root {
+  color-scheme: light;
+  --gsk-ink: #182235;
+  --gsk-muted: #66748a;
+  --gsk-paper: #f4f7fb;
+  --gsk-surface: #fff;
+  --gsk-line: #e3e9f1;
+  --gsk-brand: #183b72;
+  --gsk-brand-strong: #102b56;
+  --gsk-accent: #e7a63c;
+  --gsk-success: #16845b;
+  --gsk-danger: #c34550;
+  --gsk-radius: 18px;
+  --gsk-shadow: 0 8px 24px rgba(24,45,78,.08);
+  font-synthesis:none;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+}
+* { box-sizing:border-box; }
+html,body,#app { min-height:100%; margin:0; }
+html { background:var(--gsk-paper); scroll-behavior:smooth; }
+body { overflow-x:hidden; background:var(--gsk-paper)!important; color:var(--gsk-ink)!important; font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif!important; font-size:14px; line-height:1.55; }
+button,input,select,textarea { font:inherit; -webkit-tap-highlight-color:transparent; }
+button,a { touch-action:manipulation; }
+a { color:var(--gsk-brand); text-decoration:none; }
+img { max-width:100%; }
+:focus-visible { outline:3px solid rgba(24,59,114,.3); outline-offset:3px; }
+.app-root,.app-layout,.premium-shell { min-height:100dvh; background:var(--gsk-paper)!important; color:var(--gsk-ink)!important; }
+.premium-app-header,.app-header { position:sticky; top:0; z-index:1030; min-height:66px; padding-top:env(safe-area-inset-top); background:rgba(255,255,255,.96)!important; color:var(--gsk-ink)!important; border-bottom:1px solid var(--gsk-line)!important; box-shadow:0 4px 18px rgba(25,42,69,.05)!important; backdrop-filter:blur(16px); }
+.premium-header-inner { width:min(100%,720px); min-height:64px; margin:auto; padding:8px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.premium-header-brand,.premium-header-brand strong { color:var(--gsk-ink)!important; }
+.premium-header-brand small { color:var(--gsk-muted)!important; }
+.premium-brand-mark { width:40px!important; height:40px!important; border-radius:13px!important; background:var(--gsk-brand)!important; color:#fff!important; box-shadow:none!important; }
+.premium-menu-trigger,.header-menu-btn { display:grid; place-items:center; width:42px; height:42px; border:1px solid var(--gsk-line)!important; border-radius:13px!important; background:#fff!important; color:var(--gsk-ink)!important; }
+.premium-header-actions { display:flex; align-items:center; gap:8px; }
+.premium-notification { display:grid; place-items:center; width:40px; height:40px; border:1px solid var(--gsk-line); border-radius:13px; color:var(--gsk-ink)!important; background:#fff; }
+.premium-header-wallet { min-height:40px; display:flex; align-items:center; gap:7px; padding:0 12px; border-radius:13px; background:#edf3fb!important; color:var(--gsk-brand)!important; font-size:12px; font-weight:850; }
+.main-body-content { width:min(100%,720px); min-height:calc(100dvh - 140px); margin-inline:auto; padding:14px 14px calc(104px + env(safe-area-inset-bottom)); }
+.premium-bottom-nav,.bottom-nav { position:fixed!important; inset:auto 0 0!important; z-index:1050; display:flex; align-items:center; justify-content:space-around; gap:2px; min-height:calc(68px + env(safe-area-inset-bottom))!important; padding:7px 6px calc(7px + env(safe-area-inset-bottom))!important; border-top:1px solid var(--gsk-line)!important; border-radius:18px 18px 0 0!important; background:rgba(255,255,255,.97)!important; box-shadow:0 -8px 24px rgba(24,45,78,.07)!important; backdrop-filter:blur(16px); }
+.premium-bottom-nav .nav-item,.bottom-nav .nav-item { flex:1; min-width:0; display:grid; justify-items:center; align-content:center; gap:3px; color:#8290a4!important; transform:none!important; }
+.premium-bottom-nav .nav-icon { width:32px!important; height:28px!important; margin:0!important; border:0!important; border-radius:9px!important; background:transparent!important; color:inherit!important; box-shadow:none!important; font-size:19px!important; }
+.premium-bottom-nav .nav-label { font-size:10px!important; font-weight:750!important; color:inherit!important; }
+.premium-bottom-nav .nav-item.active,.premium-bottom-nav .nav-item.router-link-active { color:var(--gsk-brand)!important; }
+.premium-bottom-nav .nav-item.active .nav-icon,.premium-bottom-nav .nav-item.router-link-active .nav-icon { width:32px!important; height:28px!important; margin:0!important; border:0!important; background:#edf3fb!important; color:var(--gsk-brand)!important; box-shadow:none!important; animation:none!important; }
+.premium-sidebar,.sidebar { width:min(320px,calc(100vw - 48px)); background:#fff!important; border-right:1px solid var(--gsk-line)!important; border-radius:0 20px 20px 0!important; box-shadow:18px 0 45px rgba(24,45,78,.16)!important; padding-bottom:env(safe-area-inset-bottom); }
+.premium-sidebar-header,.sidebar-header { background:linear-gradient(135deg,#183b72,#102b56)!important; color:#fff!important; }
+.premium-profile-copy strong,.premium-sidebar-header h6 { color:#fff!important; }
+.premium-profile-copy small,.premium-profile-copy a,.premium-sidebar-header small { color:rgba(255,255,255,.72)!important; }
+.premium-sidebar-wallet,.sidebar-wallet-card { border:1px solid rgba(255,255,255,.14)!important; border-radius:14px!important; background:rgba(255,255,255,.1)!important; }
+.premium-sidebar-menu .sidebar-menu-item,.sidebar-menu-item { min-height:46px; margin:3px 8px; padding:11px 12px; border-radius:12px!important; color:#536178!important; font-weight:700; }
+.premium-sidebar-menu .sidebar-menu-item.router-link-active,.sidebar-menu-item.router-link-active { color:var(--gsk-brand)!important; background:#edf3fb!important; box-shadow:inset 3px 0 var(--gsk-brand)!important; }
+.premium-sidebar-footer { padding:16px; }
+.card,.premium-card,.amount-card,.payment-card,.balance-card,.history-card,.chart-card,.referral-card,.notification-card,.support-card {
+  border:1px solid var(--gsk-line)!important; border-radius:var(--gsk-radius)!important; background:#fff!important; box-shadow:var(--gsk-shadow)!important; color:var(--gsk-ink)!important;
+}
+h1,h2,h3,h4,h5,h6 { color:var(--gsk-ink); font-weight:800; letter-spacing:-.035em; }
+p,.text-muted { color:var(--gsk-muted); }
+.btn { min-height:44px; border-radius:12px!important; padding:10px 15px; font-weight:800; }
+.btn-primary,.btn-app,.pay-button { border-color:var(--gsk-brand)!important; background:var(--gsk-brand)!important; color:#fff!important; box-shadow:0 7px 18px rgba(24,59,114,.16)!important; }
+.btn-primary:hover,.btn-app:hover { background:var(--gsk-brand-strong)!important; }
+.form-control,.form-select,.input-group-text { min-height:46px; border-color:#d9e1ec!important; border-radius:11px!important; background:#fff!important; color:var(--gsk-ink)!important; box-shadow:none!important; }
+.form-control:focus,.form-select:focus { border-color:#7293c0!important; box-shadow:0 0 0 3px rgba(24,59,114,.12)!important; }
+.form-label { color:#34445d!important; font-size:12px; font-weight:800; }
+.alert { border-radius:13px!important; }
+.table { --bs-table-color:var(--gsk-ink); --bs-table-border-color:var(--gsk-line); font-size:12px; }
+.table thead th { background:#f1f5fa; color:#58677d; font-size:10px; font-weight:850; text-transform:uppercase; letter-spacing:.05em; }
+.auth-container { width:min(100% - 12px,460px)!important; margin:22px auto!important; padding:clamp(22px,6vw,32px)!important; border:1px solid var(--gsk-line)!important; border-radius:24px!important; background:#fff!important; box-shadow:var(--gsk-shadow)!important; }
+.auth-container h4 { color:var(--gsk-brand)!important; font-size:24px; }
+.auth-form .btn-app { min-height:50px; }
+.amount-input-box { border:1px solid var(--gsk-line)!important; border-radius:15px!important; background:#f8fafd!important; }
+.quick-amounts button { min-height:40px; border:1px solid var(--gsk-line)!important; border-radius:11px!important; background:#fff!important; color:var(--gsk-brand)!important; font-weight:800; }
+.quick-amounts button.selected { border-color:var(--gsk-brand)!important; background:#edf3fb!important; }
+.gateway-option,.manual-option { border:1px solid var(--gsk-line)!important; border-radius:15px!important; background:#fff!important; }
+.gateway-option.selected,.manual-option.selected { border-color:var(--gsk-brand)!important; box-shadow:0 0 0 3px rgba(24,59,114,.08)!important; }
+.pay-button { min-height:54px!important; border-radius:14px!important; }
+.global-loading-indicator__bar { background:linear-gradient(90deg,var(--gsk-brand),var(--gsk-accent))!important; }
+.push-permission-notice { left:12px!important; right:12px!important; bottom:calc(82px + env(safe-area-inset-bottom))!important; border:1px solid var(--gsk-line)!important; border-radius:14px!important; background:#fff!important; color:var(--gsk-ink)!important; box-shadow:var(--gsk-shadow)!important; }
+.launch-splash { background:var(--gsk-brand-strong)!important; }
+@media (min-width:760px) {
+  .main-body-content { padding-inline:20px; }
+}
+@media (max-width:380px) {
+  .main-body-content { padding-inline:10px; }
+  .premium-header-inner { padding-inline:11px; }
+  .premium-header-brand strong { font-size:12px; }
+  .premium-bottom-nav .nav-label { font-size:9px!important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+}
