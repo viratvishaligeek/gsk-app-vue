@@ -409,3 +409,19 @@ onUnmounted(() => {
 <style scoped>
 .notification-shortcuts{display:flex;gap:8px;margin:12px 0;overflow-x:auto;scrollbar-width:none}.notification-shortcuts::-webkit-scrollbar{display:none}.notification-shortcuts a{display:flex;align-items:center;justify-content:center;gap:7px;flex:1;min-height:38px;padding:0 10px;border:1px solid #e1e9f3;border-radius:12px;background:#fff;color:#3e5c7f;text-decoration:none;font-size:10px;font-weight:850;white-space:nowrap}.push-preference-card,.app-update-card{border-radius:17px}.notification-list-heading{display:flex;align-items:end;justify-content:space-between;margin:20px 2px 10px}.notification-list-heading h2{margin:3px 0 0;font-size:17px;font-weight:950}.notification-group{margin-bottom:15px}.notification-group h3{margin:0 2px 8px;color:#78889e;font-size:9px;font-weight:950;letter-spacing:.13em;text-transform:uppercase}.notification-row{display:flex;gap:11px;padding:13px;margin-bottom:8px;border:1px solid #e5ebf3;border-radius:15px;background:#fff;box-shadow:0 5px 16px #1b365d08}.notification-symbol{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border-radius:12px;background:#edf3fc;font-size:21px}.notification-copy strong{font-size:11px}.notification-copy p{margin:4px 0;color:#66768d;font-size:10px;line-height:1.5}.notification-copy small{color:#91a0b2;font-size:9px}
 </style>
+
+<style scoped>
+.gsk-screen{min-height:100dvh;padding:15px 13px calc(110px + env(safe-area-inset-bottom));background:radial-gradient(circle at 95% 0,#342b70 0,transparent 26%),#080d1b;color:#f4f6ff}
+.notification-shortcuts{display:flex;gap:8px;margin:13px 0}.notification-shortcuts a{flex:1;padding:10px 12px;border:1px solid #354363;border-radius:12px;background:#131e35;color:#c8c0ff;font-size:10px;font-weight:850}
+.push-preference-card,.app-update-card,.notification-row{border:1px solid #2e3d5e;border-radius:17px;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 10px 24px #00000022}
+.push-preference-copy strong,.app-update-copy strong{color:#fff}.push-preference-copy small,.app-update-copy small{color:#91a0bf}
+.push-preference-copy>span,.app-update-symbol,.notification-symbol{background:#292650;color:#d0c7ff}
+.push-toggle{border-color:#465779;background:#27334b}.push-toggle.enabled{border-color:#3bba91;background:#13785e}
+.app-update-copy>span{color:#a99bff}.app-update-card>button{border:1px solid #a294ff;border-radius:11px;background:linear-gradient(110deg,#765cf5,#326ce5);color:#fff}
+.notification-list-heading h2{color:#fff;font-size:17px;font-weight:950}.notification-list-heading small{color:#91a0bf}
+.notification-group>h3{color:#a99bff}.notification-row{border-radius:15px}
+.notification-copy strong{color:#f4f6ff}.notification-copy small,.notification-copy p{color:#91a0bf}
+.notification-row.unread{border-color:#7166c5;background:linear-gradient(145deg,#201e43,#121d34)}
+.notification-more{border-color:#465779;background:#1a2945;color:#c8c0ff}
+.gsk-screen .gsk-empty-state{border-color:#34415f;background:#111a2e;color:#f4f6ff}
+</style>
