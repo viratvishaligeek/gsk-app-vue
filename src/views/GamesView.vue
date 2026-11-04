@@ -14,7 +14,7 @@
       </div>
     </section>
 
-    <section v-if="featuredGame && !searchTerm" class="games-spotlight-v3">
+    <section v-if="featuredGame && !searchTerm && activeFilter === 'all'" class="games-spotlight-v3">
       <div class="games-spotlight-heading"><span>⭐ SPOTLIGHT MARKET</span><small>{{ featuredGame.is_playable ? 'READY TO PLAY' : 'NEXT SCHEDULE' }}</small></div>
       <div class="games-spotlight-body">
         <div class="games-spotlight-icon">🎲</div>
@@ -120,7 +120,7 @@ const filteredGames = computed(() => {
   })
 })
 
-const discoveryGames = computed(() => filteredGames.value.filter(game => game.id !== featuredGame.value?.id))
+const discoveryGames = computed(() => filteredGames.value.filter(game => !(game.id === featuredGame.value?.id && !searchTerm.value.trim() && activeFilter.value === 'all')))
 
 const hasTodayResult = game => Boolean(game.today_result?.number ?? (game.latest_result?.date === serverToday.value ? game.latest_result?.number : null))
 const resultNumber = game => {
