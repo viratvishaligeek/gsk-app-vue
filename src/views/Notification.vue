@@ -1,100 +1,35 @@
 <template>
-  <div class="content-area">
-    <div class="page-content">
-      <div class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between gap-3 mb-3">
-        <div>
-          <div class="fw-bold text-dark"><span class="gsk-emoji-icon" aria-hidden="true">🔔</span>Notification</div>
-          <div v-if="pushStatus" class="small mt-1" role="status">{{ pushStatus }}</div>
-          <div v-if="permissionMessage" class="small mt-1 text-muted" role="status">{{ permissionMessage }}</div>
-          <div v-if="preferenceMessage" class="small mt-1" role="status">{{ preferenceMessage }}</div>
-        </div>
-        <button type="button" class="btn btn-sm flex-shrink-0"
-          :class="notificationsEnabled && pushPermissionState === 'granted' ? 'btn-outline-danger' : 'btn-primary'"
-          :disabled="pushLoading || preferenceLoading || pushPermissionState === 'checking'"
-          @click="togglePushNotifications">
-          <span v-if="pushLoading || preferenceLoading" class="spinner-border spinner-border-sm me-1"></span>
-          {{ pushLoading || preferenceLoading ? 'Please wait…' : (notificationsEnabled && pushPermissionState ===
-            'granted' ? 'नोटिफिकेशन बंद करें' : 'नोटिफिकेशन चालू करें') }}
-        </button>
-      </div>
-      <div v-if="appUpdate.latest_url"
-        class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between gap-3 mb-3"
-        style="background: linear-gradient(135deg, #9fbf3c8c, #ff450066);">
-        <div>
-          <div class="fw-bold text-danger btn btn-sm border"><span class="gsk-emoji-icon" aria-hidden="true">⬇️</span>Update App
-          </div>
-          <div v-if="appUpdate.latest_url" class="text-dark">
-            <span v-if="appUpdate.latest_version">Version {{ appUpdate.latest_version }} · </span>Published {{
-              formatAppUpdateDate(appUpdate.update_date) }}. Downloading the APK opens the normal Android installation
-            flow; it will not install silently.
-          </div>
-        </div>
-        <button v-if="appUpdate.latest_url" type="button" class="btn btn-md btn-success flex-shrink-0"
-          @click="openLatestApp">Download APK</button>
-      </div>
-      <div v-if="isInitialLoading" class="text-center py-5">
-        <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
-        <div class="text-muted mt-2">
-          Loading notifications...
-        </div>
-      </div>
-      <div v-else-if="errorMessage" class="alert alert-danger rounded-3">
-        {{ errorMessage }}
-        <button type="button" class="btn btn-sm btn-outline-danger ms-2" @click="fetchNotifications(1)">
-          Retry
-        </button>
-      </div>
-      <template v-else>
-        <template v-for="group in groupedNotifications" :key="group.key">
-          <h6 class="section-header">
-            {{ group.title }}
-          </h6>
-          <div v-for="notification in group.items" :key="notification.id" class="notification-item">
-            <div class="d-flex">
-              <div class="notification-icon" :class="getNotificationIconClass(notification.subject)">
-                <i :class="getNotificationIcon(notification.subject)"></i>
-              </div>
-              <div class="notification-content">
-                <div class="notification-title">
-                  {{ notification.subject || 'Notification' }}
-                </div>
-                <div v-if="notification.message" class="notification-message">
-                  {{ notification.message }}
-                </div>
-                <div class="notification-time">
-                  {{ formatNotificationTime(notification.created_at) }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
-        <div v-if="notifications.length === 0" class="text-center py-5">
-          <div class="empty-icon mb-2">
-            <span class="gsk-emoji-icon" aria-hidden="true">🔕</span>
-          </div>
-          <h6 class="fw-bold text-dark">
-            No Notifications
-          </h6>
-          <p class="text-muted mb-0">
-            You don't have any notifications yet.
-          </p>
-        </div>
-        <div v-if="notifications.length > 0" class="text-center mt-4 mb-4">
-          <button v-if="hasMore" type="button" class="btn action-btn secondary-action-btn" :disabled="isLoading"
-            @click="loadMore">
-            <span v-if="isLoading" class="spinner-border spinner-border-sm me-1"></span>
-            {{ isLoading ? 'Loading...' : 'Load More' }}
-          </button>
-          <div v-else class="text-muted fs-8">
-            No more notifications
-          </div>
-        </div>
-      </template>
-
-    </div>
-  </div>
+  <main class="gsk-screen">
+    <header class="screen-banner"><div class="screen-banner-icon">🔔</div><div><span>STAY IN THE LOOP</span><h1>Notifications</h1><p>Updates about your account and activity.</p></div></header>
+    <section class="push-preference-card">
+      <div class="push-preference-copy"><span>🔔</span><div><strong>Push notifications</strong><small>{{ notificationsEnabled&&pushPermissionState==='granted'?'Notifications are enabled on this device.':'Enable alerts to receive important updates.' }}</small></div></div>
+      <button type="button" class="push-toggle" :class="{enabled:notificationsEnabled&&pushPermissionState==='granted'}"
+        :disabled="pushLoading||preferenceLoading||pushPermissionState==='checking'" @click="togglePushNotifications"
+        :aria-pressed="notificationsEnabled&&pushPermissionState==='granted'"><span></span></button>
+      <div v-if="pushLoading||preferenceLoading" class="small text-primary mt-2">⏳ Updating notification settings…</div>
+      <p v-if="pushStatus" class="small mt-2 mb-0" role="status">{{ pushStatus }}</p>
+      <p v-if="permissionMessage||preferenceMessage" class="small text-secondary mt-1 mb-0" role="status">{{ permissionMessage||preferenceMessage }}</p>
+    </section>
+    <section v-if="appUpdate.latest_url" class="app-update-card">
+      <div class="app-update-symbol">📲</div><div class="app-update-copy"><span>NEW VERSION AVAILABLE</span><strong>Update GSK Play</strong><small v-if="appUpdate.latest_version">Version {{ appUpdate.latest_version }} · {{ formatAppUpdateDate(appUpdate.update_date) }}</small><small>Download the APK and follow Android's installation steps.</small></div>
+      <button type="button" @click="openLatestApp">Update →</button>
+    </section>
+    <div class="notification-list-heading"><div><span class="gsk-page-kicker">YOUR ACTIVITY</span><h2>Recent updates</h2></div><small>{{ notifications.length }} updates</small></div>
+    <div v-if="isInitialLoading" class="gsk-empty-state"><span>⏳</span><strong>Loading notifications…</strong></div>
+    <div v-else-if="errorMessage" class="alert alert-danger">{{ errorMessage }}<button class="btn btn-sm btn-outline-danger ms-2" @click="fetchNotifications(1)">Retry</button></div>
+    <template v-else>
+      <section v-for="group in groupedNotifications" :key="group.key" class="notification-group">
+        <h3>{{ group.title }}</h3>
+        <article v-for="notification in group.items" :key="notification.id" class="notification-row">
+          <span class="notification-symbol">{{ notification.subject?.toLowerCase().includes('win')?'🏆':notification.subject?.toLowerCase().includes('wallet')||notification.subject?.toLowerCase().includes('payment')?'💰':notification.subject?.toLowerCase().includes('game')?'🎮':notification.subject?.toLowerCase().includes('security')?'🔐':'📣' }}</span>
+          <div class="notification-copy"><strong>{{ notification.subject||'Notification' }}</strong><p v-if="notification.message">{{ notification.message }}</p><small>{{ formatNotificationTime(notification.created_at) }}</small></div>
+        </article>
+      </section>
+      <div v-if="notifications.length===0" class="gsk-empty-state"><span>🔕</span><strong>You're all caught up</strong><p>New account and activity updates will appear here.</p></div>
+      <div v-if="notifications.length" class="notification-more"><button v-if="hasMore" type="button" class="btn btn-outline-primary rounded-pill px-4" :disabled="isLoading" @click="loadMore">{{ isLoading?'Loading…':'Load more updates' }}</button><small v-else>You're up to date.</small></div>
+    </template>
+  </main>
 </template>
-
 <script setup>
 import api from '@/plugins/axios'
 import { Capacitor } from '@capacitor/core'
@@ -544,154 +479,6 @@ onUnmounted(() => {
   if (notificationRefreshTimer) clearInterval(notificationRefreshTimer)
 })
 </script>
-
 <style scoped>
-.content-area {
-  min-height: 100vh;
-  background-color: #f4f5f7;
-}
-
-.page-content {
-  padding: 12px;
-}
-
-.scrollbar-osahan {
-  scrollbar-width: none;
-}
-
-.scrollbar-osahan::-webkit-scrollbar {
-  display: none;
-}
-
-.action-btn {
-  border-radius: 999px;
-  padding: 7px 16px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.primary-action-btn {
-  background: #ffc107;
-  color: #212529;
-  border-color: #ffc107;
-}
-
-.primary-action-btn:hover {
-  background: #e0a800;
-  color: #212529;
-}
-
-.secondary-action-btn {
-  background: #ffffff;
-  color: #495057;
-  border: 1px solid #dee2e6;
-}
-
-.secondary-action-btn:hover {
-  background: #f8f9fa;
-  color: #212529;
-}
-
-.section-header {
-  margin-top: 18px;
-  margin-bottom: 8px;
-  color: #6c757d;
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.notification-item {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 13px;
-  margin-bottom: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-}
-
-.notification-icon {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  font-size: 17px;
-}
-
-.notification-icon.primary {
-  background: rgba(13, 110, 253, 0.1);
-  color: #0d6efd;
-}
-
-.notification-icon.accent {
-  background: rgba(111, 66, 193, 0.1);
-  color: #6f42c1;
-}
-
-.notification-icon.secondary {
-  background: rgba(108, 117, 125, 0.12);
-  color: #495057;
-}
-
-.notification-icon.warning {
-  background: rgba(255, 193, 7, 0.15);
-  color: #d39e00;
-}
-
-.notification-content {
-  min-width: 0;
-  flex: 1;
-}
-
-.notification-title {
-  color: #212529;
-  font-size: 0.88rem;
-  font-weight: 800;
-  margin-bottom: 3px;
-}
-
-.notification-message {
-  color: #6c757d;
-  font-size: 0.78rem;
-  line-height: 1.45;
-  word-break: break-word;
-}
-
-.notification-time {
-  color: #adb5bd;
-  font-size: 0.7rem;
-  margin-top: 5px;
-}
-
-.empty-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(255, 193, 7, 0.15);
-  color: #d39e00;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-}
-
-.fs-8 {
-  font-size: 0.72rem;
-}
-
-@media (min-width: 768px) {
-  .page-content {
-    padding: 16px;
-  }
-
-  .notification-item {
-    padding: 15px;
-  }
-}
+.gsk-screen{min-height:100dvh;padding:14px 13px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb;color:#1e2c42}.screen-banner{display:flex;align-items:center;gap:13px;padding:19px;border-radius:19px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.screen-banner-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:#ffffff1b;font-size:28px}.screen-banner span{color:#cbd9eb;font-size:9px;font-weight:900;letter-spacing:.13em}.screen-banner h1{margin:2px 0;color:#fff;font-size:22px;font-weight:900}.screen-banner p{margin:0;color:#d5e1f0;font-size:11px}.push-preference-card,.app-update-card{margin-top:13px;padding:14px;border:1px solid #e5ebf3;border-radius:16px;background:#fff}.push-preference-copy{display:flex;align-items:center;gap:11px}.push-preference-copy>span{font-size:26px}.push-preference-copy div{display:grid;flex:1}.push-preference-copy strong{font-size:12px}.push-preference-copy small{color:#7b899d;font-size:10px}.push-toggle{position:relative;width:49px;height:28px;border:0;border-radius:30px;background:#cbd3df;transition:background .2s}.push-toggle span{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #10274730;transition:transform .2s}.push-toggle.enabled{background:#2b9b6d}.push-toggle.enabled span{transform:translateX(21px)}.app-update-card{display:flex;align-items:center;gap:11px;background:#fff8e8;border-color:#f0dfb8}.app-update-symbol{font-size:29px}.app-update-copy{display:grid;flex:1;min-width:0}.app-update-copy span{font-size:8px;font-weight:900;color:#9a762e;letter-spacing:.1em}.app-update-copy strong{font-size:12px}.app-update-copy small{font-size:9px;color:#806e4c}.app-update-card button{border:0;border-radius:9px;padding:8px 10px;background:#315f9f;color:#fff;font-size:9px;font-weight:850}.notification-list-heading{display:flex;align-items:end;justify-content:space-between;margin:22px 1px 10px}.notification-list-heading h2{margin:2px 0 0;font-size:17px;font-weight:900}.notification-list-heading>small{color:#8592a4;font-size:9px}.notification-group{margin-bottom:13px}.notification-group h3{margin:0 0 7px;color:#8492a6;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.notification-row{display:flex;align-items:flex-start;gap:11px;padding:13px;margin-bottom:8px;border:1px solid #e5ebf3;border-radius:14px;background:#fff}.notification-symbol{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border-radius:12px;background:#edf3fc;font-size:21px}.notification-copy{min-width:0}.notification-copy strong{font-size:11px;font-weight:850}.notification-copy p{margin:3px 0;color:#63738a;font-size:10px;line-height:1.5;white-space:pre-line}.notification-copy small{color:#9aa5b3;font-size:8px}.notification-more{display:grid;justify-items:center;padding:12px}.notification-more small{color:#8794a5;font-size:10px}
 </style>
