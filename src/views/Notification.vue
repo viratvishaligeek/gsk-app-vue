@@ -157,7 +157,7 @@ const refreshPushPermission = async () => {
         permissionMessage.value = 'Device notification permission is enabled.'
       } else if (receive === 'denied') {
         pushPermissionState.value = 'denied'
-        permissionMessage.value = isAndroidApp ? 'Notifications are blocked. Open Android Settings → Apps → gali satta kings → Notifications to enable them.' : 'Notifications are blocked by device settings. Open this app’s notification settings and allow notifications.'
+        permissionMessage.value = isAndroidApp ? 'Notifications are blocked. Open Android Settings → Apps → GSK Play → Notifications to enable them.' : 'Notifications are blocked by device settings. Open this app’s notification settings and allow notifications.'
       } else {
         pushPermissionState.value = 'prompt'
         permissionMessage.value = 'Permission will be requested only after you tap Enable.'
