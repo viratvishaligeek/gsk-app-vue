@@ -6,7 +6,7 @@
           <div class="d-flex align-items-center gap-2">
             <div
               class="icon-circle bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center fw-black">
-              <i class="bi bi-clock-history fs-5"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">🕒</span>
             </div>
 
             <div>
@@ -21,7 +21,7 @@
 
           <div
             class="d-flex align-items-center gap-2 bg-white bg-opacity-10 px-3 py-1-5 rounded-pill border border-white-15">
-            <i class="bi bi-calendar-event text-warning fs-7"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🗓️</span>
 
             <input type="date"
               class="form-control-plaintext form-control-sm text-white fw-bold fs-8 font-monospace p-0 border-0 shadow-none cursor-pointer"
@@ -86,7 +86,7 @@
           </div>
 
           <div v-else-if="history.length === 0" class="card border-0 shadow-xs rounded-4 py-4 text-center bg-white">
-            <i class="bi bi-ticket-perforated display-5 text-warning mb-2"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🎟️</span>
 
             <h6 class="fw-bold text-dark fs-7 mb-1">
               No Slips Found for {{ selectedDate }}
@@ -120,13 +120,13 @@
                 <div>
                   <span v-if="slip.status === 'running'"
                     class="badge bg-warning text-dark fw-bold px-2 py-1 rounded-pill fs-8 pulse-gold">
-                    <i class="bi bi-clock-history me-1"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">🕒</span>
                     RUNNING
                   </span>
 
                   <span v-else-if="slip.status === 'won'"
                     class="badge bg-success text-white fw-bold px-2 py-1 rounded-pill fs-8">
-                    <i class="bi bi-trophy-fill me-1"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">🏆</span>
                     WON
                     <span v-if="slip.winning_number">
                       ({{ slip.winning_number }})
@@ -191,12 +191,7 @@
                       ? 'btn-danger text-white'
                       : 'btn-light border text-dark'
                       " style="width: 32px; height: 32px">
-                    <i :class="[
-                      'bi',
-                      activeExpandedId === slip.id
-                        ? 'bi-chevron-up'
-                        : 'bi-chevron-down',
-                    ]"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                   </button>
                 </div>
               </div>
@@ -232,7 +227,7 @@
                     <div class="p-2 rounded-3 bg-dark text-white">
                       <div class="d-flex align-items-center justify-content-between">
                         <span class="fs-8 fw-bold">
-                          <i class="bi bi-trophy-fill text-warning me-1"></i>
+                          <span class="gsk-emoji-icon" aria-hidden="true">🏆</span>
                           Result
                         </span>
 
@@ -341,7 +336,7 @@
                 <div v-if="slip.status === 'won'"
                   class="mt-2 p-2 bg-success text-white rounded-3 d-flex align-items-center justify-content-between fs-8 fw-bold">
                   <span>
-                    <i class="bi bi-trophy-fill me-1"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">🏆</span>
                     Winning Amount Credited:
                   </span>
 
@@ -368,7 +363,7 @@
                     <li class="page-item" :class="{ disabled: pagination.current_page === 1 }">
                       <button class="page-link rounded-circle border-0" @click="goToPage(pagination.current_page - 1)"
                         :disabled="pagination.current_page === 1">
-                        <i class="bi bi-chevron-left"></i>
+                        <span class="gsk-emoji-icon" aria-hidden="true">‹</span>
                       </button>
                     </li>
 
@@ -387,7 +382,7 @@
                       <button class="page-link rounded-circle border-0" @click="goToPage(pagination.current_page + 1)"
                         :disabled="pagination.current_page === pagination.last_page
                           ">
-                        <i class="bi bi-chevron-right"></i>
+                        <span class="gsk-emoji-icon" aria-hidden="true">›</span>
                       </button>
                     </li>
                   </ul>
