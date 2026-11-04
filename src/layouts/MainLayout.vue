@@ -56,7 +56,6 @@
       <router-link to="/dashboard" active-class="is-active" exact-active-class="is-active"><span>🏠</span><small>Home</small></router-link>
       <router-link to="/games" active-class="is-active"><span>🎮</span><small>Games</small></router-link>
       <router-link to="/play-history" active-class="is-active"><span>📜</span><small>Plays</small></router-link>
-      <router-link to="/monthly-chart" active-class="is-active"><span>📊</span><small>Charts</small></router-link>
       <router-link to="/wallet" active-class="is-active"><span>💰</span><small>Wallet</small></router-link>
       <router-link to="/profile" active-class="is-active"><span>👤</span><small>Profile</small></router-link>
     </nav>
