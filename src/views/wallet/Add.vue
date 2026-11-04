@@ -16,7 +16,7 @@
                 to wallet
               </div>
               <small>
-                <i class="bi bi-check-circle-fill"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✅</span>
                 Payment completed • Just now
               </small>
             </div>
@@ -30,7 +30,7 @@
       <section class="amount-card">
         <div class="section-label">
           <span class="section-icon green">
-            <i class="bi bi-wallet2"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">💰</span>
           </span>
           <div>
             <strong>Add money</strong>
@@ -58,7 +58,7 @@
             <span>Fast & secure payment</span>
           </div>
           <span class="secured-pill">
-            <i class="bi bi-lock-fill"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
             Secure
           </span>
         </div>
@@ -81,7 +81,7 @@
               </small>
             </div>
             <div class="gateway-lightning">
-              <i class="bi bi-lightning-charge-fill"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">⚡</span>
             </div>
           </div>
           <!-- UPI APP STYLE -->
@@ -112,13 +112,13 @@
             </div>
             <div class="upi-app">
               <div class="upi-icon more">
-                <i class="bi bi-three-dots"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">⋯</span>
               </div>
               <small>More</small>
             </div>
           </div>
           <div class="gateway-note">
-            <i class="bi bi-shield-check"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🛡️</span>
             You'll be redirected to the secure payment page.
           </div>
         </div>
@@ -130,7 +130,7 @@
               <span></span>
             </div>
             <div class="manual-icon">
-              <i class="bi bi-qr-code-scan"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">📷</span>
             </div>
             <div class="manual-content">
               <strong>Manual UPI</strong>
@@ -138,7 +138,7 @@
                 Pay by QR and submit UTR
               </small>
             </div>
-            <i class="bi bi-chevron-right manual-arrow"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </div>
         </div>
       </section>
@@ -147,10 +147,7 @@
         <div v-if="apiMessage.text" class="api-message"
           :class="apiMessage.type === 'error' ? 'message-error' : 'message-success'">
           <div class="message-icon">
-            <i :class="apiMessage.type === 'error'
-              ? 'bi bi-exclamation-circle-fill'
-              : 'bi bi-check-circle-fill'
-              "></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </div>
           <div class="flex-grow-1">
             {{ apiMessage.text }}
@@ -164,18 +161,18 @@
         <span v-if="isLoading" class="spinner-border spinner-border-sm"></span>
         <template v-else>
           <span class="pay-button-left">
-            <i class="bi bi-lock-fill"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
             Secure Payment
           </span>
           <span class="pay-button-amount">
             ₹{{ formatCurrency(form.amount) }}
-            <i class="bi bi-arrow-right"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">→</span>
           </span>
         </template>
       </button>
 
       <div class="secure-footer">
-        <i class="bi bi-shield-check"></i>
+        <span class="gsk-emoji-icon" aria-hidden="true">🛡️</span>
         Your payment is processed securely.
       </div>
 
@@ -186,7 +183,7 @@
             <span>Your recent add-money requests</span>
           </div>
           <button type="button" class="refresh-btn" :class="{ spinning: pendingLoading }" @click="loadPendingPayments">
-            <i class="bi bi-arrow-clockwise"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">↻</span>
           </button>
         </div>
         <!-- LOADING -->
@@ -197,7 +194,7 @@
         <!-- EMPTY -->
         <div v-else-if="!pendingLoading && pendingPayments.length === 0" class="empty-pending">
           <div class="empty-icon">
-            <i class="bi bi-receipt"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🧾</span>
           </div>
           <strong>No pending payments</strong>
           <span>
@@ -209,7 +206,7 @@
           <div v-for="payment in pendingPayments" :key="payment.id" class="pending-item">
             <div class="pending-item-left">
               <div class="pending-payment-icon">
-                <i class="bi bi-arrow-down-left"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">↙️</span>
               </div>
               <div>
                 <strong>
@@ -246,14 +243,14 @@
         <div class="manual-modal gateway-payment-modal">
           <div class="modal-header-custom">
             <div class="modal-title-wrap">
-              <div class="modal-upi-icon"><i class="bi bi-qr-code-scan"></i></div>
+              <div class="modal-upi-icon"><span class="gsk-emoji-icon" aria-hidden="true">📷</span></div>
               <div>
                 <h5>Complete UPI payment</h5>
                 <small>₹{{ formatCurrency(gatewayPaymentAmount) }}</small>
               </div>
             </div>
             <button type="button" class="modal-close" aria-label="Close payment screen" @click="closeGatewayPayment">
-              <i class="bi bi-x-lg"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
             </button>
           </div>
           <div class="modal-body-custom">
@@ -287,7 +284,7 @@
           <div class="modal-header-custom">
             <div class="modal-title-wrap">
               <div class="modal-upi-icon">
-                <i class="bi bi-qr-code"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">▦</span>
               </div>
               <div>
                 <h5>Pay via UPI</h5>
@@ -297,17 +294,14 @@
               </div>
             </div>
             <button type="button" class="modal-close" @click="closeManualModal">
-              <i class="bi bi-x-lg"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
             </button>
           </div>
           <transition name="slide-fade">
             <div v-if="apiMessage.text" class="api-message"
               :class="apiMessage.type === 'error' ? 'message-error' : 'message-success'">
               <div class="message-icon">
-                <i :class="apiMessage.type === 'error'
-                  ? 'bi bi-exclamation-circle-fill'
-                  : 'bi bi-check-circle-fill'
-                  "></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
               </div>
               <div class="flex-grow-1">
                 {{ apiMessage.text }}
@@ -324,7 +318,7 @@
               </div>
               <img v-if="paymentInfo.qr_url" :src="paymentInfo.qr_url" class="manual-qr" alt="UPI QR Code" />
               <div v-else class="qr-placeholder">
-                <i class="bi bi-qr-code"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">▦</span>
                 <span>QR unavailable</span>
               </div>
               <strong>
@@ -332,11 +326,11 @@
               </strong>
               <button v-if="paymentInfo.upi_id" type="button" class="upi-copy" @click="copyUpiId">
                 {{ paymentInfo.upi_id }}
-                <i class="bi bi-copy"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">📋</span>
               </button>
             </div>
             <div class="manual-instruction">
-              <i class="bi bi-info-circle-fill"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">ℹ️</span>
               <span v-if="getSetting('add_money_notice')" class="add-money-hindi-notice" lang="hi">{{
                 getSetting('add_money_notice') }}
               </span>
@@ -346,7 +340,7 @@
                 UTR / Transaction ID
               </label>
               <div class="field-with-icon">
-                <i class="bi bi-receipt"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🧾</span>
                 <input v-model="manualForm.utr" type="text" autocomplete="off" style="font-size: 16px;"
                   placeholder="Enter 12 digit UTR" />
               </div>
@@ -359,7 +353,7 @@
                 <input type="file" accept="image/png,image/jpeg,image/webp" @change="handleScreenshot" />
                 <template v-if="!screenshotPreview">
                   <div class="upload-icon">
-                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">☁️</span>
                   </div>
                   <strong>Upload screenshot</strong>
                   <small>
@@ -377,7 +371,7 @@
             <button type="button" class="manual-submit-btn" :disabled="manualLoading" @click="submitManualRequest">
               <span v-if="manualLoading" class="spinner-border spinner-border-sm"></span>
               <template v-else>
-                <i class="bi bi-check2-circle"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✅</span>
                 Submit Payment
               </template>
             </button>
