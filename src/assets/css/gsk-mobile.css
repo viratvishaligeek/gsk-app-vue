@@ -39,3 +39,5 @@ a{color:#a99bff}
 .dropdown-item{color:#dbe3f6}
 .dropdown-item:hover,.dropdown-item:focus{background:#273653;color:#fff}
 @media(prefers-reduced-motion:no-preference){.btn,.card,a,button{transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s,transform .18s}}
+
+body.sidebar-open{overflow:hidden;touch-action:none}
