@@ -37,25 +37,21 @@ Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/4
 - [x] Login, registration and password recovery: consistent dark branded auth surfaces; existing auth/API form logic preserved.
 - [x] Dynamic CMS page: dark responsive content container.
 
-## Not complete yet
-- [ ] Verify every route and state in the built app.
-- [ ] Verify carousel auto-slide, touch/swipe, indicators and controls on a physical Android device.
-- [ ] Verify gameplay modes and payment workflows end-to-end against the live API.
-- [ ] Review keyboard overlap, safe areas, reduced-motion and overflow at 320 / 360 / 375 / 390 / 414 / 430 px.
-- [ ] Capture genuine before/after screenshots.
-
 ## Validation
-- [x] Unit tests passed on GitHub Actions run #43.
-- [x] Static lint passed on GitHub Actions run #43.
-- [x] Production Vite build passed on GitHub Actions run #43.
-- [x] Capacitor Android sync passed on GitHub Actions run #43.
-- [x] Android debug APK build and artifact upload passed on GitHub Actions run #43 for the dashboard/gameplay/wallet and page-theme changes.
-- [ ] Rerun validation after the latest route-transition and bottom-navigation visibility changes.
-- [ ] Physical-device verification remains pending.
-- [ ] Verify native navigation and Android back behavior after the shell styling change.
+- [x] Unit tests passed on GitHub Actions run #47.
+- [x] Static lint passed on GitHub Actions run #47.
+- [x] Production Vite build passed on GitHub Actions run #47.
+- [x] Capacitor Android sync passed on GitHub Actions run #47.
+- [x] Android debug APK build and artifact upload passed on GitHub Actions run #47.
+- [ ] Physical-device verification of navigation, safe areas, carousel gestures, gameplay and payment flows.
+- [ ] Genuine before/after screenshots.
 
-Build: [GitHub Actions run #43](https://github.com/viratvishaligeek/gsk-app-vue/actions/runs/41918464721)\n\nAPK artifact: `gsk-app-debug-apk` · 7,331,307 bytes · artifact ZIP SHA-256 `8a355aafe1f96881bc9873bb29a461d2645848797db0073fbba8272fd260a528`.\n\n## Guardrails
+Build: [GitHub Actions run #47](https://github.com/viratvishaligeek/gsk-app-vue/actions/runs/41919525449)
+
+APK artifact: `gsk-app-debug-apk` · 7,329,596 bytes · artifact ZIP SHA-256 `37b1f8eb741a472cba73fae228de495d025190b5bf0082108e2c10676c851fa2`.
+
+## Guardrails
 - v3 is based on current `main`; no changes were pushed to `main`.
 - No API services, Axios configuration, Pinia stores, auth guards, payment service code, push services, presence services or Android native configuration were changed in this v3 increment.
-- No new payment methods or API endpoints were invented. The current router has no separate payment-method management route.
-- Do not merge until CI, device testing, visual review and end-to-end checks are complete.
+- No new payment methods or payment APIs were invented. The current router has no separate payment-method management route.
+- Do not merge until physical-device testing, visual review and end-to-end checks are complete.
