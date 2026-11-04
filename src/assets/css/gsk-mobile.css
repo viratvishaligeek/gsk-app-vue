@@ -90,3 +90,79 @@ p,.text-muted { color:var(--gsk-muted); }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
 }
+/* Screen-level surfaces: retain existing data bindings and interaction classes. */
+.content-area,.dynamic-page-bg,.history-bg,.add-money-page,.withdraw-page,.profile-page {
+  color:var(--gsk-ink)!important; background:var(--gsk-paper)!important;
+}
+.content-area .card,.content-area .card-hover,.page-card,.notice-card,.amount-card,.payment-card,.withdraw-card,.profile-section,.notification-item,.transaction-card,.history-card,.referral-page .card {
+  border:1px solid var(--gsk-line)!important; border-radius:16px!important; background:#fff!important; box-shadow:var(--gsk-shadow)!important;
+}
+.content-area .card-header,.content-area .card-footer,.page-card .page-header,.card-footer.bg-light {
+  border-color:var(--gsk-line)!important; background:#f8fafd!important; color:var(--gsk-ink)!important;
+}
+.dashboard-initial-loading,.dashboard-initial-error { min-height:55vh; display:grid; place-content:center; }
+.notice-card { padding:15px!important; }
+.notice-header { display:flex; align-items:center; gap:10px; }
+.notice-title,.notice-title-wrap { color:var(--gsk-ink)!important; }
+.notice-title-icon,.icon-circle,.section-icon,.notification-icon,.referral-icon {
+  display:grid; place-items:center; border-radius:13px!important; background:#edf3fb!important; color:var(--gsk-brand)!important;
+}
+.live-result-box { border:0!important; border-radius:18px!important; background:linear-gradient(135deg,#183b72,#102b56)!important; box-shadow:var(--gsk-shadow)!important; }
+.live-result-box .city-name,.live-result-box .result-number { color:#fff!important; }
+.live-result-box .result-number { font-size:32px!important; font-weight:900!important; }
+.marquee-wrapper { border-radius:12px!important; background:#eaf0f8!important; color:var(--gsk-brand)!important; }
+.custom-card { border:1px solid var(--gsk-line)!important; border-radius:16px!important; box-shadow:var(--gsk-shadow)!important; }
+.page-title,.section-heading,.notification-title,.transaction-title { color:var(--gsk-ink)!important; }
+.page-header { padding:18px!important; background:linear-gradient(135deg,#183b72,#102b56)!important; }
+.page-header .page-title { color:#fff!important; }
+.auth-container .text-primary-color,.text-primary-color { color:var(--gsk-brand)!important; }
+.profile-layout { display:grid; gap:14px; }
+.profile-section { padding:18px!important; }
+.section-heading__icon { border-radius:12px!important; background:#edf3fb!important; color:var(--gsk-brand)!important; }
+.line-input,.text-input,.amount-input { border:1px solid var(--gsk-line)!important; border-radius:11px!important; background:#f8fafd!important; color:var(--gsk-ink)!important; }
+.save-button,.withdraw-button,.action-btn { border:0!important; border-radius:12px!important; background:var(--gsk-brand)!important; color:#fff!important; }
+.security-banner,.status-message { border:1px solid var(--gsk-line)!important; border-radius:12px!important; background:#f4f7fb!important; }
+.wallet-card { border-radius:18px!important; background:linear-gradient(135deg,#183b72,#102b56)!important; box-shadow:var(--gsk-shadow)!important; }
+.wallet-card .wallet-balance,.wallet-card .wallet-label,.wallet-card .wallet-summary { color:#fff!important; }
+.wallet-summary-item { border:1px solid rgba(255,255,255,.18)!important; border-radius:12px!important; background:rgba(255,255,255,.09)!important; }
+.action-btn .card,.action-btn .icon-shape { border-radius:13px!important; }
+.transactions-list { display:grid; gap:9px; }
+.transaction-card { padding:13px!important; }
+.transaction-title { font-weight:800!important; }
+.amount-card,.payment-card,.withdraw-card { padding:16px!important; }
+.amount-input-box { min-height:64px; padding:10px 13px!important; }
+.amount-input-box input { min-width:0; color:var(--gsk-brand)!important; font-size:27px!important; font-weight:850!important; }
+.quick-amounts { display:flex; flex-wrap:wrap; gap:8px; }
+.quick-amounts button { flex:1 1 72px; }
+.activity-section { border:0!important; background:transparent!important; }
+.activity-card { border:1px solid var(--gsk-line)!important; border-radius:14px!important; background:#fff!important; box-shadow:var(--gsk-shadow)!important; }
+.activity-avatar { background:#edf3fb!important; color:var(--gsk-brand)!important; }
+.gateway-option,.manual-option,.destination-option { padding:14px!important; }
+.gateway-option.selected,.manual-option.selected,.destination-option.selected { border-color:var(--gsk-brand)!important; background:#f4f7fb!important; }
+.recommended-badge,.secured-pill { border-radius:99px!important; background:#eaf5ef!important; color:var(--gsk-success)!important; }
+.api-message { border:1px solid var(--gsk-line)!important; border-radius:13px!important; background:#fff!important; box-shadow:var(--gsk-shadow)!important; }
+.pay-button,.withdraw-button { width:100%; min-height:54px!important; display:flex; align-items:center; justify-content:space-between; padding:13px 16px!important; }
+.pending-item,.notification-item,.referral-row { border:1px solid var(--gsk-line)!important; border-radius:13px!important; background:#fff!important; }
+.notification-item { display:flex; gap:12px; padding:14px!important; margin-bottom:10px; }
+.notification-icon { flex:0 0 42px; width:42px; height:42px; }
+.notification-title { font-size:13px!important; font-weight:850!important; }
+.notification-message,.notification-time { color:var(--gsk-muted)!important; }
+.result-table-wrapper { overflow:auto; border:1px solid var(--gsk-line); border-radius:14px; background:#fff; }
+.result-table-wrapper .table { margin:0; }
+.result-table-wrapper .table th,.result-table-wrapper .table td { padding:9px 7px!important; }
+.result-badge { display:inline-flex; min-width:30px; min-height:28px; align-items:center; justify-content:center; border-radius:8px!important; background:#edf3fb!important; color:var(--gsk-brand)!important; }
+.play-game-header { border:1px solid var(--gsk-line)!important; border-radius:14px!important; background:#fff!important; }
+.play-game-tabs { border:1px solid var(--gsk-line)!important; border-radius:13px!important; background:#fff!important; }
+.play-game-tabs .nav-link.active { background:var(--gsk-brand)!important; color:#fff!important; }
+.play-game-page .btn-success,.play-game-page .btn-warning { border-radius:11px!important; }
+.sticky-bottom-bar { bottom:calc(8px + env(safe-area-inset-bottom))!important; }
+.sticky-bottom-bar .card { border:1px solid rgba(255,255,255,.14)!important; border-radius:16px!important; background:#102b56!important; }
+.message-bubble { border:1px solid var(--gsk-line)!important; border-radius:15px!important; background:#fff!important; color:var(--gsk-ink)!important; }
+.chat-media { max-width:100%; border-radius:12px; }
+.referral-code { min-width:0; border:1px dashed #9db2d0; border-radius:11px; background:#f4f7fb; color:var(--gsk-brand); font-weight:850; letter-spacing:.08em; }
+@media (max-width:575px) {
+  .content-area .container-fluid,.add-money-page .container-fluid,.withdraw-page .container-fluid { padding-left:12px!important; padding-right:12px!important; }
+  .profile-section,.amount-card,.payment-card,.withdraw-card { padding:14px!important; }
+  .profile-layout,.edit-grid,.destination-grid { grid-template-columns:minmax(0,1fr)!important; }
+  .result-table-wrapper { margin-inline:-2px; }
+}
