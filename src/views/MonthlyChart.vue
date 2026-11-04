@@ -191,3 +191,19 @@ onBeforeUnmount(async () => {
 <style scoped>
 .chart-shortcuts{display:flex;gap:8px;margin:12px 0;overflow-x:auto;scrollbar-width:none}.chart-shortcuts::-webkit-scrollbar{display:none}.chart-shortcuts a{display:flex;align-items:center;justify-content:center;flex:1;min-height:39px;padding:0 12px;border:1px solid #e2eaf3;border-radius:12px;background:#fff;color:#31577f;text-decoration:none;font-size:10px;font-weight:850;white-space:nowrap}.chart-filter-panel{position:relative;overflow:hidden;border-radius:18px}.chart-filter-panel .form-select{min-height:43px;border-radius:11px}.chart-market-strip{scroll-snap-type:x mandatory;padding-bottom:15px}.chart-market-chip{scroll-snap-align:start;min-width:145px;border-radius:14px}.chart-table-panel{overflow:hidden;border-radius:18px}.gsk-chart-scroll{overscroll-behavior-x:contain}.gsk-chart-table th,.gsk-chart-table td{min-width:72px}.gsk-chart-table .chart-date-column{position:sticky;left:0;z-index:2;min-width:65px;background:#f0f4fa}.gsk-chart-table thead .chart-date-column{z-index:3}.chart-legend{display:flex;gap:10px;flex-wrap:wrap;padding:12px 2px 0;font-size:9px;color:#74849a}
 </style>
+
+<style scoped>
+.gsk-screen{min-height:100dvh;padding:15px 13px calc(110px + env(safe-area-inset-bottom));background:radial-gradient(circle at 95% 0,#342b70 0,transparent 26%),#080d1b;color:#f4f6ff}
+.chart-shortcuts{display:flex;gap:8px;overflow-x:auto;margin:13px 0}.chart-shortcuts a{flex:1;min-width:max-content;padding:10px 12px;border:1px solid #354363;border-radius:12px;background:#131e35;color:#c8c0ff;font-size:10px;font-weight:850}
+.chart-filter-panel,.chart-table-panel{border:1px solid #2e3d5e;border-radius:18px;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 12px 28px #00000024}
+.screen-section-title strong{color:#fff}.screen-section-title small{color:#91a0bf}.screen-section-title>span{background:#292650;color:#c9beff}
+.chart-filter-panel .form-label{color:#c6d1e8}.chart-filter-panel .form-select{border-color:#39496c;background-color:#0b1428;color:#fff;color-scheme:dark}
+.chart-market-strip{display:flex;gap:8px;overflow-x:auto;padding:12px 1px;scroll-snap-type:x mandatory}
+.chart-market-chip{min-width:125px;border:1px solid #2e3d5e;border-radius:14px;background:#131e35;color:#f4f6ff;scroll-snap-align:start}
+.chart-market-chip small{color:#91a0bf}.chart-market-chip strong{color:#fff}.chart-market-chip span{font-size:8px}
+.chart-table-heading{border-color:#2e3d5e;color:#f4f6ff}.chart-table-heading strong{color:#fff}.chart-table-heading small{color:#91a0bf}
+.gsk-chart-scroll{border-color:#344361;background:#0b1428}.gsk-chart-table{--bs-table-bg:#111a2e;--bs-table-color:#dce4f6;--bs-table-border-color:#344361;--bs-table-hover-bg:#1c2b49;--bs-table-hover-color:#fff;color:#dce4f6}
+.gsk-chart-table thead th{background:#1b2947;color:#d2caff;border-color:#3a4770}.gsk-chart-table tbody th{background:#182541;color:#c8d3e9}.gsk-chart-table tbody td{color:#f4f6ff}
+.chart-date-column{background:#1b2947!important;color:#d2caff!important}.chart-result{color:#8ce8c2}.chart-missing{color:#7888aa}
+.chart-today-row th,.chart-today-row td{background:#20234a!important}
+</style>
