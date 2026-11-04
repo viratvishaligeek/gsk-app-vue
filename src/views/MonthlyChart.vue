@@ -1,6 +1,6 @@
 <template>
   <main class="gsk-screen">
-    <header class="screen-banner chart-banner"><div class="screen-banner-icon">📊</div><div><span>RESULT ARCHIVE</span><h1>Monthly charts</h1><p>Browse date-wise market results.</p></div></header>
+    <GskScreenHeader emoji="📊" kicker="RESULT ARCHIVE" title="Monthly charts" subtitle="Browse date-wise market results." />
     <section class="chart-filter-panel">
       <div class="screen-section-title"><span>🗓️</span><div><strong>Choose a period</strong><small>Update the chart by month and year</small></div></div>
       <div class="row g-2"><div class="col-7"><label class="form-label" for="chart-month">Month</label><select id="chart-month" v-model="selectedMonth" @change="fetchMonthlyResults" class="form-select"><option v-for="(month,index) in months" :key="index" :value="index+1">{{ month }}</option></select></div><div class="col-5"><label class="form-label" for="chart-year">Year</label><select id="chart-year" v-model="selectedYear" @change="fetchMonthlyResults" class="form-select"><option v-for="year in years" :key="year" :value="year">{{ year }}</option></select></div></div>
@@ -28,6 +28,7 @@
   </main>
 </template>
 <script setup>
+import GskScreenHeader from '@/components/GskScreenHeader.vue'
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { App } from '@capacitor/app'
 import { useRoute } from 'vue-router'
