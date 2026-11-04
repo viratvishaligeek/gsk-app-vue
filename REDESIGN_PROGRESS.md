@@ -9,6 +9,7 @@ Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/4
 ### Android application shell
 - [x] Replaced non-matching scoped selectors with styles for the actual `gsk-app-shell`, `gsk-drawer`, `gsk-topbar`, `gsk-main-content` and `gsk-bottom-navigation` markup.
 - [x] Added a midnight navy visual system with violet / electric-blue accents, styled drawer, wallet shortcut, active navigation treatment, safe-area spacing and reduced-motion handling.
+- [x] Added lightweight route transitions and kept primary bottom navigation visible on Monthly Charts and Live Support.
 - [x] Added dark global surface, form, modal, alert and Bootstrap control tokens.
 
 ### Dashboard and Games
@@ -48,7 +49,8 @@ Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/4
 - [x] Static lint passed on GitHub Actions run #43.
 - [x] Production Vite build passed on GitHub Actions run #43.
 - [x] Capacitor Android sync passed on GitHub Actions run #43.
-- [x] Android debug APK build and artifact upload passed on GitHub Actions run #43.
+- [x] Android debug APK build and artifact upload passed on GitHub Actions run #43 for the dashboard/gameplay/wallet and page-theme changes.
+- [ ] Rerun validation after the latest route-transition and bottom-navigation visibility changes.
 - [ ] Physical-device verification remains pending.
 - [ ] Verify native navigation and Android back behavior after the shell styling change.
 
