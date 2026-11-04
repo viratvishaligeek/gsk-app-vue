@@ -37,6 +37,16 @@
               <img :src="banner.imageUrl" class="d-block w-100" :alt="banner.title || 'GSK promotion'" />
             </div>
           </div>
+          <template v-if="banners.length > 1">
+            <button class="carousel-control-prev gsk-banner-control" type="button"
+              aria-label="Previous promotion" @click="goToBanner((activeBannerIndex + banners.length - 1) % banners.length)">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next gsk-banner-control" type="button"
+              aria-label="Next promotion" @click="goToBanner((activeBannerIndex + 1) % banners.length)">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+          </template>
         </div>
       </section>
 
@@ -534,4 +544,5 @@ onUnmounted(() => {
 @media(min-width:700px){.gsk-dashboard{max-width:760px;margin:0 auto;padding-top:24px}.dashboard-actions{gap:14px}.dashboard-action{padding:17px}.market-list{grid-template-columns:repeat(2,minmax(0,1fr))}.market-item-footer{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.announcement-track{animation:none}}
 .lobby-preview-track{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}.lobby-preview-track::-webkit-scrollbar{display:none}.lobby-preview-card{display:flex;flex:0 0 min(68vw,220px);flex-direction:column;gap:9px;padding:13px;border:1px solid #e3eaf3;border-radius:16px;background:#fff;box-shadow:0 5px 15px #213b5b09;scroll-snap-align:start}.lobby-preview-card.is-closed{background:#fafbfd}.lobby-preview-top{display:flex;align-items:center;justify-content:space-between}.lobby-preview-top>span{font-size:22px}.lobby-preview-top small{font-size:8px;font-weight:900;color:#239667}.lobby-preview-top small.is-closed-label{color:#8b96a7}.lobby-preview-card h3{margin:0;font-size:13px;font-weight:900}.lobby-preview-result{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:10px;background:#f1f5fa}.lobby-preview-result small{color:#78869a;font-size:9px}.lobby-preview-result strong{font-size:21px;font-weight:950;color:#182d4d}.lobby-preview-card>a{margin-top:auto;color:#315f9f;font-size:10px;font-weight:900}.lobby-preview-all{display:flex;align-items:center;justify-content:space-between;margin-top:3px;padding:13px 14px;border:1px solid #dce6f2;border-radius:13px;background:#edf3fc;color:#244e83;font-size:11px;font-weight:900;text-decoration:none}
+.dashboard-promotions .carousel{position:relative}.gsk-banner-control{width:38px;height:38px;top:50%;bottom:auto;transform:translateY(-50%);border:1px solid #ffffff80;border-radius:50%;background:#142b4b80;opacity:.95}.gsk-banner-control.carousel-control-prev{left:10px}.gsk-banner-control.carousel-control-next{right:10px}.gsk-banner-control .carousel-control-prev-icon,.gsk-banner-control .carousel-control-next-icon{width:14px;height:14px}
 </style>
