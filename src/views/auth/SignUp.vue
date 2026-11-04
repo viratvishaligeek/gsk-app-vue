@@ -20,7 +20,7 @@
         <label for="fullName" class="form-label">Full Name</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-person text-primary"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">👤</span>
           </span>
           <input type="text" class="form-control border-start-0" :class="{ 'is-invalid': errors.fullName }"
             id="fullName" v-model.trim="form.fullName" placeholder="Enter full name"
@@ -47,14 +47,14 @@
         <label for="password" class="form-label">Password</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-lock text-success"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
           </span>
           <input :type="showPassword ? 'text' : 'password'" class="form-control border-start-0 border-end-0"
             :class="{ 'is-invalid': errors.password }" id="password" v-model="form.password"
             placeholder="Create password" @input="clearFieldError('password')" />
           <button type="button" class="input-group-text bg-transparent border-start-0"
             @click="showPassword = !showPassword" aria-label="Toggle password visibility">
-            <i :class="['bi', showPassword ? 'bi-eye-slash' : 'bi-eye', 'text-info']"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </button>
         </div>
         <div v-if="errors.password" class="invalid-feedback d-block small mt-1">
@@ -76,7 +76,7 @@
         <label for="referralCode" class="form-label">Referral Code (Optional)</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-gift text-warning"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🎁</span>
           </span>
           <input type="text" class="form-control border-start-0" :class="{ 'is-invalid': errors.referralCode }"
             id="referralCode" v-model.trim="form.referralCode" placeholder="Enter referral code"
