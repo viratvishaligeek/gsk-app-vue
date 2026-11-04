@@ -1,14 +1,14 @@
 <template>
   <div class="content-area pb-5 history-bg min-vh-100 d-flex flex-column">
     <div class="container-fluid px-2 px-md-3 py-2 flex-grow-1 d-flex flex-column">
-      <div class="card border-0 shadow-sm rounded-4 p-3 mb-2 bg-dark text-white">
+      <div class="support-banner">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
           <div class="d-flex align-items-center gap-3">
             <div
-              class="icon-circle bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center">
+              class="support-banner-icon">
               <span class="gsk-emoji-icon" aria-hidden="true">🎧</span></div>
             <div>
-              <h6 class="fw-bold text-white mb-1">VIP Live Support Desk</h6><span class="small text-white-50">{{
+              <h1 class="fw-bold text-white mb-1">Live support</h1><span class="small text-white-50">{{
                 realtimeConnected ? 'Connected · live messages' : connected ? 'Connected · recovery sync' :
                   humanSupportRequested ? 'Reconnecting to support…' : 'Browse FAQs before starting a chat' }}</span>
             </div>
@@ -17,7 +17,7 @@
             connected ? 'Online' : 'Reconnecting' }}</span>
         </div>
       </div>
-      <section v-if="!humanSupportRequested" class="card border-0 shadow-sm rounded-4 bg-white mb-3">
+      <section v-if="!humanSupportRequested" class="support-faq-card mb-3">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
             <div>
@@ -342,40 +342,6 @@ onUnmounted(() => {
   mediaUrlCache.forEach(url => URL.revokeObjectURL(url))
   mediaUrlCache.clear()
 })
-</script>
-
-<style scoped>
-.history-bg {
-  background-color: #f4f5f7
-}
-
-.message-bubble {
-  max-width: 78%;
-  word-break: break-word
-}
-
-.chat-media {
-  display: block;
-  max-width: min(260px, 65vw);
-  max-height: 260px;
-  border-radius: 10px;
-  margin-top: 5px
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none
-}
-
-.rounded-bottom-right-0 {
-  border-bottom-right-radius: 2px !important
-}
-
-.rounded-bottom-left-0 {
-  border-bottom-left-radius: 2px !important
-}
+</script><style scoped>
+.content-area.history-bg{min-height:100dvh;padding:14px 12px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb}.content-area.history-bg>.container-fluid{max-width:720px;margin:0 auto;padding:0!important}.support-banner{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:16px;border-radius:17px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.support-banner-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#ffffff1b;font-size:25px}.support-banner h1{margin:0;color:#fff;font-size:17px;font-weight:900}.support-banner .small{color:#d4e0f0!important;font-size:10px}.support-banner .badge{margin-left:auto}.support-faq-card,.card{border:1px solid #e5ebf3!important;border-radius:16px!important;background:#fff;box-shadow:0 7px 20px #1b365d0b!important}.support-faq-card .card-body{padding:15px}.support-faq-card .btn{min-height:42px;font-size:11px}.message-bubble{max-width:84%;word-break:break-word;font-size:12px;line-height:1.5}.message-bubble.bg-warning{background:#e9f1fc!important;color:#203b5e!important}.message-bubble.bg-white{border-color:#e5ebf3!important}.chat-media{display:block;max-width:min(260px,65vw);max-height:260px;margin-top:6px;border-radius:11px}.card-footer form .form-control{min-height:42px}.no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}.rounded-bottom-right-0{border-bottom-right-radius:3px!important}.rounded-bottom-left-0{border-bottom-left-radius:3px!important}
 </style>
