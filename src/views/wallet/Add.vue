@@ -402,6 +402,883 @@ const maxAddMoney = computed(() => {
 })
 
 
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
+
+const isLoading = ref(false)
+const manualLoading = ref(false)
+
+const gatewayEnabled = ref(false)
+const showManualModal = ref(false)
+
+const pendingLoading = ref(false)
+const pendingGatewayRequestId = ref(null)
+const showGatewayModal = ref(false)
+const gatewayPaymentUrl = ref('')
+const gatewayPaymentAmount = ref(0)
+const gatewayPaymentStatus = ref('processing')
+const gatewayStatusMessage = ref('Payment is waiting for provider confirmation.')
+const gatewayStatusChecking = ref(false)
+
+const quickAmounts = [
+  100,
+  500,
+  1000,
+  2000,
+]
+
+
+const form = reactive({
+  amount: 500,
+  paymentMethod: 'gateway',
+})
+
+
+const paymentInfo = reactive({
+  upi_id: '',
+  name: '',
+  qr_url: '',
+})
+
+
+const manualForm = reactive({
+  utr: '',
+  screenshot: null,
+})
+
+
+const screenshotPreview = ref(null)
+
+
+const apiMessage = reactive({
+  text: '',
+  type: 'error',
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| Pending payments
+|--------------------------------------------------------------------------
+|
+| Change this endpoint if your backend uses another route.
+|--------------------------------------------------------------------------
+*/
+
+const PENDING_PAYMENT_ENDPOINT =
+  '/wallet/get-money-request'
+
+const pendingPayments = ref([])
+
+
+/*
+|--------------------------------------------------------------------------
+| Demo activity
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| This is intentionally labelled as demo activity.
+| Replace it with real activity API if required.
+|--------------------------------------------------------------------------
+*/
+
+const demoActivities = [
+  {
+    name: 'Rahul',
+    amount: '500',
+    initials: 'R',
+  },
+  {
+    name: 'Aman',
+    amount: '1,000',
+    initials: 'A',
+  },
+  {
+    name: 'Vikas',
+    amount: '2,000',
+    initials: 'V',
+  },
+  {
+    name: 'Neha',
+    amount: '500',
+    initials: 'N',
+  },
+  {
+    name: 'Rohit',
+    amount: '1,500',
+    initials: 'R',
+  },
+  {
+    name: 'Pooja',
+    amount: '1,000',
+    initials: 'P',
+  },
+  {
+    name: 'Arjun',
+    amount: '2,500',
+    initials: 'A',
+  },
+]
+
+const activityIndex = ref(0)
+
+const currentActivity = computed(() => {
+  return demoActivities[
+    activityIndex.value
+  ]
+})
+
+let activityTimer = null
+let pendingTimer = null
+let gatewayStatusTimer = null
+let appStateListener = null
+let appBackButtonListener = null
+let gatewayStatusInFlight = false
+const handledGatewayTerminalRequests = new Set()
+const gatewaySuccessStatuses = new Set(['approved', 'success', 'completed', 'paid'])
+const gatewayFailureStatuses = new Set(['failed', 'rejected', 'cancelled', 'canceled', 'expired'])
+
+
+/*
+|--------------------------------------------------------------------------
+| Currency
+|--------------------------------------------------------------------------
+*/
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(Number(value || 0))
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Payment Date
+|--------------------------------------------------------------------------
+*/
+
+const formatPaymentDate = (value) => {
+  if (!value) {
+    return '--'
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value)
+  }
+
+  return date.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Payment Status
+|--------------------------------------------------------------------------
+*/
+
+const formatStatus = (status) => {
+  const value = String(status || '').toLowerCase()
+
+  const map = {
+    pending: 'Pending',
+    processing: 'Processing',
+    approved: 'Approved',
+    success: 'Success',
+    completed: 'Completed',
+    paid: 'Paid',
+    rejected: 'Rejected',
+    failed: 'Failed',
+    cancelled: 'Cancelled',
+    canceled: 'Cancelled',
+    expired: 'Expired',
+  }
+
+  return map[value] || 'Pending'
+}
+
+
+const getStatusClass = (status) => {
+  const value = String(status || '').toLowerCase()
+
+  if (
+    value === 'approved' ||
+    value === 'success' ||
+    value === 'completed'
+  ) {
+    return 'status-success'
+  }
+
+  if (
+    value === 'rejected' ||
+    value === 'failed' ||
+    value === 'cancelled' ||
+    value === 'canceled' ||
+    value === 'expired'
+  ) {
+    return 'status-danger'
+  }
+
+  return 'status-pending'
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Load payment methods
+|--------------------------------------------------------------------------
+*/
+
+const loadPaymentMethods = async () => {
+  try {
+
+    const response = await api.get(
+      '/wallet/payment-methods'
+    )
+
+    if (!response.data?.success) {
+      return
+    }
+
+    const data =
+      response.data.data || {}
+
+    const manualUpi =
+      data.manual_upi || {}
+
+    const gateway =
+      data.gateway || {}
+
+
+    paymentInfo.upi_id =
+      manualUpi.upi_id || ''
+
+    paymentInfo.name =
+      manualUpi.name || ''
+
+    paymentInfo.qr_url =
+      manualUpi.qr_url || ''
+
+
+    gatewayEnabled.value =
+      Boolean(gateway.enabled)
+
+
+    /*
+     * Prefer automatic gateway when available.
+     */
+    if (gatewayEnabled.value) {
+      form.paymentMethod = 'gateway'
+    } else {
+      form.paymentMethod = 'manual_upi'
+    }
+
+  } catch (error) {
+
+    console.error(
+      'Payment methods error:',
+      error
+    )
+
+    /*
+     * Don't break the page if payment-method
+     * configuration API fails.
+     */
+  }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Add money
+|--------------------------------------------------------------------------
+*/
+
+const handleAddMoney = async () => {
+
+  apiMessage.text = ''
+
+
+  const amount =
+    Number(form.amount)
+
+
+  if (
+    !amount ||
+    Number.isNaN(amount) ||
+    amount < minAddMoney.value
+  ) {
+
+    apiMessage.type = 'error'
+
+    apiMessage.text =
+      `Minimum add money amount is ₹${formatCurrency(minAddMoney.value)}.`
+
+    return
+  }
+
+  if (
+    maxAddMoney.value > 0 &&
+    amount > maxAddMoney.value
+  ) {
+
+    apiMessage.type = 'error'
+
+    apiMessage.text =
+      `Maximum add money amount is ₹${formatCurrency(maxAddMoney.value)}.`
+
+    return
+  }
+
+
+  if (
+    form.paymentMethod === 'manual_upi'
+  ) {
+
+    showManualModal.value = true
+
+    return
+  }
+
+
+  await createGatewayOrder()
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Automatic Gateway
+|--------------------------------------------------------------------------
+*/
+
+const createGatewayOrder = async () => {
+  if (isLoading.value) return
+  isLoading.value = true
+
+  try {
+    const response = await api.post('/wallet/gateway/create-order', {
+      amount: Number(form.amount),
+    })
+
+    if (!response.data?.success) {
+      throw new Error(response.data?.message || 'Unable to start payment.')
+    }
+
+    const paymentData = response.data?.data || {}
+    const paymentUrl = String(paymentData.payment_url || '')
+    const requestId = paymentData.request_id
+    if (!isTrustedGatewayPaymentUrl(paymentUrl) || !requestId) {
+      throw new Error('The provider returned an unsupported payment URL. Please contact support; no wallet credit was made.')
+    }
+
+    pendingGatewayRequestId.value = String(requestId)
+    gatewayPaymentAmount.value = Number(form.amount)
+    gatewayPaymentUrl.value = paymentUrl
+    gatewayPaymentStatus.value = 'processing'
+    gatewayStatusMessage.value = 'Waiting for UPIGateway to confirm payment.'
+    showGatewayModal.value = true
+    startGatewayStatusPolling()
+    await refreshGatewayPaymentStatus()
+  } catch (error) {
+    console.warn('Gateway payment request failed.', { status: error.response?.status || null })
+    apiMessage.type = 'error'
+    apiMessage.text = getPaymentErrorMessage(error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Screenshot
+|--------------------------------------------------------------------------
+*/
+
+const handleScreenshot = (event) => {
+
+  const file =
+    event.target.files?.[0]
+
+
+  if (!file) {
+    return
+  }
+
+
+  if (
+    ![
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+    ].includes(file.type)
+  ) {
+
+    apiMessage.type = 'error'
+
+    apiMessage.text =
+      'Please upload JPG, PNG or WEBP.'
+
+    return
+  }
+
+
+  if (
+    file.size >
+    15 * 1024 * 1024
+  ) {
+
+    apiMessage.type = 'error'
+
+    apiMessage.text =
+      'Screenshot must not exceed 15 MB.'
+
+    return
+  }
+
+
+  manualForm.screenshot =
+    file
+
+
+  if (screenshotPreview.value) {
+
+    URL.revokeObjectURL(
+      screenshotPreview.value
+    )
+  }
+
+
+  screenshotPreview.value =
+    URL.createObjectURL(file)
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Submit Manual UPI
+|--------------------------------------------------------------------------
+*/
+
+const submitManualRequest = async () => {
+
+  apiMessage.text = ''
+
+
+  if (
+    !manualForm.utr.trim()
+  ) {
+
+    apiMessage.type = 'error'
+
+    apiMessage.text =
+      'Please enter UTR / transaction number.'
+
+    return
+  }
+
+
+  if (
+    !manualForm.screenshot
+  ) {
+
+    apiMessage.type = 'error'
+
+    apiMessage.text =
+      'Please upload payment screenshot.'
+
+    return
+  }
+
+
+  manualLoading.value = true
+
+
+  try {
+
+    const formData =
+      new FormData()
+
+
+    formData.append(
+      'amount',
+      Number(form.amount)
+    )
+
+    formData.append(
+      'utr',
+      manualForm.utr.trim()
+    )
+
+    formData.append(
+      'screenshot',
+      manualForm.screenshot
+    )
+
+
+    const response =
+      await api.post(
+        '/wallet/add-money-request',
+        formData
+      )
+
+
+    if (!response.data?.success) {
+      throw new Error(
+        response.data?.message ||
+        'Unable to submit payment request.'
+      )
+    }
+
+
+    void playNotificationSound('add_money', `manual-${response.data?.data?.id || Date.now()}`)
+
+    showManualModal.value =
+      false
+
+
+    apiMessage.type =
+      'success'
+
+
+    apiMessage.text =
+      response.data.message ||
+      'Payment submitted successfully.'
+
+
+    resetManualForm()
+
+
+    /*
+     * Immediately refresh pending list.
+     */
+    await loadPendingPayments()
+
+
+    setTimeout(() => {
+      router.push('/wallet')
+
+    }, 1800)
+
+  } catch (error) {
+
+    console.error(
+      'Manual payment error:',
+      error
+    )
+
+    apiMessage.type =
+      'error'
+
+
+    apiMessage.text =
+      error.response?.data?.message ||
+      error.message ||
+      'Unable to submit payment request.'
+
+  } finally {
+
+    manualLoading.value =
+      false
+  }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Pending Payments API
+|--------------------------------------------------------------------------
+*/
+
+const loadPendingPayments = async () => {
+
+  pendingLoading.value = true
+
+  try {
+
+    const response =
+      await api.get(
+        PENDING_PAYMENT_ENDPOINT,
+        {
+          params: {
+            statuses: ['pending', 'processing'],
+            type: 'credit',
+          },
+        }
+      )
+
+
+    /*
+     * Supports:
+     *
+     * { success: true, data: [] }
+     *
+     * OR
+     *
+     * { status: true, data: [] }
+     *
+     * OR
+     *
+     * { success: true, data: { data: [] } }
+     */
+
+    const responseData =
+      response.data
+
+
+    let list =
+      responseData?.data
+
+
+    if (
+      list &&
+      !Array.isArray(list) &&
+      Array.isArray(list.data)
+    ) {
+      list = list.data
+    }
+
+
+    pendingPayments.value =
+      Array.isArray(list)
+        ? list
+        : []
+
+  } catch (error) {
+
+    console.error(
+      'Pending payments error:',
+      error
+    )
+
+    /*
+     * Don't show an error banner here.
+     * The payment page should remain usable even
+     * if pending-history API is temporarily unavailable.
+     */
+
+  } finally {
+
+    pendingLoading.value =
+      false
+  }
+}
+
+
+const refreshGatewayPaymentStatus = async () => {
+  const requestId = pendingGatewayRequestId.value
+  if (!requestId || gatewayStatusInFlight || handledGatewayTerminalRequests.has(requestId)) return
+
+  gatewayStatusInFlight = true
+  gatewayStatusChecking.value = true
+  try {
+    const response = await api.get(`/wallet/gateway/${encodeURIComponent(requestId)}/status`, {
+      cache: false,
+      showGlobalLoader: false,
+    })
+    // Ignore stale responses if the user has switched to a different payment.
+    if (pendingGatewayRequestId.value !== requestId) return
+
+    const payment = response.data?.data
+    const status = String(payment?.status || '').toLowerCase()
+    if (!payment) throw new Error('Payment status response was empty.')
+
+    gatewayPaymentStatus.value = status || 'processing'
+    gatewayStatusMessage.value = payment.message || 'Payment is still pending verification.'
+
+    // Only a server-verified terminal status can complete this flow. Unknown,
+    // pending and network-timeout states remain unconfirmed.
+    if (gatewaySuccessStatuses.has(status)) {
+      handledGatewayTerminalRequests.add(requestId)
+      stopGatewayStatusPolling()
+      showGatewayModal.value = false
+      apiMessage.type = 'success'
+      apiMessage.text = 'Payment verified successfully. Your wallet has been refreshed.'
+      if (Number.isFinite(Number(payment.wallet_balance))) {
+        authStore.updateUserData({ balance: Number(payment.wallet_balance) })
+      }
+      gatewayPaymentUrl.value = ''
+      pendingGatewayRequestId.value = null
+      await loadPendingPayments()
+    } else if (gatewayFailureStatuses.has(status)) {
+      handledGatewayTerminalRequests.add(requestId)
+      stopGatewayStatusPolling()
+      showGatewayModal.value = false
+      apiMessage.type = 'error'
+      apiMessage.text = status === 'cancelled' || status === 'canceled'
+        ? 'The payment provider confirmed that this payment was cancelled. No wallet credit was applied.'
+        : status === 'expired'
+          ? 'This payment session expired. You can safely start a new payment.'
+          : 'The provider confirmed that this payment failed. You can safely start a new payment.'
+      gatewayPaymentUrl.value = ''
+      pendingGatewayRequestId.value = null
+      await loadPendingPayments()
+    }
+  } catch (error) {
+    // A timeout or unreachable API is not evidence of payment failure.
+    if (pendingGatewayRequestId.value === requestId) {
+      gatewayStatusMessage.value = 'Status could not be refreshed. Your payment remains unconfirmed; try again shortly.'
+    }
+    console.warn('Unable to refresh gateway payment status:', error)
+  } finally {
+    gatewayStatusChecking.value = false
+    gatewayStatusInFlight = false
+  }
+}
+
+const startGatewayStatusPolling = () => {
+  stopGatewayStatusPolling()
+  gatewayStatusTimer = setInterval(() => {
+    if (showGatewayModal.value && !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) && !gatewayFailureStatuses.has(gatewayPaymentStatus.value)) {
+      void refreshGatewayPaymentStatus()
+    }
+  }, 10000)
+}
+
+const stopGatewayStatusPolling = () => {
+  if (gatewayStatusTimer) {
+    clearInterval(gatewayStatusTimer)
+    gatewayStatusTimer = null
+  }
+}
+
+const closeGatewayPayment = () => {
+  showGatewayModal.value = false
+  stopGatewayStatusPolling()
+  if (pendingGatewayRequestId.value && !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) && !gatewayFailureStatuses.has(gatewayPaymentStatus.value)) {
+    apiMessage.type = 'error'
+    apiMessage.text = 'Payment status is still pending verification. You can resume it from Pending payments; closing this screen does not cancel the transaction.'
+  }
+}
+
+const resumeGatewayPayment = (payment) => {
+  const requestId = payment?.request_id || payment?.gateway_request_id || payment?.id
+  if (!requestId || !payment?.gateway_payment_url) return
+  pendingGatewayRequestId.value = String(requestId)
+  gatewayPaymentUrl.value = String(payment.gateway_payment_url)
+  gatewayPaymentAmount.value = Number(payment.amount || 0)
+  gatewayPaymentStatus.value = String(payment.status || 'processing').toLowerCase()
+  gatewayStatusMessage.value = 'Reopened pending payment. Checking the provider status now.'
+  showGatewayModal.value = true
+  startGatewayStatusPolling()
+  void refreshGatewayPaymentStatus()
+}
+
+/*
+|--------------------------------------------------------------------------
+| Reset manual form
+|--------------------------------------------------------------------------
+*/
+
+const resetManualForm = () => {
+
+  manualForm.utr = ''
+
+  manualForm.screenshot = null
+
+
+  if (screenshotPreview.value) {
+
+    URL.revokeObjectURL(
+      screenshotPreview.value
+    )
+  }
+
+
+  screenshotPreview.value =
+    null
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Close modal
+|--------------------------------------------------------------------------
+*/
+
+const closeManualModal = () => {
+
+  if (manualLoading.value) {
+    return
+  }
+
+  showManualModal.value =
+    false
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Copy UPI
+|--------------------------------------------------------------------------
+*/
+
+const copyUpiId = async () => {
+
+  if (!paymentInfo.upi_id) {
+    return
+  }
+
+  try {
+
+    await navigator.clipboard.writeText(
+      paymentInfo.upi_id
+    )
+
+
+    apiMessage.type =
+      'success'
+
+    apiMessage.text =
+      'UPI ID copied.'
+
+  } catch (error) {
+
+    console.error(
+      'Copy UPI error:',
+      error
+    )
+  }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Demo activity rotation
+|--------------------------------------------------------------------------
+*/
+
+const startActivityRotation = () => {
+
+  if (activityTimer) {
+    clearInterval(activityTimer)
+  }
+
+
+  /*
+   * 4.5 seconds keeps it noticeable
+   * without becoming annoying.
+   */
+  activityTimer =
+    setInterval(() => {
+      activityIndex.value =
+        (
+          activityIndex.value + 1
+        ) % demoActivities.length
+
+    }, 4500)
+}
+
 
 /*
 |--------------------------------------------------------------------------
@@ -470,7 +1347,9 @@ onMounted(async () => {
     delete remainingQuery.request_id
     await router.replace({ path: route.path, query: remainingQuery })
   }
-startPendingRefresh()
+
+  startActivityRotation()
+  startPendingRefresh()
 })
 
 
@@ -484,6 +1363,15 @@ onBeforeUnmount(async () => {
   if (appBackButtonListener) {
     await appBackButtonListener.remove()
     appBackButtonListener = null
+  }
+
+  if (activityTimer) {
+
+    clearInterval(
+      activityTimer
+    )
+
+    activityTimer = null
   }
 
 
