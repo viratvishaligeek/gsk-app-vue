@@ -1,6 +1,6 @@
 <template>
   <main class="gsk-screen">
-    <header class="screen-banner wallet-banner"><div class="screen-banner-icon">💰</div><div><span>YOUR MONEY</span><h1>My wallet</h1><p>Balance, payments and transactions.</p></div></header>
+    <GskScreenHeader emoji="💰" kicker="YOUR MONEY" title="My wallet" subtitle="Balance, payments and transactions." />
     <section class="wallet-balance-card">
       <div class="wallet-balance-head"><span>AVAILABLE BALANCE</span><button type="button" @click="isBalanceVisible=!isBalanceVisible">{{ isBalanceVisible?'🙈 Hide':'👁️ Show' }}</button></div>
       <strong class="wallet-balance-amount">₹{{ isBalanceVisible?formatCurrency(walletBalance):'••••••' }}</strong>
@@ -30,6 +30,7 @@
   </main>
 </template>
 <script setup>
+import GskScreenHeader from '@/components/GskScreenHeader.vue'
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/utils/auth'
 import api from '@/plugins/axios'
