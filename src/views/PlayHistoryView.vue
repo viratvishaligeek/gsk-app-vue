@@ -1,6 +1,6 @@
 <template>
   <main class="gsk-screen">
-    <header class="screen-banner history-banner"><div class="screen-banner-icon">📜</div><div><span>YOUR ACTIVITY</span><h1>Play history</h1><p>Review your slips and daily totals.</p></div></header>
+    <GskScreenHeader emoji="📜" kicker="YOUR ACTIVITY" title="Play history" subtitle="Review your slips and daily totals." />
     <section class="history-date-panel"><div><strong>🗓️ Select date</strong><small>Choose a day to view your activity</small></div><input v-model="selectedDate" type="date" :max="todayDateStr" class="form-control" @change="fetchPlayHistory(1)"><button v-if="selectedDate!==todayDateStr" class="btn btn-sm btn-outline-primary rounded-pill" @click="resetToToday">Today</button></section>
     <section class="history-stat-grid">
       <article><span>💸</span><small>Total spent</small><strong>₹{{ formatCurrency(dailyStats.totalSpent) }}</strong></article>
@@ -31,6 +31,7 @@
   </main>
 </template>
 <script setup>
+import GskScreenHeader from '@/components/GskScreenHeader.vue'
 import { ref, computed, onMounted } from 'vue'
 import api from '@/plugins/axios'
 
