@@ -1,156 +1,32 @@
 <template>
-  <div class="content-area pb-5 mb-5 history-bg">
-    <div class="container-fluid px-2 px-md-3 py-2">
-      <div class="card border-0 shadow-sm theme-bg rounded-4 p-3 mb-3 text-white position-relative overflow-hidden">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 position-relative z-1">
-          <div class="d-flex align-items-center gap-2">
-            <div class="icon-circle text-dark d-flex align-items-center justify-content-center fw-black">
-              <img src="../assets/img/result_icon.png" height="30px" alt="">
-            </div>
-            <div>
-              <h6 class="fw-black text-white mb-0">Monthly Result Chart</h6>
-              <span class="fs-8 text-white-50">
-                Day-wise winning results matrix
-              </span>
-            </div>
-          </div>
-
-          <div
-            class="d-flex align-items-center gap-2 bg-white bg-opacity-10 p-1 px-2 rounded-pill border border-white-15">
-            <select v-model="selectedMonth" @change="fetchMonthlyResults"
-              class="form-select form-select-sm bg-transparent text-white border-0 fw-bold fs-8 cursor-pointer shadow-none py-0">
-              <option v-for="(month, index) in months" :key="index" :value="index + 1" class="text-dark">
-                {{ month }}
-              </option>
-            </select>
-
-            <select v-model="selectedYear" @change="fetchMonthlyResults"
-              class="form-select form-select-sm bg-transparent text-white border-0 fw-bold fs-8 cursor-pointer shadow-none py-0">
-              <option v-for="year in years" :key="year" :value="year" class="text-dark">
-                {{ year }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="gameHeaders.length" class="row g-2 mb-3">
-        <div v-for="game in gameHeaders" :key="game.id" class="col-3">
-          <div class="card border-0 shadow-xs rounded-3 py-2 bg-white text-center border-top border-3"
-            :style="{ borderColor: game.color }">
-            <span class="fs-8 text-muted fw-bold text-uppercase d-block mb-1">
-              {{ game.name }}
-            </span>
-
-            <div class="d-flex align-items-center justify-content-center gap-2">
-              <span class="badge bg-light text-dark font-monospace border fs-7 fw-black">
-                {{ getLatestResult(game.id) }}
-              </span>
-
-              <span v-if="hasTodayResult(game.id)" class="fs-8 text-success fw-bold">
-                <span class="gsk-emoji-icon" aria-hidden="true">⚡</span>
-                आज
-              </span>
-              <span v-else class="fs-8 text-danger fw-bold">
-                कल
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card border-0 shadow-xs rounded-4 bg-white overflow-hidden">
-        <div v-if="isLoading" class="text-center py-5">
-          <div class="spinner-border text-warning" role="status"></div>
-
-          <p class="text-muted fs-8 mt-2 fw-semibold mb-0">
-            Loading result chart for
-            {{ getMonthName(selectedMonth) }}
-            {{ selectedYear }}...
-          </p>
-        </div>
-
-        <div v-else-if="!gameHeaders.length" class="text-center py-5">
-          <span class="gsk-emoji-icon" aria-hidden="true">📊</span>
-
-          <p class="text-muted mt-2 mb-0">
-            No games available.
-          </p>
-        </div>
-
-        <div v-else class="table-responsive result-table-wrapper">
-          <table class="table  table-hover align-middle mb-0 text-center font-monospace fs-8">
-            <thead class=" text-uppercase fs-8">
-              <tr>
-                <th class="date-sticky date-header p-0 py-2 text-danger">
-                  Date
-                </th>
-
-                <th v-for="game in gameHeaders" :key="game.id" class="p-1 text-white" :style="{
-                  backgroundColor: 'brown',
-                  minWidth: game.name.trim().split(/\s+/).length >= 2 ? '100px' : 'auto'
-                }">
-                  <div class="d-flex align-items-center justify-content-center gap-1">
-                    <span>{{ game.name }}</span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in monthlyData" :key="row.date" :class="{
-                'table-warning fw-bold border-2 border-warning': row.is_today,
-              }">
-                <td class="date-sticky date-cell fw-black bg-light font-monospace p-1 text-danger">
-                  {{ row.formatted_day }}
-
-                  <span v-if="row.is_today" class="badge bg-danger text-white rounded-pill ms-1 d-block"
-                    style="font-size: 0.6rem">
-                    TODAY
-                  </span>
-                </td>
-
-                <td v-for="game in gameHeaders" :key="game.id" class="p-0">
-                  <span
-                    v-if="row.results[game.id] !== null && row.results[game.id] !== undefined && row.results[game.id] !== ''"
-                    class="result-badge fw-black" :class="[
-                      row.is_today ? 'text-danger fs-6' : 'text-dark fs-7',
-                      isJodaResult(row.results[game.id]) ? 'joda-highlight' : '',
-                    ]">
-                    {{ row.results[game.id] }}
-                  </span>
-
-                  <span v-else class=" fw-bold">
-                    --
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div
-          class="card-footer bg-light p-3 border-0 d-flex flex-wrap align-items-center justify-content-between gap-2 fs-8 text-muted">
-          <div class="d-flex align-items-center gap-3">
-            <span>
-              <span class="gsk-emoji-icon" aria-hidden="true">🟦</span>
-              Today's Live Row
-            </span>
-
-            <span>
-              <span class="gsk-emoji-icon" aria-hidden="true">—</span>
-              Result Awaited
-            </span>
-          </div>
-
-          <span>
-            Updated automatically upon result declaration
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <main class="gsk-screen">
+    <header class="screen-banner chart-banner"><div class="screen-banner-icon">📊</div><div><span>RESULT ARCHIVE</span><h1>Monthly charts</h1><p>Browse date-wise market results.</p></div></header>
+    <section class="chart-filter-panel">
+      <div class="screen-section-title"><span>🗓️</span><div><strong>Choose a period</strong><small>Update the chart by month and year</small></div></div>
+      <div class="row g-2"><div class="col-7"><label class="form-label" for="chart-month">Month</label><select id="chart-month" v-model="selectedMonth" @change="fetchMonthlyResults" class="form-select"><option v-for="(month,index) in months" :key="index" :value="index+1">{{ month }}</option></select></div><div class="col-5"><label class="form-label" for="chart-year">Year</label><select id="chart-year" v-model="selectedYear" @change="fetchMonthlyResults" class="form-select"><option v-for="year in years" :key="year" :value="year">{{ year }}</option></select></div></div>
+    </section>
+    <section v-if="gameHeaders.length" class="chart-market-strip">
+      <div v-for="game in gameHeaders" :key="game.id" class="chart-market-chip"><small>{{ game.name }}</small><strong>{{ getLatestResult(game.id) }}</strong><span :class="hasTodayResult(game.id)?'text-success':'text-secondary'">{{ hasTodayResult(game.id)?'● Today':'No result today' }}</span></div>
+    </section>
+    <section class="chart-table-panel">
+      <div class="chart-table-heading"><div><span>📅</span><strong>{{ getMonthName(selectedMonth) }} {{ selectedYear }}</strong></div><small>{{ monthlyData.length }} calendar days</small></div>
+      <div v-if="isLoading" class="gsk-empty-state"><span>⏳</span><strong>Loading results…</strong><p>Fetching the latest saved chart.</p></div>
+      <div v-else-if="!gameHeaders.length" class="gsk-empty-state"><span>🎮</span><strong>No games available</strong><p>There are no markets to display for this period.</p></div>
+      <div v-else class="table-responsive gsk-chart-scroll"><table class="table table-bordered table-hover align-middle text-center mb-0 gsk-chart-table">
+        <thead><tr><th class="chart-date-column">Date</th><th v-for="game in gameHeaders" :key="game.id">{{ game.name }}</th></tr></thead>
+        <tbody><tr v-for="row in monthlyData" :key="row.date" :class="{'chart-today-row':row.is_today}">
+          <th class="chart-date-column"><span>{{ row.formatted_day }}</span><small v-if="row.is_today">TODAY</small></th>
+          <td v-for="game in gameHeaders" :key="game.id">
+            <span v-if="row.results[game.id]!==null&&row.results[game.id]!==undefined&&row.results[game.id]!==''"
+              class="chart-result" :class="{'chart-joda':isJodaResult(row.results[game.id]),'chart-today-result':row.is_today}">{{ row.results[game.id] }}</span>
+            <span v-else class="chart-missing">—</span>
+          </td>
+        </tr></tbody>
+      </table></div>
+      <footer class="chart-legend"><span>🟨 Today's row</span><span>— Result not published</span><span>✨ Highlighted Jodi</span></footer>
+    </section>
+  </main>
 </template>
-
 <script setup>
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import { App } from '@capacitor/app'
@@ -309,93 +185,6 @@ onBeforeUnmount(async () => {
   }
 })
 </script>
-
 <style scoped>
-.theme-bg {
-  background: linear-gradient(135deg,
-      var(--primary-color),
-      var(--primary-light));
-}
-
-.history-bg {
-  background-color: #f4f5f7;
-  min-height: 100vh;
-}
-
-.fw-black {
-  font-weight: 900;
-}
-
-.fs-8 {
-  font-size: 0.72rem;
-}
-
-.fs-7 {
-  font-size: 0.82rem;
-}
-
-.shadow-xs {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-}
-
-.border-white-15 {
-  border-color: rgba(255, 255, 255, 0.15) !important;
-}
-
-.result-badge {
-  letter-spacing: 0.5px;
-}
-
-.result-badge.joda-highlight {
-  display: inline-block;
-  padding: 0.12rem 0.35rem;
-  border: 1px solid #a3cfbb;
-  border-radius: 0.35rem;
-  background-color: #d1e7dd;
-  color: #0f5132 !important;
-}
-
-.result-table-wrapper {
-  overflow-x: auto;
-  overflow-y: auto;
-  position: relative;
-  isolation: isolate;
-  -webkit-overflow-scrolling: touch;
-}
-
-.result-table-wrapper table {
-  border-collapse: separate;
-  border-spacing: 0;
-  width: max-content;
-  min-width: 100%;
-}
-
-.result-table-wrapper th,
-.result-table-wrapper td {
-  white-space: nowrap;
-}
-
-.result-table-wrapper .date-sticky {
-  position: sticky;
-  left: 0;
-  min-width: 65px;
-  width: 65px;
-  max-width: 65px;
-  background-color: #fff !important;
-  z-index: 2;
-  border-right: 2px solid #dee2e6;
-}
-
-.result-table-wrapper .date-header {
-  z-index: 4;
-  background-color: #f8f9fa !important;
-}
-
-.result-table-wrapper .date-cell {
-  background-color: #f8f9fa !important;
-}
-
-.result-table-wrapper tbody tr.table-warning .date-cell {
-  background-color: #fff3cd !important;
-}
+.gsk-screen{min-height:100dvh;padding:14px 13px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb;color:#1e2c42}.screen-banner{display:flex;align-items:center;gap:13px;padding:19px;border-radius:19px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.screen-banner-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:#ffffff1b;font-size:28px}.screen-banner span{color:#cbd9eb;font-size:9px;font-weight:900;letter-spacing:.13em}.screen-banner h1{margin:2px 0;color:#fff;font-size:22px;font-weight:900}.screen-banner p{margin:0;color:#d5e1f0;font-size:11px}.chart-filter-panel,.chart-table-panel{margin-top:13px;padding:15px;border:1px solid #e5ebf3;border-radius:17px;background:#fff;box-shadow:0 8px 22px #1b365d0b}.screen-section-title{display:flex;align-items:center;gap:10px;margin-bottom:13px}.screen-section-title>span{font-size:25px}.screen-section-title div{display:grid}.screen-section-title strong{font-size:13px}.screen-section-title small{font-size:10px;color:#7b899d}.chart-filter-panel .form-label{font-size:10px;font-weight:800;color:#63738a}.chart-market-strip{display:flex;gap:9px;overflow:auto;padding:13px 0 2px;scrollbar-width:none}.chart-market-chip{display:grid;gap:3px;min-width:112px;padding:11px;border:1px solid #e4eaf2;border-radius:13px;background:#fff}.chart-market-chip small{overflow:hidden;color:#6d7d93;font-size:9px;font-weight:800;text-overflow:ellipsis;white-space:nowrap}.chart-market-chip strong{font-size:20px;font-weight:900;color:#244e83}.chart-market-chip span{font-size:8px;font-weight:800}.chart-table-panel{padding:0;overflow:hidden}.chart-table-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px;border-bottom:1px solid #e9eef5}.chart-table-heading div{display:flex;align-items:center;gap:8px}.chart-table-heading div span{font-size:21px}.chart-table-heading strong{font-size:13px}.chart-table-heading small{color:#7b899d;font-size:9px}.gsk-chart-scroll{max-height:65vh}.gsk-chart-table{min-width:max-content;font-size:11px}.gsk-chart-table th,.gsk-chart-table td{min-width:72px;padding:9px 7px!important}.gsk-chart-table thead th{position:sticky;top:0;z-index:3;background:#edf3fb;color:#38516f;font-size:9px}.gsk-chart-table .chart-date-column{position:sticky;left:0;z-index:4;min-width:55px;background:#f2f5f9;color:#40516a}.gsk-chart-table tbody .chart-date-column{z-index:2}.chart-date-column span{display:block;font-weight:900}.chart-date-column small{display:block;color:#bf7840;font-size:7px}.chart-today-row td,.chart-today-row .chart-date-column{background:#fff6df!important}.chart-result{display:inline-grid;place-items:center;min-width:31px;min-height:27px;border-radius:7px;background:#edf3fc;color:#244e83;font-weight:900}.chart-today-result{background:#ffe7ad;color:#7b5010}.chart-joda{outline:2px solid #50a77c;background:#e0f5e9;color:#17663f}.chart-missing{color:#aeb8c5}.chart-legend{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px;border-top:1px solid #e9eef5;color:#7b899d;font-size:9px}
 </style>
