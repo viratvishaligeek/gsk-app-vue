@@ -26,7 +26,7 @@
       </div>
 
       <div v-if="!game.is_playable" class="alert alert-warning mx-1">
-        <i class="bi bi-clock me-1"></i>
+        <span class="gsk-emoji-icon" aria-hidden="true">🕒</span>
 
         {{ game.play_status_message || ('Betting time for ' + game.name + ' is currently closed.') }}
       </div>
@@ -237,7 +237,7 @@
             </div>
           </div>
           <div v-else class="text-center text-muted py-4">
-            <i class="bi bi-grid-3x3-gap fs-3 d-block mb-2"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🎮</span>
             <small> Select at least two digits to generate combinations. </small>
           </div>
         </div>
@@ -265,7 +265,7 @@
                   " @click="submitBetsAPI">
                   <span v-if="isSubmitting" class="spinner-border spinner-border-sm"></span>
                   <span v-else>
-                    <i class="bi bi-check-circle-fill"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✅</span>
                     Place Bet
                   </span>
                 </button>
@@ -584,7 +584,7 @@ const submitBetsAPI = async () => {
       </div>
 
       <div class="bet-confirm-warning">
-        <i class="bi bi-wallet2"></i>
+        <span class="gsk-emoji-icon" aria-hidden="true">💰</span>
         This amount will be deducted from your wallet.
       </div>
     </div>
