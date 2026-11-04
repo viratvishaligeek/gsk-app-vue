@@ -231,3 +231,19 @@ onMounted(() => {
 <style scoped>
 .history-shortcuts{display:flex;gap:8px;margin:13px 0;overflow-x:auto;scrollbar-width:none}.history-shortcuts::-webkit-scrollbar{display:none}.history-shortcuts a{display:flex;align-items:center;justify-content:space-between;gap:15px;flex:1;min-width:140px;padding:11px 13px;border:1px solid #e1e9f3;border-radius:13px;background:#fff;color:#345577;text-decoration:none;font-size:10px;font-weight:850}.history-shortcuts a span{font-size:15px}.history-date-panel{position:relative;grid-template-columns:1fr auto;gap:10px}.history-date-panel input{min-height:43px;border-radius:11px}.history-stat-grid article{position:relative;overflow:hidden}.history-stat-grid article>span{display:grid;place-items:center;width:31px;height:31px;border-radius:10px;background:#edf3fc}.history-slip{border-radius:17px}.slip-top{background:#fff}.slip-main{gap:10px}.slip-bottom button{min-height:34px;padding:0 11px}.history-slip-list{padding-bottom:8px}
 </style>
+
+<style scoped>
+.gsk-screen{min-height:100dvh;padding:15px 13px calc(110px + env(safe-area-inset-bottom));background:radial-gradient(circle at 95% 0,#342b70 0,transparent 26%),#080d1b;color:#f4f6ff}
+.history-shortcuts{display:flex;gap:8px;margin:13px 0;overflow-x:auto}.history-shortcuts a{flex:1;min-width:max-content;padding:10px 12px;border:1px solid #354363;border-radius:12px;background:#131e35;color:#c8c0ff;font-size:10px;font-weight:850}
+.history-date-panel,.history-stat-grid article,.history-slip{border-color:#2e3d5e;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 9px 22px #00000020}
+.history-date-panel{border-radius:16px}.history-date-panel strong{color:#fff}.history-date-panel small{color:#91a0bf}
+.history-date-panel .form-control{border-color:#39496c;background:#0b1428;color:#fff;color-scheme:dark}
+.history-stat-grid{gap:8px}.history-stat-grid article{border-radius:15px}.history-stat-grid article>span{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#292650}
+.history-stat-grid article small{color:#91a0bf}.history-stat-grid article strong{color:#fff;font-size:15px;font-variant-numeric:tabular-nums}
+.history-list-heading h2{color:#fff;font-size:17px;font-weight:950}.history-list-heading small{color:#91a0bf}
+.history-slip{border-radius:17px}.slip-top{border-color:#2e3d5e}.slip-market{color:#fff}.slip-mode{background:#292650;color:#c9beff}
+.slip-main small,.slip-bottom small{color:#8798b8}.slip-main strong,.slip-bottom strong{color:#f4f6ff}
+.slip-bet-grid,.slip-detail-panel{border-color:#344361;background:#0c162b;color:#c6d1e8}
+.slip-status.won{border-color:#286b5a;background:#123a34;color:#76e4bf}.slip-status.running{border-color:#806333;background:#3b301d;color:#ffd17b}.slip-status.lost{border-color:#824252;background:#3c202f;color:#ff9eae}.slip-status.closed{border-color:#405174;background:#1a2946;color:#b9c8e4}
+.history-pagination button{border-color:#39496c;background:#182541;color:#c6d1e8}.history-pagination button.active{border-color:#8b72ff;background:#765cf5;color:#fff}
+</style>
