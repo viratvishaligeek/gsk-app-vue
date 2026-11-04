@@ -337,3 +337,23 @@ const handleChangePassword = async () => {
 .profile-section-nav{display:flex;gap:8px;overflow-x:auto;margin:0 0 12px;padding:2px 1px 6px;scrollbar-width:none}.profile-section-nav::-webkit-scrollbar{display:none}.profile-section-nav a{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;min-height:39px;padding:0 13px;border:1px solid #dfe7f1;border-radius:30px;background:#fff;color:#4b607b;text-decoration:none;font-size:10px;font-weight:850}.profile-section-nav a:active{border-color:#315f9f;background:#edf3fc}.profile-section{scroll-margin-top:14px}.profile-page{background:radial-gradient(ellipse at top right,#e9f1fc 0,transparent 34%),#f3f6fb}.profile-section .section-heading{padding-bottom:12px;border-bottom:1px solid #edf1f6}.profile-section .edit-grid{gap:14px}.profile-section .line-input{min-height:47px;border-radius:12px}.profile-section .save-button{min-height:44px;border-radius:12px}
 @media(min-width:720px){.profile-section-nav{max-width:720px;margin-right:auto;margin-left:auto}.profile-layout{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-layout>.profile-section:first-of-type{grid-column:1/-1}}
 </style>
+
+<style scoped>
+.profile-page{min-height:100dvh;padding:16px 13px calc(110px + env(safe-area-inset-bottom));background:radial-gradient(circle at 90% 0,#342b70 0,transparent 28%),#080d1b;color:#f4f6ff}
+.profile-screen-heading{display:flex;align-items:center;gap:12px;margin:3px 0 16px}.profile-screen-heading>span{display:grid;place-items:center;width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,#765cf5,#286ee9);font-size:24px;box-shadow:0 8px 22px #765cf544}
+.profile-screen-heading small{color:#a99bff;font-size:8px;font-weight:950;letter-spacing:.16em}.profile-screen-heading h1{margin:2px 0;color:#fff;font-size:22px;font-weight:950}
+.profile-layout{display:grid;gap:12px}.profile-section-nav{display:flex;gap:8px;overflow-x:auto;padding:4px;scrollbar-width:none;border:1px solid #2d3b59;border-radius:14px;background:#111a2e}
+.profile-section-nav a{flex:1;min-width:max-content;padding:10px 12px;border-radius:10px;background:#182541;color:#c7d2e8;font-size:10px;font-weight:850}
+.profile-section{padding:16px;border:1px solid #2e3d5e;border-radius:19px;background:linear-gradient(155deg,#17223c,#101a2e);box-shadow:0 10px 25px #00000025}
+.section-heading h2{color:#fff;font-size:15px;font-weight:950}.section-heading p{color:#91a0bf;font-size:10px}
+.section-heading__icon{background:#292650;color:#c9beff}.section-heading__icon--purple{background:#292650}
+.edit-field label{color:#cbd5e9;font-size:10px;font-weight:850}.line-input{border-color:#39496c;background:#0b1428;color:#fff}
+.line-input input{background:transparent;color:#fff}.line-input input::placeholder{color:#7586a8}.line-input>span{color:#a99bff}
+.line-input--readonly{background:#141f37;color:#9ba9c8}.field-error{color:#ff9bab}
+.security-banner{border-color:#51488a;background:#24244b;color:#d4ceff}.security-banner strong{color:#f4f0ff}.security-banner small{color:#b7b1dc}
+.security-section{border-color:#2e3d5e;background:#111a2e}.security-grid{gap:10px}
+.status-message{border-color:#2d6d5b;background:#123a34;color:#7ce6c0}.status-message.error{border-color:#824252;background:#3c202f;color:#ff9eae}
+.save-button,.save-button--dark{border:1px solid #9b8aff;background:linear-gradient(105deg,#795cf5,#286ee9);color:#fff;box-shadow:0 9px 22px #4f5de944}
+.dismiss-button{border-color:#465779;background:#1a2945;color:#c7d2e8}.footer-note{color:#8393b5}
+@media(min-width:760px){.profile-layout{grid-template-columns:190px minmax(0,1fr);align-items:start}.profile-section-nav{position:sticky;top:84px;display:grid}.profile-section-nav a{min-width:0}}
+</style>
