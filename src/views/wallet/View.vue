@@ -10,12 +10,12 @@
               <div class="wallet-balance-section">
                 <div class="d-flex align-items-center justify-content-between">
                   <div class="d-flex align-items-center gap-2 opacity-75">
-                    <i class="bi bi-wallet2"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">💰</span>
                     <span class="wallet-label"> Available Balance </span>
                   </div>
                   <button type="button" @click="isBalanceVisible = !isBalanceVisible" class="balance-toggle"
                     title="Toggle Balance" aria-label="Toggle balance visibility">
-                    <i :class="['bi', isBalanceVisible ? 'bi-eye-slash' : 'bi-eye']"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                   </button>
                 </div>
                 <div class="d-flex align-items-baseline gap-1 mt-1">
@@ -29,7 +29,7 @@
 
                 <div class="wallet-summary-item">
                   <div class="summary-icon credit-icon">
-                    <i class="bi bi-wallet-fill"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">💰</span>
                   </div>
 
                   <div class="summary-content">
@@ -45,7 +45,7 @@
 
                 <div class="wallet-summary-item">
                   <div class="summary-icon debit-icon">
-                    <i class="bi bi-bank"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">🏦</span>
                   </div>
 
                   <div class="summary-content">
@@ -61,7 +61,7 @@
 
                 <div class="wallet-summary-item">
                   <div class="summary-icon bet-icon">
-                    <i class="bi bi-controller"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                   </div>
 
                   <div class="summary-content">
@@ -77,7 +77,7 @@
 
                 <div class="wallet-summary-item">
                   <div class="summary-icon win-icon">
-                    <i class="bi bi-trophy-fill"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                   </div>
 
                   <div class="summary-content">
@@ -104,7 +104,7 @@
               <router-link to="/wallet/add" class="action-btn text-decoration-none">
                 <div class="card card-hover border-0 shadow-sm rounded-3 text-center p-2 h-100">
                   <div class="icon-shape bg-primary-soft text-primary rounded-circle mx-auto mb-1">
-                    <i class="bi bi-plus-circle-fill fs-5"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                   </div>
                   <h6 class="fw-bold mb-0 text-dark small">Add Money</h6>
                   <p class="text-muted mb-0 d-none d-sm-block" style="font-size: 11px">
@@ -117,7 +117,7 @@
               <router-link to="/wallet/withdraw" class="action-btn text-decoration-none">
                 <div class="card card-hover border-0 shadow-sm rounded-3 text-center p-2 h-100">
                   <div class="icon-shape bg-warning-soft text-warning rounded-circle mx-auto mb-1">
-                    <i class="bi bi-arrow-up-right-circle-fill fs-5"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                   </div>
                   <h6 class="fw-bold mb-0 text-dark small">Withdrawal</h6>
                   <p class="text-muted mb-0 d-none d-sm-block" style="font-size: 11px">
@@ -213,9 +213,7 @@
                           'transaction-type',
                           item.type === 'credit' ? 'type-credit' : 'type-debit'
                         ]">
-                          <i :class="item.type === 'credit'
-                            ? 'bi bi-arrow-down'
-                            : 'bi bi-arrow-up'"></i>
+                          <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                           {{ item.type }}
                         </span>
 
@@ -233,7 +231,7 @@
               </div>
 
               <div v-else class="text-center py-5">
-                <i class="bi bi-receipt-cutoff display-4 text-muted opacity-50"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                 <p class="text-muted mt-2 mb-0">No transactions found.</p>
               </div>
             </div>
@@ -261,7 +259,7 @@
                     ]">
                       <button type="button" class="page-link pagination-btn" :disabled="currentPage === 1"
                         @click="goToPage(currentPage - 1)">
-                        <i class="bi bi-chevron-left"></i>
+                        <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                       </button>
                     </li>
 
@@ -280,7 +278,7 @@
                     ]">
                       <button type="button" class="page-link pagination-btn" :disabled="currentPage === totalPages"
                         @click="goToPage(currentPage + 1)">
-                        <i class="bi bi-chevron-right"></i>
+                        <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                       </button>
                     </li>
 
