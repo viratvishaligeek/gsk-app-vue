@@ -40,8 +40,8 @@ Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/3
 - [x] Static lint passed on the earlier gameplay commit.
 - [x] Production Vite build passed on the earlier gameplay commit.
 - [x] Capacitor Android sync passed on the earlier gameplay commit.
-- [ ] Re-run / confirm validation on the latest complete UI commit (new commits triggered additional Actions runs).
-- [ ] Android debug APK build and artifact upload for the latest head.
+- [x] Unit tests, lint, Vite production build and Capacitor sync passed on source commit `2a77b6e` (GitHub Actions run 41911997422).
+- [x] Android debug APK build and artifact upload passed on source commit `2a77b6e`; artifact `gsk-app-debug-apk` (7,312,076 bytes, SHA-256 `d3e17c4589607ce1807156f628052a07fafb4aecae5509c4160170eeda2dd9b7`).
 - [ ] Test Games discovery, filters and navigation on physical Android devices.
 - [ ] Test each gameplay mode end-to-end with the live API and wallet.
 - [ ] Verify gateway and manual UPI end-to-end, including Android app resume/back behavior.
@@ -49,7 +49,7 @@ Draft PR: https://github.com/viratvishaligeek/gsk-app-vue/pull/3
 - [ ] Verify carousel touch, previous/next, indicators and auto-slide on Android.
 - [ ] Capture genuine before/after screenshots at supported device widths.
 
-## Guardrails
+Latest documentation-only commit `2847a83` has a separate validation run in progress; all source changes listed above were included in the successful `2a77b6e` Android build.\n\n## Guardrails
 - No API services, Axios configuration, Pinia stores, authentication guards, push/presence services or Android native configuration were changed in this increment.
 - Wallet Add Money business logic was retained; only its template and scoped presentation were changed.
 - Do not merge to `main` until latest CI, real-device workflows and visual review are complete.
