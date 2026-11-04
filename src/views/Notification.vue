@@ -1,6 +1,6 @@
 <template>
   <main class="gsk-screen">
-    <header class="screen-banner"><div class="screen-banner-icon">🔔</div><div><span>STAY IN THE LOOP</span><h1>Notifications</h1><p>Updates about your account and activity.</p></div></header>
+    <GskScreenHeader emoji="🔔" kicker="STAY IN THE LOOP" title="Notifications" subtitle="Updates about your account and activity." />
     <section class="push-preference-card">
       <div class="push-preference-copy"><span>🔔</span><div><strong>Push notifications</strong><small>{{ notificationsEnabled&&pushPermissionState==='granted'?'Notifications are enabled on this device.':'Enable alerts to receive important updates.' }}</small></div></div>
       <button type="button" class="push-toggle" :class="{enabled:notificationsEnabled&&pushPermissionState==='granted'}"
@@ -31,6 +31,7 @@
   </main>
 </template>
 <script setup>
+import GskScreenHeader from '@/components/GskScreenHeader.vue'
 import api from '@/plugins/axios'
 import { Capacitor } from '@capacitor/core'
 import { Browser } from '@capacitor/browser'
