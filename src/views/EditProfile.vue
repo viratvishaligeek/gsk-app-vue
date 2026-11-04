@@ -4,7 +4,7 @@
       <section class="profile-section" style="  background: linear-gradient(135deg, #272451, #000);">
         <div class="section-heading">
           <div class="section-heading__icon">
-            <i class="bi bi-person-lines-fill"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">👤</span>
           </div>
           <div>
             <h2>Personal information</h2>
@@ -17,7 +17,7 @@
             <div class="edit-field">
               <label for="profile-name">Full name <span>*</span></label>
               <div class="line-input">
-                <i class="bi bi-person"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">👤</span>
                 <input id="profile-name" v-model.trim="profileForm.name" type="text" placeholder="Enter your name"
                   autocomplete="name" maxlength="255" required :class="{ 'input-error': errors.name }"
                   @input="clearProfileError('name')" />
@@ -28,17 +28,17 @@
             <div class="edit-field">
               <label for="profile-phone">Phone number</label>
               <div class="line-input line-input--readonly">
-                <i class="bi bi-telephone"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">📞</span>
                 <input id="profile-phone" :value="authStore.user?.phone || ''" type="tel" readonly
                   aria-describedby="phone-note" />
-                <i class="bi bi-lock-fill field-lock"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
               </div>
             </div>
 
             <div class="edit-field">
               <label for="profile-city">City</label>
               <div class="line-input">
-                <i class="bi bi-geo-alt"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">📍</span>
                 <input id="profile-city" v-model.trim="profileForm.city" type="text" placeholder="Enter your city"
                   autocomplete="address-level2" maxlength="255" :class="{ 'input-error': errors.city }"
                   @input="clearProfileError('city')" />
@@ -49,7 +49,7 @@
             <div class="edit-field">
               <label for="profile-gender">Gender</label>
               <div class="line-input">
-                <i class="bi bi-person-hearts"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">💞</span>
                 <select id="profile-gender" v-model="profileForm.gender" :class="{ 'input-error': errors.gender }"
                   @change="clearProfileError('gender')">
                   <option value="">Select gender</option>
@@ -57,7 +57,7 @@
                   <option value="female">Female</option>
                   <option value="other">Other</option>
                 </select>
-                <i class="bi bi-chevron-down select-arrow"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">⌄</span>
               </div>
               <small v-if="errors.gender" class="field-error">{{ errors.gender }}</small>
             </div>
@@ -66,21 +66,19 @@
 
           <div v-if="profileStatus.text" class="status-message" :class="'status-message--' + profileStatus.type"
             role="status">
-            <i :class="profileStatus.type === 'success'
-              ? 'bi bi-check-circle-fill'
-              : 'bi bi-exclamation-circle-fill'"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
             <span>{{ profileStatus.text }}</span>
           </div>
 
           <div class="form-footer">
             <span class="footer-note">
-              <i class="bi bi-shield-check"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">🛡️</span>
               Your information is protected.
             </span>
 
             <button class="save-button save-button--dark" type="submit" :disabled="isProfileLoading">
               <span v-if="isProfileLoading" class="spinner-border spinner-border-sm"></span>
-              <i v-else class="bi bi-check2"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">✓</span>
               {{ isProfileLoading ? 'Saving...' : 'Save changes' }}
             </button>
           </div>
@@ -90,7 +88,7 @@
       <section class="profile-section security-section">
         <div class="section-heading">
           <div class="section-heading__icon section-heading__icon--purple">
-            <i class="bi bi-shield-lock"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔐</span>
           </div>
           <div>
             <h2 style="color: black;">Password & security</h2>
@@ -99,18 +97,16 @@
         </div>
 
         <div class="security-banner">
-          <i class="bi bi-info-circle"></i>
+          <span class="gsk-emoji-icon" aria-hidden="true">ℹ️</span>
           <span>Use a strong password with at least 8 characters.</span>
         </div>
 
         <div v-if="passwordStatus.text" class="status-message" :class="'status-message--' + passwordStatus.type"
           role="status" aria-live="polite">
-          <i :class="passwordStatus.type === 'success'
-            ? 'bi bi-check-circle-fill'
-            : 'bi bi-exclamation-circle-fill'"></i>
+          <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           <span>{{ passwordStatus.text }}</span>
           <button type="button" class="dismiss-button" aria-label="Dismiss" @click="passwordStatus.text = ''">
-            <i class="bi bi-x-lg"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✕</span>
           </button>
         </div>
 
@@ -119,7 +115,7 @@
             <div class="edit-field edit-field--full">
               <label for="current-password">Current password <span>*</span></label>
               <div class="line-input">
-                <i class="bi bi-key"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🔑</span>
                 <input id="current-password" v-model="passwordForm.current_password"
                   :type="showCurrentPassword ? 'text' : 'password'" autocomplete="current-password"
                   placeholder="Enter current password" :class="{ 'input-error': passErrors.current_password }"
@@ -127,7 +123,7 @@
                 <button type="button" class="eye-button"
                   :aria-label="showCurrentPassword ? 'Hide password' : 'Show password'"
                   @click="showCurrentPassword = !showCurrentPassword">
-                  <i :class="showCurrentPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                  <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                 </button>
               </div>
               <small v-if="passErrors.current_password" class="field-error">
@@ -138,7 +134,7 @@
             <div class="edit-field">
               <label for="new-password">New password <span>*</span></label>
               <div class="line-input">
-                <i class="bi bi-lock"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
                 <input id="new-password" v-model="passwordForm.new_password"
                   :type="showNewPassword ? 'text' : 'password'" autocomplete="new-password"
                   placeholder="Min. 8 characters" :class="{ 'input-error': passErrors.new_password }"
@@ -146,7 +142,7 @@
                 <button type="button" class="eye-button"
                   :aria-label="showNewPassword ? 'Hide password' : 'Show password'"
                   @click="showNewPassword = !showNewPassword">
-                  <i :class="showNewPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                  <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                 </button>
               </div>
               <small v-if="passErrors.new_password" class="field-error">
@@ -157,7 +153,7 @@
             <div class="edit-field">
               <label for="confirm-password">Confirm password <span>*</span></label>
               <div class="line-input">
-                <i class="bi bi-lock-fill"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
                 <input id="confirm-password" v-model="passwordForm.new_password_confirmation"
                   :type="showConfirmPassword ? 'text' : 'password'" autocomplete="new-password"
                   placeholder="Repeat password" :class="{ 'input-error': passErrors.new_password_confirmation }"
@@ -165,7 +161,7 @@
                 <button type="button" class="eye-button"
                   :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
                   @click="showConfirmPassword = !showConfirmPassword">
-                  <i :class="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                  <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
                 </button>
               </div>
               <small v-if="passErrors.new_password_confirmation" class="field-error">
@@ -176,12 +172,12 @@
 
           <div class="form-footer security-footer">
             <span class="footer-note">
-              <i class="bi bi-shield-lock"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">🔐</span>
               Never share your password.
             </span>
             <button class="save-button save-button--dark" type="submit" :disabled="isPasswordLoading">
               <span v-if="isPasswordLoading" class="spinner-border spinner-border-sm"></span>
-              <i v-else class="bi bi-shield-check"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">🛡️</span>
               {{ isPasswordLoading ? 'Updating...' : 'Update password' }}
             </button>
           </div>
