@@ -1,36 +1,14 @@
 <template>
   <div class="add-money-page pb-5">
 
-    <main class="container-fluid px-3">
-      <section class="activity-section">
-        <transition name="activity-slide" mode="out-in">
-          <div :key="activityIndex" class="activity-card">
-            <div class="activity-avatar">
-              {{ currentActivity.initials }}
-            </div>
-            <div class="activity-content">
-              <div class="activity-message">
-                <strong>{{ currentActivity.name }}</strong>
-                added
-                <strong>₹{{ currentActivity.amount }}</strong>
-                to wallet
-              </div>
-              <small>
-                <i class="bi bi-check-circle-fill"></i>
-                Payment completed • Just now
-              </small>
-            </div>
-            <div class="activity-money">
-              ₹{{ currentActivity.amount }}
-            </div>
-          </div>
-        </transition>
-      </section>
+    <main class="container-fluid px-3 gsk-payment-flow">
+      <header class="payment-screen-header"><router-link to="/wallet" class="payment-back" aria-label="Back to wallet">←</router-link><div class="payment-screen-heading"><small>WALLET SERVICES</small><h1>Add money</h1><p>Choose an amount and payment method.</p></div></header>
+      
 
       <section class="amount-card">
         <div class="section-label">
           <span class="section-icon green">
-            <i class="bi bi-wallet2"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">💰</span>
           </span>
           <div>
             <strong>Add money</strong>
@@ -58,7 +36,7 @@
             <span>Fast & secure payment</span>
           </div>
           <span class="secured-pill">
-            <i class="bi bi-lock-fill"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
             Secure
           </span>
         </div>
@@ -81,7 +59,7 @@
               </small>
             </div>
             <div class="gateway-lightning">
-              <i class="bi bi-lightning-charge-fill"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">⚡</span>
             </div>
           </div>
           <!-- UPI APP STYLE -->
@@ -112,13 +90,13 @@
             </div>
             <div class="upi-app">
               <div class="upi-icon more">
-                <i class="bi bi-three-dots"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">⋯</span>
               </div>
               <small>More</small>
             </div>
           </div>
           <div class="gateway-note">
-            <i class="bi bi-shield-check"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🛡️</span>
             You'll be redirected to the secure payment page.
           </div>
         </div>
@@ -130,7 +108,7 @@
               <span></span>
             </div>
             <div class="manual-icon">
-              <i class="bi bi-qr-code-scan"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">📷</span>
             </div>
             <div class="manual-content">
               <strong>Manual UPI</strong>
@@ -138,7 +116,7 @@
                 Pay by QR and submit UTR
               </small>
             </div>
-            <i class="bi bi-chevron-right manual-arrow"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </div>
         </div>
       </section>
@@ -147,10 +125,7 @@
         <div v-if="apiMessage.text" class="api-message"
           :class="apiMessage.type === 'error' ? 'message-error' : 'message-success'">
           <div class="message-icon">
-            <i :class="apiMessage.type === 'error'
-              ? 'bi bi-exclamation-circle-fill'
-              : 'bi bi-check-circle-fill'
-              "></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </div>
           <div class="flex-grow-1">
             {{ apiMessage.text }}
@@ -164,18 +139,18 @@
         <span v-if="isLoading" class="spinner-border spinner-border-sm"></span>
         <template v-else>
           <span class="pay-button-left">
-            <i class="bi bi-lock-fill"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
             Secure Payment
           </span>
           <span class="pay-button-amount">
             ₹{{ formatCurrency(form.amount) }}
-            <i class="bi bi-arrow-right"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">→</span>
           </span>
         </template>
       </button>
 
       <div class="secure-footer">
-        <i class="bi bi-shield-check"></i>
+        <span class="gsk-emoji-icon" aria-hidden="true">🛡️</span>
         Your payment is processed securely.
       </div>
 
@@ -186,7 +161,7 @@
             <span>Your recent add-money requests</span>
           </div>
           <button type="button" class="refresh-btn" :class="{ spinning: pendingLoading }" @click="loadPendingPayments">
-            <i class="bi bi-arrow-clockwise"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">↻</span>
           </button>
         </div>
         <!-- LOADING -->
@@ -197,7 +172,7 @@
         <!-- EMPTY -->
         <div v-else-if="!pendingLoading && pendingPayments.length === 0" class="empty-pending">
           <div class="empty-icon">
-            <i class="bi bi-receipt"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🧾</span>
           </div>
           <strong>No pending payments</strong>
           <span>
@@ -209,7 +184,7 @@
           <div v-for="payment in pendingPayments" :key="payment.id" class="pending-item">
             <div class="pending-item-left">
               <div class="pending-payment-icon">
-                <i class="bi bi-arrow-down-left"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">↙️</span>
               </div>
               <div>
                 <strong>
@@ -246,14 +221,14 @@
         <div class="manual-modal gateway-payment-modal">
           <div class="modal-header-custom">
             <div class="modal-title-wrap">
-              <div class="modal-upi-icon"><i class="bi bi-qr-code-scan"></i></div>
+              <div class="modal-upi-icon"><span class="gsk-emoji-icon" aria-hidden="true">📷</span></div>
               <div>
                 <h5>Complete UPI payment</h5>
                 <small>₹{{ formatCurrency(gatewayPaymentAmount) }}</small>
               </div>
             </div>
             <button type="button" class="modal-close" aria-label="Close payment screen" @click="closeGatewayPayment">
-              <i class="bi bi-x-lg"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
             </button>
           </div>
           <div class="modal-body-custom">
@@ -287,7 +262,7 @@
           <div class="modal-header-custom">
             <div class="modal-title-wrap">
               <div class="modal-upi-icon">
-                <i class="bi bi-qr-code"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">▦</span>
               </div>
               <div>
                 <h5>Pay via UPI</h5>
@@ -297,17 +272,14 @@
               </div>
             </div>
             <button type="button" class="modal-close" @click="closeManualModal">
-              <i class="bi bi-x-lg"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
             </button>
           </div>
           <transition name="slide-fade">
             <div v-if="apiMessage.text" class="api-message"
               :class="apiMessage.type === 'error' ? 'message-error' : 'message-success'">
               <div class="message-icon">
-                <i :class="apiMessage.type === 'error'
-                  ? 'bi bi-exclamation-circle-fill'
-                  : 'bi bi-check-circle-fill'
-                  "></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
               </div>
               <div class="flex-grow-1">
                 {{ apiMessage.text }}
@@ -324,7 +296,7 @@
               </div>
               <img v-if="paymentInfo.qr_url" :src="paymentInfo.qr_url" class="manual-qr" alt="UPI QR Code" />
               <div v-else class="qr-placeholder">
-                <i class="bi bi-qr-code"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">▦</span>
                 <span>QR unavailable</span>
               </div>
               <strong>
@@ -332,11 +304,11 @@
               </strong>
               <button v-if="paymentInfo.upi_id" type="button" class="upi-copy" @click="copyUpiId">
                 {{ paymentInfo.upi_id }}
-                <i class="bi bi-copy"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">📋</span>
               </button>
             </div>
             <div class="manual-instruction">
-              <i class="bi bi-info-circle-fill"></i>
+              <span class="gsk-emoji-icon" aria-hidden="true">ℹ️</span>
               <span v-if="getSetting('add_money_notice')" class="add-money-hindi-notice" lang="hi">{{
                 getSetting('add_money_notice') }}
               </span>
@@ -346,7 +318,7 @@
                 UTR / Transaction ID
               </label>
               <div class="field-with-icon">
-                <i class="bi bi-receipt"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">🧾</span>
                 <input v-model="manualForm.utr" type="text" autocomplete="off" style="font-size: 16px;"
                   placeholder="Enter 12 digit UTR" />
               </div>
@@ -359,7 +331,7 @@
                 <input type="file" accept="image/png,image/jpeg,image/webp" @change="handleScreenshot" />
                 <template v-if="!screenshotPreview">
                   <div class="upload-icon">
-                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span class="gsk-emoji-icon" aria-hidden="true">☁️</span>
                   </div>
                   <strong>Upload screenshot</strong>
                   <small>
@@ -377,7 +349,7 @@
             <button type="button" class="manual-submit-btn" :disabled="manualLoading" @click="submitManualRequest">
               <span v-if="manualLoading" class="spinner-border spinner-border-sm"></span>
               <template v-else>
-                <i class="bi bi-check2-circle"></i>
+                <span class="gsk-emoji-icon" aria-hidden="true">✅</span>
                 Submit Payment
               </template>
             </button>
@@ -1420,1395 +1392,13 @@ onBeforeUnmount(async () => {
     )
   }
 })
-</script>
-
-
-<style scoped>
-/* =========================================================
-   BASE
-========================================================= */
-
-.add-money-page {
-  min-height: 100vh;
-  background:
-    linear-gradient(180deg,
-      #f7faf9 0%,
-      #f5f7f8 42%,
-      #f8f9fa 100%);
-  color: #172033;
-  overflow-x: hidden;
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(255, 255, 255, .94);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid #edf0f1;
-}
-
-.header-inner {
-  width: 100%;
-  max-width: 760px;
-  margin: auto;
-  padding:
-    12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.back-btn {
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
-  border-radius: 14px;
-  background: #fff;
-  border: 1px solid #e8eded;
-  color: #172033;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  box-shadow: 0 4px 14px rgba(20, 35, 45, .06);
-  transition: .2s ease;
-}
-
-.back-btn:active {
-  transform: scale(.93);
-}
-
-.header-title {
-  flex: 1;
-  min-width: 0;
-}
-
-.header-title h5 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 900;
-}
-
-.header-title span {
-  display: block;
-  margin-top: 1px;
-  color: #8a94a3;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.secure-badge {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: #e9faf4;
-  color: #009b70;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* =========================================================
-   CONTAINER
-========================================================= */
-
-.container-fluid {
-  width: 100%;
-  max-width: 760px;
-  margin: auto;
-}
-
-
-/* =========================================================
-   API MESSAGE
-========================================================= */
-
-.api-message {
-  margin-top: 12px;
-  padding: 11px 13px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 12px;
-  font-weight: 700;
-  box-shadow: 0 5px 18px rgba(20, 35, 45, .06);
-}
-
-.message-success {
-  color: #087953;
-  background: #edfff8;
-  border: 1px solid #c8f2e3;
-}
-
-.message-error {
-  color: #bd3043;
-  background: #fff2f4;
-  border: 1px solid #ffd6dc;
-}
-
-.message-icon {
-  font-size: 17px;
-}
-
-.message-close {
-  border: 0;
-  background: transparent;
-  font-size: 20px;
-  color: inherit;
-  opacity: .6;
-}
-
-
-/* =========================================================
-   COMMON SECTION
-========================================================= */
-
-.amount-card,
-.payment-card,
-.pending-section,
-.activity-section {
-  margin-top: 14px;
-  border-radius: 22px;
-  background: #fff;
-  border: 1px solid #e9eeee;
-  box-shadow:
-    0 8px 25px rgba(24, 40, 52, .055);
-}
-
-
-/* =========================================================
-   AMOUNT
-========================================================= */
-
-.amount-card {
-  padding: 18px;
-}
-
-.section-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.section-icon {
-  width: 39px;
-  height: 39px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.section-icon.green {
-  color: #008e68;
-  background: #eafaf4;
-}
-
-.section-label strong {
-  display: block;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.section-label small {
-  display: block;
-  color: #8993a1;
-  font-size: 10px;
-  margin-top: 2px;
-}
-
-.amount-input-box {
-  height: 50px;
-  padding: 0 12px;
-  border-radius: 17px;
-  background: #f7f9f9;
-  border: 1px solid #e8eeee;
-  display: flex;
-  align-items: center;
-  transition: .2s ease;
-}
-
-.amount-input-box:focus-within {
-  background: #fff;
-  border-color: #00a878;
-  box-shadow: 0 0 0 4px rgba(0, 168, 120, .07);
-}
-
-.rupee-symbol {
-  color: #00966e;
-  font-size: 27px;
-  font-weight: 900;
-}
-
-.amount-input-box input {
-  min-width: 0;
-  flex: 1;
-  height: 100%;
-  padding: 0 8px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #172033;
-  font-size: 30px;
-  font-weight: 950;
-}
-
-.amount-input-box input::placeholder {
-  color: #b7bec6;
-}
-
-.amount-input-box input::-webkit-inner-spin-button,
-.amount-input-box input::-webkit-outer-spin-button {
-  appearance: none;
-  margin: 0;
-}
-
-.amount-suffix {
-  color: #98a1ab;
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.quick-amounts {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-  margin-top: 11px;
-}
-
-.quick-amounts button {
-  min-height: 39px;
-  padding: 4px;
-  border: 1px solid #e2e8e6;
-  border-radius: 11px;
-  background: #fff;
-  color: #536071;
-  font-size: 11px;
-  font-weight: 800;
-  transition: .2s ease;
-}
-
-.quick-amounts button:active {
-  transform: scale(.95);
-}
-
-.quick-amounts button.selected {
-  color: #008b65;
-  background: #eafaf4;
-  border-color: #9ee1cc;
-}
-
-.amount-hint {
-  margin-top: 10px;
-  color: #919aa5;
-  font-size: 10px;
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-
-
-/* =========================================================
-   PAYMENT
-========================================================= */
-
-.payment-card {
-  padding: 18px;
-}
-
-.section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.section-heading h6 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.section-heading span {
-  display: block;
-  color: #8b95a1;
-  font-size: 10px;
-  margin-top: 2px;
-}
-
-.secured-pill {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 8px;
-  border-radius: 20px;
-  color: #008c67 !important;
-  background: #eafaf4;
-  font-size: 9px !important;
-  font-weight: 800;
-}
-
-
-/* Gateway */
-
-.gateway-option {
-  position: relative;
-  padding: 14px;
-  border: 1.5px solid #e3e9e7;
-  border-radius: 18px;
-  background: #fff;
-  cursor: pointer;
-  transition: .25s ease;
-}
-
-.gateway-option.selected {
-  border-color: #00a878;
-  background:
-    linear-gradient(145deg,
-      #f5fffb,
-      #fff);
-  box-shadow:
-    0 7px 22px rgba(0, 168, 120, .09);
-}
-
-.gateway-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.gateway-radio {
-  width: 20px;
-  height: 20px;
-  flex: 0 0 20px;
-  border: 2px solid #ccd5d2;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.selected .gateway-radio {
-  border-color: #00a878;
-}
-
-.selected .gateway-radio span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #00a878;
-}
-
-.gateway-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.gateway-title-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.gateway-title-row strong {
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.gateway-main small {
-  display: block;
-  margin-top: 3px;
-  color: #7d8792;
-  font-size: 10px;
-}
-
-.recommended-badge {
-  display: inline-block !important;
-  padding: 3px 6px;
-  border-radius: 5px;
-  color: #008b65 !important;
-  background: #dff8ee;
-  font-size: 7px !important;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.gateway-lightning {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  background: linear-gradient(135deg, #00a878, #00ca96);
-  box-shadow: 0 5px 12px rgba(0, 168, 120, .2);
-}
-
-
-/* UPI apps */
-
-.upi-apps {
-  display: flex;
-  align-items: flex-start;
-  gap: 13px;
-  margin-top: 15px;
-  padding: 12px 2px 3px;
-  border-top: 1px dashed #e2e8e6;
-}
-
-.upi-app {
-  min-width: 42px;
-  text-align: center;
-}
-
-.upi-icon {
-  width: 37px;
-  height: 37px;
-  margin: auto;
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 900;
-  font-size: 14px;
-  box-shadow: 0 4px 9px rgba(20, 35, 45, .1);
-}
-
-.upi-app small {
-  display: block;
-  margin-top: 5px;
-  color: #7e8994;
-  font-size: 7px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.more {
-  color: #687481;
-  background: #edf1f2;
-}
-
-.gateway-note {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 11px;
-  color: #7f8994;
-  font-size: 9px;
-}
-
-
-/* Manual */
-
-.manual-option {
-  margin-top: 9px;
-  padding: 13px 14px;
-  border: 1px solid #e5eaea;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-.manual-option.selected {
-  border-color: #00a878;
-  background: #f7fffc;
-}
-
-.manual-option-inner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.manual-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  color: #5361d9;
-  background: #eef0ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.manual-content {
-  flex: 1;
-}
-
-.manual-content strong {
-  display: block;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.manual-content small {
-  display: block;
-  margin-top: 2px;
-  color: #8b95a0;
-  font-size: 9px;
-}
-
-.manual-arrow {
-  color: #a3abb3;
-}
-
-
-/* =========================================================
-   PAY BUTTON
-========================================================= */
-
-.pay-button {
-  width: 100%;
-  min-height: 57px;
-  margin-top: 15px;
-  padding: 0 17px;
-  border: 0;
-  border-radius: 17px;
-  color: #fff;
-  background:
-    linear-gradient(135deg,
-      #008e67,
-      #00a878,
-      #00c592);
-  box-shadow:
-    0 10px 24px rgba(0, 157, 112, .24);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-weight: 900;
-  transition: .2s ease;
-}
-
-.pay-button:active {
-  transform: scale(.98);
-}
-
-.pay-button:disabled {
-  opacity: .7;
-}
-
-.pay-button-left {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
-}
-
-.pay-button-amount {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 15px;
-}
-
-.secure-footer {
-  margin-top: 7px;
-  text-align: center;
-  color: #9ba3ad;
-  font-size: 9px;
-}
-
-.secure-footer i {
-  color: #00a878;
-}
-
-
-/* =========================================================
-   PENDING
-========================================================= */
-
-.pending-section {
-  padding: 16px;
-}
-
-.pending-heading {
-  margin-bottom: 12px;
-}
-
-.refresh-btn {
-  width: 34px;
-  height: 34px;
-  border: 1px solid #e4e9e8;
-  border-radius: 10px;
-  background: #fff;
-  color: #65717d;
-}
-
-.refresh-btn.spinning i {
-  display: inline-block;
-  animation: spin .7s linear infinite;
-}
-
-.pending-loading {
-  min-height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: #89939d;
-  font-size: 10px;
-}
-
-.pending-loading .spinner-border {
-  color: #00a878;
-}
-
-.empty-pending {
-  padding: 25px 10px;
-  text-align: center;
-}
-
-.empty-icon {
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 9px;
-  border-radius: 15px;
-  color: #8b96a1;
-  background: #f1f4f4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 21px;
-}
-
-.empty-pending strong {
-  display: block;
-  font-size: 12px;
-}
-
-.empty-pending span {
-  display: block;
-  margin-top: 4px;
-  color: #98a1ab;
-  font-size: 9px;
-}
-
-.pending-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.pending-item {
-  min-height: 61px;
-  padding: 9px;
-  border-radius: 14px;
-  background: #f8faf9;
-  border: 1px solid #edf1ef;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.pending-item-left,
-.pending-item-right {
-  display: flex;
-  align-items: center;
-}
-
-.pending-item-left {
-  gap: 9px;
-}
-
-.pending-item-right {
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;
-}
-
-.pending-payment-icon {
-  width: 35px;
-  height: 35px;
-  border-radius: 10px;
-  color: #009b70;
-  background: #e7f9f2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pending-item-left strong {
-  display: block;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.pending-item-left small,
-.pending-item-right small {
-  display: block;
-  margin-top: 2px;
-  color: #929ca6;
-  font-size: 8px;
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 7px;
-  border-radius: 20px;
-  font-size: 8px;
-  font-weight: 900;
-}
-
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-}
-
-.status-pending {
-  color: #a16a00;
-  background: #fff6dc;
-}
-
-.status-pending .status-dot {
-  background: #f2a900;
-  box-shadow: 0 0 5px #f2a900;
-}
-
-.status-success {
-  color: #087c58;
-  background: #e7faf2;
-}
-
-.status-success .status-dot {
-  background: #00a878;
-}
-
-.status-danger {
-  color: #c12e40;
-  background: #fff0f2;
-}
-
-.status-danger .status-dot {
-  background: #dc3545;
-}
-
-
-/* =========================================================
-   ACTIVITY
-========================================================= */
-
-.activity-section {
-  padding: 13px;
-  background:
-    linear-gradient(145deg,
-      #ffffff,
-      #f9fffc);
-}
-
-.activity-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 9px;
-}
-
-.activity-live-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #00b67d;
-  box-shadow:
-    0 0 0 4px rgba(0, 182, 125, .1),
-    0 0 8px rgba(0, 182, 125, .5);
-  animation: pulse 1.3s infinite;
-}
-
-.activity-header strong {
-  display: block;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.activity-header span {
-  display: block;
-  margin-top: 1px;
-  color: #9aa3ad;
-  font-size: 8px;
-}
-
-.activity-card {
-  min-height: 57px;
-  padding: 9px;
-  border-radius: 13px;
-  background: #f5faf8;
-  border: 1px solid #e1f0ea;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.activity-avatar {
-  width: 35px;
-  height: 35px;
-  flex: 0 0 35px;
-  border-radius: 11px;
-  color: #fff;
-  background:
-    linear-gradient(135deg,
-      #008f69,
-      #00c594);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.activity-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.activity-message {
-  color: #4d5966;
-  font-size: 9px;
-  line-height: 1.35;
-}
-
-.activity-message strong {
-  color: #172033;
-}
-
-.activity-content small {
-  display: block;
-  margin-top: 3px;
-  color: #00a878;
-  font-size: 7px;
-  font-weight: 700;
-}
-
-.activity-money {
-  color: #008b65;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal-backdrop-custom {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  padding: 12px;
-  background: rgba(12, 20, 28, .72);
-  backdrop-filter: blur(5px);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.gateway-payment-backdrop {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  align-items: center;
-}
-
-.gateway-payment-modal {
-  max-width: 560px;
-  max-height: calc(100dvh - 24px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-}
-
-.gateway-payment-help {
-  color: #66727d;
-  font-size: 11px;
-  line-height: 1.5;
-  margin: 10px 0 12px;
-}
-
-.gateway-payment-frame {
-  display: block;
-  width: 100%;
-  height: clamp(220px, 42dvh, 420px);
-  min-height: 220px;
-  border: 1px solid #e5eaea;
-  border-radius: 12px;
-  background: #fff;
-  overflow: hidden;
-  overscroll-behavior: contain;
-}
-
-.gateway-payment-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-}
-
-.gateway-payment-status-message {
-  min-height: 2.8em;
-  overflow-wrap: anywhere;
-  margin: 10px 0 0;
-  color: #66727d;
-  font-size: 10px;
-  text-align: center;
-}
-
-.gateway-back-btn,
-.resume-payment-btn {
-  border: 1px solid #dfe5e4;
-  border-radius: 10px;
-  background: #fff;
-  color: #536071;
-  padding: 9px 12px;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.gateway-back-btn {
-  width: 100%;
-  margin-top: 8px;
-}
-
-.resume-payment-btn {
-  margin-top: 4px;
-  color: #008b65;
-  border-color: #bce8d9;
-}
-
-.manual-modal {
-  width: 100%;
-  max-width: 490px;
-  max-height: 94vh;
-  overflow-y: auto;
-  border-radius: 25px 25px 18px 18px;
-  background: #fff;
-  box-shadow: 0 -10px 60px rgba(0, 0, 0, .28);
-}
-
-.modal-header-custom {
-  padding: 15px 16px;
-  border-bottom: 1px solid #edf0f1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.modal-upi-icon {
-  width: 39px;
-  height: 39px;
-  border-radius: 12px;
-  color: #5664d9;
-  background: #eef0ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-title-wrap h5 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.modal-title-wrap small {
-  color: #00a878;
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.modal-close {
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 10px;
-  background: #f1f3f4;
-  color: #69737d;
-}
-
-.modal-body-custom {
-  padding: 16px;
-}
-
-.qr-container {
-  text-align: center;
-}
-
-.qr-label {
-  margin-bottom: 7px;
-  color: #7f8993;
-  font-size: 9px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .4px;
-}
-
-.manual-qr,
-.qr-placeholder {
-  width: 190px;
-  height: 190px;
-  margin: auto;
-  border-radius: 15px;
-  border: 1px solid #e5eaea;
-  padding: 8px;
-  object-fit: contain;
-  background: #fff;
-  display: block;
-}
-
-.qr-placeholder {
-  color: #9ba4ad;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.qr-placeholder i {
-  font-size: 40px;
-}
-
-.qr-container>strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 11px;
-}
-
-.upi-copy {
-  margin-top: 4px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #68737f;
-  font-size: 9px;
-}
-
-.upi-copy i {
-  margin-left: 3px;
-}
-
-.manual-app-row {
-  margin: 14px 0;
-  padding: 10px 0;
-  border-top: 1px dashed #e2e7e6;
-  border-bottom: 1px dashed #e2e7e6;
-  display: flex;
-  justify-content: center;
-  gap: 22px;
-}
-
-.manual-app-row>div {
-  text-align: center;
-}
-
-.mini-upi-icon {
-  width: 35px;
-  height: 35px;
-  margin: auto;
-  border-radius: 10px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.manual-app-row span {
-  display: block;
-  margin-top: 4px;
-  color: #7c8791;
-  font-size: 7px;
-  font-weight: 700;
-}
-
-.manual-instruction {
-
-  padding: 9px;
-  border-radius: 11px;
-  color: #735f5f;
-  background: #f4f8f7;
-  display: flex;
-  gap: 7px;
-  font-size: 13px;
-  line-height: 1.4;
-  font-weight: 600;
-}
-
-.manual-instruction i {
-  color: #00a878;
-}
-
-.form-field {
-  margin-top: 13px;
-}
-
-.form-field>label {
-  display: block;
-  margin-bottom: 6px;
-  color: #394552;
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.field-with-icon {
-  height: 45px;
-  padding: 0 11px;
-  border: 1px solid #dfe5e4;
-  border-radius: 12px;
-  background: #fafcfc;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.field-with-icon:focus-within {
-  border-color: #00a878;
-}
-
-.field-with-icon i {
-  color: #82908d;
-}
-
-.field-with-icon input {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  font-size: 11px;
-}
-
-.upload-box {
-  min-height: 105px;
-  padding: 12px;
-  border: 1.5px dashed #cbd9d5;
-  border-radius: 13px;
-  background: #f9fcfb;
-  cursor: pointer;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.upload-box input {
-  display: none;
-}
-
-.upload-icon {
-  width: 35px;
-  height: 35px;
-  border-radius: 10px;
-  color: #009d72;
-  background: #e5f8f1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-}
-
-.upload-box strong {
-  margin-top: 5px;
-  font-size: 10px;
-}
-
-.upload-box small {
-  margin-top: 2px;
-  color: #929ca6;
-  font-size: 8px;
-}
-
-.screenshot-preview {
-  max-width: 100%;
-  max-height: 150px;
-  border-radius: 9px;
-  object-fit: contain;
-}
-
-.change-image {
-  margin-top: 4px;
-  color: #008e67;
-  font-size: 8px;
-  font-weight: 800;
-}
-
-.manual-submit-btn {
-  width: 100%;
-  min-height: 49px;
-  margin-top: 15px;
-  border: 0;
-  border-radius: 14px;
-  color: #fff;
-  background:
-    linear-gradient(135deg,
-      #008e67,
-      #00b987);
-  box-shadow: 0 8px 18px rgba(0, 157, 112, .2);
-  font-size: 12px;
-  font-weight: 900;
-}
-
-
-/* =========================================================
-   ANIMATIONS
-========================================================= */
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.3);
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: .25s ease;
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-7px);
-}
-
-.activity-slide-enter-active,
-.activity-slide-leave-active {
-  transition: all .35s ease;
-}
-
-.activity-slide-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.activity-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: .25s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-from .manual-modal,
-.modal-leave-to .manual-modal {
-  transform: translateY(30px);
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 380px) {
-
-  .amount-card,
-  .payment-card,
-  .pending-section {
-    padding: 14px;
-  }
-
-  .amount-input-box {
-    height: 50px;
-  }
-
-  .amount-input-box input {
-    font-size: 20px;
-  }
-
-  .upi-apps {
-    gap: 8px;
-  }
-
-  .upi-app {
-    min-width: 38px;
-  }
-
-  .upi-icon {
-    width: 34px;
-    height: 34px;
-  }
-
-  .manual-app-row {
-    gap: 16px;
-  }
-}
-
-
-/* =========================================================
-   TABLET / DESKTOP
-========================================================= */
-
-@media (min-width: 768px) {
-
-  .app-header {
-    border-radius: 0;
-  }
-
-  .modal-backdrop-custom {
-    align-items: center;
-  }
-
-  .manual-modal {
-    border-radius: 25px;
-  }
-
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-  }
-
-}
+</script><style scoped>
+.add-money-page,.withdraw-page{min-height:100dvh;background:#f4f7fb;color:#1e2c42}.gsk-payment-flow{max-width:720px;margin:0 auto;padding-top:15px;padding-bottom:calc(105px + env(safe-area-inset-bottom))}
+.payment-screen-header{display:flex;align-items:center;gap:12px;margin:3px 0 17px}.payment-screen-header .payment-back{display:grid;place-items:center;width:40px;height:40px;border:1px solid #e3eaf3;border-radius:12px;background:#fff;color:#315f9f;font-size:20px}.payment-screen-heading{display:grid;gap:1px}.payment-screen-heading small{color:#8a98aa;font-size:9px;font-weight:900;letter-spacing:.13em}.payment-screen-heading h1{margin:0;font-size:21px;font-weight:900}.payment-screen-heading p{margin:2px 0 0;color:#7b899d;font-size:10px}
+.amount-card,.payment-card,.withdraw-card,.pending-section,.details-panel{margin-bottom:12px;padding:16px;border:1px solid #e5ebf3;border-radius:17px;background:#fff;box-shadow:0 7px 20px #1b365d0a}.section-label,.section-heading,.details-heading{display:flex;align-items:center;gap:11px;margin-bottom:14px}.section-label>div,.section-heading>div,.details-heading>div{display:grid}.section-label strong,.section-heading h6,.details-heading strong{margin:0;color:#263a55;font-size:13px;font-weight:900}.section-label small,.section-heading span,.details-heading small{color:#8290a3;font-size:10px}.section-icon,.details-heading-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#edf3fc;color:#315f9f;font-size:23px}.amount-input-box,.amount-input{display:flex;align-items:center;gap:10px;min-height:68px;padding:10px 13px;border:1px solid #dfe7f1;border-radius:14px;background:#f7f9fc}.amount-input-box input,.amount-input input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#244e83;font-size:31px;font-weight:950}.rupee-symbol,.amount-symbol{color:#315f9f;font-size:26px;font-weight:900}.amount-suffix,.amount-currency{color:#8a97a8;font-size:10px;font-weight:850}.quick-amounts{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.quick-amounts button{flex:1 1 68px;min-height:38px;border:1px solid #dfe6ef;border-radius:10px;background:#fff;color:#50627c;font-size:10px;font-weight:850}.quick-amounts button.selected{border-color:#315f9f;background:#edf3fc;color:#244e83}
+.payment-card .section-heading{justify-content:space-between}.secured-pill{padding:6px 9px;border-radius:30px;background:#e4f5eb;color:#237b55;font-size:9px;font-weight:850}.gateway-option,.manual-option,.destination-option{margin-top:9px;padding:13px;border:1px solid #e3eaf2;border-radius:13px;background:#fff;cursor:pointer}.gateway-option.selected,.manual-option.selected,.destination-option.selected{border-color:#315f9f;background:#f4f8ff;box-shadow:0 0 0 2px #315f9f14}.gateway-top,.manual-option-inner{display:flex;align-items:center;gap:10px}.gateway-radio,.destination-radio{display:grid;place-items:center;width:19px;height:19px;flex:0 0 19px;border:1.5px solid #b7c3d2;border-radius:50%}.selected .gateway-radio,.selected .destination-radio{border-color:#315f9f}.selected .gateway-radio span,.selected .destination-radio span{width:9px;height:9px;border-radius:50%;background:#315f9f}.gateway-main,.manual-content,.destination-text{display:grid;flex:1;gap:2px}.gateway-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.gateway-title-row strong,.manual-content strong,.destination-text strong{font-size:12px;font-weight:850}.gateway-main small,.manual-content small,.destination-text small{font-size:9px;color:#8391a3}.recommended-badge{padding:4px 7px;border-radius:30px;background:#e4f5eb;color:#217b54;font-size:8px;font-weight:850}.gateway-lightning,.manual-icon{font-size:23px}.upi-apps{display:flex;justify-content:space-between;gap:8px;margin:13px 0 8px;padding:10px;border-radius:11px;background:#f7f9fc}.upi-app{display:grid;justify-items:center;gap:4px}.upi-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#fff}.upi-app small{font-size:8px;color:#6d7c90}.upi-app img{max-width:26px;max-height:22px;object-fit:contain}.gateway-note,.secure-footer{display:flex;align-items:center;gap:7px;color:#7f8da0;font-size:9px}.gateway-note{padding-top:9px;border-top:1px solid #e8edf4}.api-message{display:flex;align-items:center;gap:10px;margin:10px 0;padding:12px;border:1px solid #e4eaf2;border-radius:12px;background:#fff;font-size:11px}.message-error{border-color:#f1d2d5;background:#fff7f7;color:#a94c55}.message-success{border-color:#cdebd9;background:#f4fbf6;color:#267a53}.message-close{border:0;background:transparent;font-size:20px}.pay-button,.withdraw-submit{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:54px;margin-top:12px;padding:13px 16px;border:0;border-radius:13px;background:#244e83;color:#fff;font-size:12px;font-weight:900}.pay-button:disabled,.withdraw-submit:disabled{opacity:.6}.pay-button-left{display:flex;align-items:center;gap:8px}.pay-button-amount{display:flex;align-items:center;gap:9px}.secure-footer{justify-content:center;padding:11px}.pending-section .section-heading{justify-content:space-between}.pending-section .section-heading h6{font-size:13px;font-weight:900}.refresh-btn{width:35px;height:35px;border:1px solid #e2e9f2;border-radius:10px;background:#f7f9fc;color:#315f9f;font-size:19px}.pending-item,.pending-payment,.withdrawal-item{padding:12px 0;border-bottom:1px solid #edf1f6}.pending-item:last-child,.pending-payment:last-child,.withdrawal-item:last-child{border-bottom:0}.destination-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.destination-option{display:flex;align-items:center;gap:8px;text-align:left}.destination-icon{font-size:22px}.field-label,.field-label-row label{display:block;margin:12px 0 6px;color:#5d6e85;font-size:10px;font-weight:850}.form-field{margin-top:12px}.text-input{display:flex;align-items:center;gap:9px;min-height:47px;padding:0 11px;border:1px solid #dfe6ef;border-radius:11px;background:#f8fafd}.text-input input{min-width:0;flex:1;border:0;outline:0;background:transparent;font-size:12px}.field-error{display:block;margin-top:5px;color:#bd535b;font-size:9px}.status-success{color:#217b54;background:#e5f5ec}.status-danger{color:#b64f58;background:#fcebed}.status-pending{color:#956d22;background:#fff3dc}.activity-section{display:none}.withdraw-card .section-heading{margin-bottom:16px}.details-heading{margin-bottom:10px}.amount-field .field-label-row{display:flex;justify-content:space-between;align-items:center}.minimum-label{font-size:9px;color:#8996a8}.withdraw-page .container-fluid{max-width:720px;margin:0 auto}.withdraw-page .pending-section{margin-top:13px}.withdraw-page .form-footer{display:flex;justify-content:space-between;gap:10px}.withdraw-page .pay-button,.withdraw-page .withdraw-submit{background:#244e83}.secure-footer{padding-bottom:5px}
+@media(max-width:420px){.gsk-payment-flow{padding-inline:11px}.amount-card,.payment-card,.withdraw-card,.pending-section{padding:13px}.upi-apps{gap:4px}.upi-app small{font-size:7px}.destination-grid{grid-template-columns:1fr}.payment-screen-heading h1{font-size:19px}}
+
+.pending-section{margin-top:13px}.pending-section .section-heading{justify-content:space-between}.pending-heading>div{display:grid}.pending-heading strong{font-size:13px;font-weight:900}.pending-heading small{font-size:9px;color:#8492a6}.pending-loading,.empty-pending{display:grid;justify-items:center;gap:7px;padding:22px 12px;color:#7e8ca0;font-size:10px}.empty-pending .empty-icon{font-size:29px}.empty-pending strong{color:#31435c;font-size:11px}.pending-list{display:grid}.pending-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #edf1f6}.pending-item:last-child{border-bottom:0}.pending-item-left{display:flex;align-items:center;gap:9px;min-width:0}.pending-payment-icon,.pending-item-left .pending-payment-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#edf3fc;font-size:20px}.pending-item-left>div:last-child{display:grid}.pending-item-left strong{font-size:11px}.pending-item-left small,.pending-item-right small{font-size:8px;color:#8996a8}.pending-item-right{display:grid;justify-items:end;gap:4px}.status-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:30px;font-size:8px;font-weight:850}.status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}.resume-payment-btn{min-height:34px;padding:6px 10px;border:1px solid #315f9f;border-radius:9px;background:#edf3fc;color:#244e83;font-size:9px;font-weight:850}
+.modal-backdrop-custom{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;padding:14px;background:#10233db8;backdrop-filter:blur(5px)}.manual-modal{width:min(100%,520px);max-height:min(92dvh,850px);overflow:auto;border:1px solid #e5ebf3;border-radius:20px;background:#fff;box-shadow:0 22px 70px #0a1b324d}.gateway-payment-modal{width:min(100%,760px)}.modal-header-custom{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid #e8edf4;background:#fff}.modal-title-wrap{display:flex;align-items:center;gap:10px}.modal-title-wrap>div:last-child{display:grid}.modal-title-wrap h5{margin:0;font-size:14px;font-weight:900}.modal-title-wrap small{color:#315f9f;font-size:11px;font-weight:850}.modal-upi-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#edf3fc;font-size:22px}.modal-close{display:grid;place-items:center;width:35px;height:35px;border:1px solid #e5ebf3;border-radius:10px;background:#f7f9fc;color:#50627b}.modal-body-custom{padding:15px}.gateway-payment-status{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:11px;font-size:10px}.gateway-payment-status .status-dot{width:8px;height:8px}.gateway-payment-help{margin:12px 0;color:#708097;font-size:10px;line-height:1.6}.gateway-payment-frame{display:block;width:100%;height:min(56vh,520px);border:1px solid #e3eaf2;border-radius:12px;background:#f7f9fc}.gateway-payment-status-message{margin:10px 0;color:#6c7c92;font-size:10px}.manual-submit-btn,.gateway-back-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;margin-top:9px;border:0;border-radius:11px;background:#244e83;color:#fff;font-size:11px;font-weight:850}.gateway-back-btn{border:1px solid #dfe6ef;background:#fff;color:#52647d}.qr-container{display:grid;justify-items:center;gap:8px;padding:14px;border:1px solid #e5ebf3;border-radius:14px;background:#f8fafd}.qr-label{color:#8492a6;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.manual-qr{width:min(210px,65vw);height:auto;max-height:210px;object-fit:contain;border-radius:10px;background:#fff}.qr-placeholder{display:grid;place-items:center;gap:5px;width:180px;height:180px;border:1px dashed #d2dce9;border-radius:12px;background:#fff;color:#8190a5;font-size:11px}.qr-placeholder .gsk-emoji-icon{font-size:42px}.upi-copy{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid #dce5f0;border-radius:9px;background:#fff;color:#315f9f;font-size:10px;font-weight:850}.manual-instruction{display:flex;gap:8px;margin:12px 0;padding:10px;border-radius:10px;background:#eef4fc;color:#61738b;font-size:10px}.field-with-icon{display:flex;align-items:center;gap:9px;min-height:46px;padding:0 11px;border:1px solid #dfe6ef;border-radius:11px;background:#f8fafd}.field-with-icon input{min-width:0;flex:1;border:0;outline:0;background:transparent}.upload-box{display:grid;justify-items:center;gap:6px;padding:17px;border:1px dashed #b9c9dc;border-radius:13px;background:#f8fafd;text-align:center;cursor:pointer}.upload-box input{position:absolute;width:1px;height:1px;opacity:0}.upload-icon{font-size:26px}.upload-box strong{font-size:11px}.upload-box small{color:#8996a8;font-size:9px}.screenshot-preview{max-width:100%;max-height:180px;border-radius:10px;object-fit:contain}.change-image{font-size:9px;color:#315f9f;font-weight:850}
 </style>

@@ -1,112 +1,26 @@
 <template>
-  <div class="container py-3 referral-page">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div>
-        <h4 class="fw-bold mb-1">Refer & Earn</h4>
-        <p class="text-muted small mb-0">Invite friends and earn a wallet reward on their first successful deposit.</p>
-      </div>
-      <span class="referral-icon">🎁</span>
-    </div>
-
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
-    <div v-if="success" class="alert alert-success">{{ success }}</div>
-
-    <div v-if="loading" class="text-center py-5">
-      <span class="spinner-border spinner-border-sm text-success me-2"></span>Loading referral details...
-    </div>
-
+  <main class="gsk-screen">
+    <GskScreenHeader emoji="🎁" kicker="GROW YOUR CIRCLE" title="Refer & earn" subtitle="Invite friends and track your rewards." />
+    <div v-if="error" class="alert alert-danger mt-3">{{ error }}</div><div v-if="success" class="alert alert-success mt-3">{{ success }}</div>
+    <div v-if="loading" class="gsk-empty-state mt-3"><span>⏳</span><strong>Loading referral details…</strong></div>
     <template v-else>
-      <section class="card border-0 shadow-sm rounded-4 mb-3">
-        <div class="card-body p-4">
-          <div class="text-muted small fw-semibold mb-2">YOUR REFERRAL CODE</div>
-          <div class="d-flex align-items-center gap-2">
-            <div class="referral-code flex-grow-1">{{ data.referral_code || '—' }}</div>
-            <button class="btn btn-outline-success" type="button" @click="copyText(data.referral_code)" :disabled="!data.referral_code">
-              <i class="bi bi-copy me-1"></i>Copy
-            </button>
-          </div>
-          <div class="mt-3">
-            <label class="form-label small fw-semibold" for="shareUrl">Referral sharing link</label>
-            <div class="input-group">
-              <input id="shareUrl" class="form-control" :value="data.share_url || ''" readonly>
-              <button class="btn btn-outline-success" type="button" @click="copyText(data.share_url)" :disabled="!data.share_url">Copy link</button>
-            </div>
-          </div>
-          <button class="btn btn-success w-100 mt-3 py-2" type="button" @click="shareReferral">
-            <i class="bi bi-share-fill me-2"></i>Share referral link
-          </button>
-          <p class="small text-muted mt-3 mb-0">
-            Reward: {{ data.referral_percentage }}% of your friend's first successful deposit, with a minimum of ₹{{ money(data.referral_min_amount) }}.
-          </p>
-        </div>
+      <section class="referral-code-card"><span class="referral-card-kicker">YOUR INVITE CODE</span><div class="referral-code-row"><strong>{{ data.referral_code||'—' }}</strong><button type="button" @click="copyText(data.referral_code)" :disabled="!data.referral_code">📋 Copy</button></div>
+        <label class="form-label mt-3" for="shareUrl">Your personal invite link</label><div class="input-group"><input id="shareUrl" class="form-control" :value="data.share_url||''" readonly><button class="btn btn-outline-light" @click="copyText(data.share_url)" :disabled="!data.share_url">Copy</button></div>
+        <button type="button" class="btn btn-warning w-100 mt-3 fw-bold" @click="shareReferral">📤 Share invite link</button>
+        <p class="referral-reward-note">🎉 Reward: {{ data.referral_percentage }}% of your friend's first successful deposit, with a minimum of ₹{{ money(data.referral_min_amount) }}.</p>
       </section>
-
-      <div class="row g-3 mb-3">
-        <div class="col-6">
-          <div class="card border-0 shadow-sm rounded-4 h-100"><div class="card-body">
-            <div class="small text-muted">Friends referred</div>
-            <div class="fs-3 fw-bold">{{ data.total_referrals || 0 }}</div>
-          </div></div>
-        </div>
-        <div class="col-6">
-          <div class="card border-0 shadow-sm rounded-4 h-100"><div class="card-body">
-            <div class="small text-muted">Total rewards</div>
-            <div class="fs-3 fw-bold text-success">₹{{ money(data.total_reward) }}</div>
-          </div></div>
-        </div>
-      </div>
-
-      <section v-if="data.can_apply_code" class="card border-0 shadow-sm rounded-4 mb-3">
-        <div class="card-body p-4">
-          <h6 class="fw-bold">Have a referral code?</h6>
-          <p class="small text-muted">You can apply or change the code only before your first successful deposit.</p>
-          <form class="d-flex gap-2" @submit.prevent="applyCode">
-            <input v-model.trim="applyCodeValue" class="form-control text-uppercase" maxlength="32" placeholder="Enter referral code" required>
-            <button class="btn btn-dark" type="submit" :disabled="applying || !applyCodeValue">
-              {{ applying ? 'Applying…' : 'Apply' }}
-            </button>
-          </form>
-          <div v-if="data.applied_referral_code" class="small text-success mt-2">
-            Current code: {{ data.applied_referral_code }}. You may change it before your first deposit.
-          </div>
-        </div>
-      </section>
-      <div v-else-if="data.applied_referral_code" class="alert alert-light border rounded-3 small">
-        Referral code <strong>{{ data.applied_referral_code }}</strong> is locked because the first successful deposit has been made.
-      </div>
-
-      <section class="card border-0 shadow-sm rounded-4">
-        <div class="card-body p-3">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h6 class="fw-bold mb-0">People you referred</h6>
-            <button class="btn btn-sm btn-light" type="button" @click="loadData" aria-label="Refresh referrals"><i class="bi bi-arrow-clockwise"></i></button>
-          </div>
-          <div v-if="!data.referrals?.length" class="text-center py-4">
-            <div class="fs-2 mb-2">👥</div>
-            <div class="fw-semibold">No referrals yet</div>
-            <div class="small text-muted">Share your link to invite your first friend.</div>
-          </div>
-          <div v-else class="referral-list">
-            <article v-for="person in data.referrals" :key="person.id" class="referral-row">
-              <div class="min-width-0">
-                <div class="fw-semibold text-truncate">{{ person.name || 'User' }}</div>
-                <div class="small text-muted">{{ person.phone || 'Phone unavailable' }}</div>
-                <div class="small text-muted">First deposit: {{ person.first_deposit_at ? new Date(person.first_deposit_at).toLocaleDateString() : 'Not made yet' }}</div>
-              </div>
-              <div class="text-end">
-                <div class="small text-muted">Deposit</div>
-                <div class="fw-semibold">{{ person.first_deposit_amount == null ? '—' : '₹' + money(person.first_deposit_amount) }}</div>
-                <div class="small text-success fw-bold">{{ person.reward_amount == null ? 'Reward pending' : '+₹' + money(person.reward_amount) }}</div>
-              </div>
-            </article>
-          </div>
-        </div>
+      <section class="referral-stats"><article><span>👥</span><small>Friends invited</small><strong>{{ data.total_referrals||0 }}</strong></article><article><span>💰</span><small>Total rewards</small><strong>₹{{ money(data.total_reward) }}</strong></article></section>
+      <section v-if="data.can_apply_code" class="referral-apply-card"><div><strong>Have a referral code?</strong><small>Apply or change it before your first successful deposit.</small></div><form @submit.prevent="applyCode"><input v-model.trim="applyCodeValue" class="form-control text-uppercase" maxlength="32" placeholder="Enter referral code" required><button class="btn btn-primary w-100 mt-2" type="submit" :disabled="applying||!applyCodeValue">{{ applying?'Applying…':'Apply code' }}</button></form><p v-if="data.applied_referral_code" class="small text-success mt-2 mb-0">Current code: {{ data.applied_referral_code }}</p></section>
+      <div v-else-if="data.applied_referral_code" class="alert alert-light border mt-3 small">Referral code <strong>{{ data.applied_referral_code }}</strong> is locked because your first successful deposit has been made.</div>
+      <section class="referral-people-card"><div class="referral-people-heading"><div><span class="gsk-page-kicker">YOUR NETWORK</span><h2>People you invited</h2></div><button type="button" @click="loadData" aria-label="Refresh referrals">↻</button></div>
+        <div v-if="!data.referrals?.length" class="gsk-empty-state"><span>🫶</span><strong>Your invite list is empty</strong><p>Share your code to invite your first friend.</p></div>
+        <article v-for="person in data.referrals" :key="person.id" class="referral-person"><div class="referral-person-avatar">👤</div><div class="referral-person-copy"><strong>{{ person.name||'User' }}</strong><small>{{ person.phone||'Phone unavailable' }}</small><small>First deposit: {{ person.first_deposit_at?new Date(person.first_deposit_at).toLocaleDateString():'Not made yet' }}</small></div><div class="referral-person-reward"><strong>{{ person.reward_amount==null?'Pending':'+₹'+money(person.reward_amount) }}</strong><small>Reward</small></div></article>
       </section>
     </template>
-  </div>
+  </main>
 </template>
-
 <script setup>
+import GskScreenHeader from '@/components/GskScreenHeader.vue'
 import { onMounted, reactive, ref } from 'vue'
 import api from '@/plugins/axios'
 
@@ -194,11 +108,6 @@ async function applyCode() {
 
 onMounted(loadData)
 </script>
-
 <style scoped>
-.referral-page { max-width: 760px; }
-.referral-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 16px; background: #e7f8f0; font-size: 24px; }
-.referral-code { min-width: 0; padding: 12px 14px; border: 1px dashed #08a477; border-radius: 12px; background: #f3fcf8; color: #087c58; font-size: 21px; font-weight: 800; letter-spacing: 2px; overflow-wrap: anywhere; text-align: center; }
-.referral-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid #edf0ef; }
-.referral-row:last-child { border-bottom: 0; }
+.gsk-screen{min-height:100dvh;padding:14px 13px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb;color:#1e2c42}.screen-banner{display:flex;align-items:center;gap:13px;padding:19px;border-radius:19px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.screen-banner-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:#ffffff1b;font-size:28px}.screen-banner span{color:#cbd9eb;font-size:9px;font-weight:900;letter-spacing:.13em}.screen-banner h1{margin:2px 0;color:#fff;font-size:22px;font-weight:900}.screen-banner p{margin:0;color:#d5e1f0;font-size:11px}.referral-code-card{margin-top:13px;padding:17px;border-radius:18px;background:linear-gradient(135deg,#1b365d,#315f9f);color:#fff;box-shadow:0 12px 25px #1b365d22}.referral-card-kicker{font-size:9px;font-weight:900;letter-spacing:.13em;color:#d1def0}.referral-code-row{display:flex;align-items:center;gap:8px;margin-top:8px}.referral-code-row strong{flex:1;overflow-wrap:anywhere;font-size:26px;font-weight:950;letter-spacing:.1em}.referral-code-row button{border:1px solid #ffffff40;border-radius:9px;padding:8px 10px;background:#ffffff18;color:#fff;font-size:10px;font-weight:800}.referral-code-card .form-label{font-size:10px;color:#e0e9f5}.referral-code-card .form-control{min-width:0;border:0}.referral-code-card .input-group .btn{min-height:46px;border-color:#ffffff55;color:#fff}.referral-reward-note{margin:12px 0 0;color:#dce6f3;font-size:9px}.referral-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}.referral-stats article{display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto;gap:1px 7px;padding:12px;border:1px solid #e5ebf3;border-radius:14px;background:#fff}.referral-stats article>span{grid-row:1/3;font-size:23px}.referral-stats small{color:#8492a6;font-size:9px}.referral-stats strong{font-size:14px;font-weight:900}.referral-apply-card,.referral-people-card{margin-top:12px;padding:15px;border:1px solid #e5ebf3;border-radius:16px;background:#fff}.referral-apply-card>div{display:grid;margin-bottom:10px}.referral-apply-card>div strong{font-size:12px}.referral-apply-card>div small{font-size:10px;color:#7b899d}.referral-people-heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.referral-people-heading h2{margin:2px 0 0;font-size:16px;font-weight:900}.referral-people-heading button{width:34px;height:34px;border:1px solid #e4eaf2;border-radius:10px;background:#f6f8fb;color:#315f9f;font-size:20px}.referral-person{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #edf1f6}.referral-person-avatar{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#edf3fc;font-size:20px}.referral-person-copy{display:grid;flex:1;min-width:0}.referral-person-copy strong{font-size:11px}.referral-person-copy small{overflow:hidden;color:#8a97a8;font-size:8px;text-overflow:ellipsis;white-space:nowrap}.referral-person-reward{display:grid;text-align:right}.referral-person-reward strong{font-size:10px;color:#21865e}.referral-person-reward small{font-size:8px;color:#8794a5}
 </style>

@@ -1,14 +1,14 @@
 <template>
   <div class="content-area pb-5 history-bg min-vh-100 d-flex flex-column">
     <div class="container-fluid px-2 px-md-3 py-2 flex-grow-1 d-flex flex-column">
-      <div class="card border-0 shadow-sm rounded-4 p-3 mb-2 bg-dark text-white">
+      <div class="support-banner">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
           <div class="d-flex align-items-center gap-3">
             <div
-              class="icon-circle bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center">
-              <i class="bi bi-headset fs-5"></i></div>
+              class="support-banner-icon">
+              <span class="gsk-emoji-icon" aria-hidden="true">🎧</span></div>
             <div>
-              <h6 class="fw-bold text-white mb-1">VIP Live Support Desk</h6><span class="small text-white-50">{{
+              <h1 class="fw-bold text-white mb-1">Live support</h1><span class="small text-white-50">{{
                 realtimeConnected ? 'Connected · live messages' : connected ? 'Connected · recovery sync' :
                   humanSupportRequested ? 'Reconnecting to support…' : 'Browse FAQs before starting a chat' }}</span>
             </div>
@@ -17,7 +17,7 @@
             connected ? 'Online' : 'Reconnecting' }}</span>
         </div>
       </div>
-      <section v-if="!humanSupportRequested" class="card border-0 shadow-sm rounded-4 bg-white mb-3">
+      <section v-if="!humanSupportRequested" class="support-faq-card mb-3">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
             <div>
@@ -32,8 +32,7 @@
               <button type="button"
                 class="btn w-100 text-start fw-semibold d-flex justify-content-between align-items-center"
                 @click="activeFaqId = activeFaqId === faq.id ? null : faq.id">
-                <span>{{ faq.question }}</span><i
-                  :class="activeFaqId === faq.id ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <span>{{ faq.question }}</span><span class="gsk-emoji-icon" aria-hidden="true">✨</span>
               </button>
               <div v-if="activeFaqId === faq.id" class="px-3 pb-3 text-muted" style="white-space:pre-line">{{ faq.answer
                 }}</div>
@@ -42,8 +41,7 @@
           <p v-else class="small text-muted py-2 mb-0">No FAQs are published for this platform yet.</p>
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 pt-3 border-top">
             <span class="small text-muted">Still need help from a person?</span>
-            <button class="btn btn-warning text-dark fw-bold" type="button" @click="openHumanSupport"><i
-                class="bi bi-headset me-1"></i>Contact human support</button>
+            <button class="btn btn-warning text-dark fw-bold" type="button" @click="openHumanSupport"><span class="gsk-emoji-icon" aria-hidden="true">🎧</span>Contact human support</button>
           </div>
         </div>
       </section>
@@ -61,8 +59,7 @@
             :class="msg.sender === 'user' ? 'align-items-end' : 'align-items-start'">
             <div class="message-bubble p-3 rounded-4 shadow-sm"
               :class="msg.sender === 'user' ? 'bg-warning text-dark rounded-bottom-right-0' : 'bg-white border text-dark rounded-bottom-left-0'">
-              <div v-if="msg.sender !== 'user'" class="small fw-bold text-danger mb-1"><i
-                  class="bi bi-patch-check-fill"></i> Support Desk</div>
+              <div v-if="msg.sender !== 'user'" class="small fw-bold text-danger mb-1"><span class="gsk-emoji-icon" aria-hidden="true">✅</span> Support Desk</div>
               <p v-if="msg.body" class="mb-1" style="white-space:pre-line">{{ msg.body }}</p>
               <template v-if="msg.media_url">
                 <img v-if="(msg.media_mime || '').startsWith('image/')" :src="msg.display_media_url"
@@ -85,19 +82,19 @@
             <input ref="fileInput" type="file" class="d-none" accept="image/*,video/mp4,video/webm,audio/*"
               @change="onFileSelected">
             <button type="button" class="btn btn-light rounded-circle border" style="width:38px;height:38px"
-              title="Attach image, video, or audio" @click="fileInput?.click()"><i class="bi bi-paperclip"></i></button>
+              title="Attach image, video, or audio" @click="fileInput?.click()"><span class="gsk-emoji-icon" aria-hidden="true">📎</span></button>
             <button type="button" class="btn rounded-circle border"
               :class="recording ? 'btn-danger text-white' : 'btn-light'" style="width:38px;height:38px"
               :disabled="!canRecord" :title="recording ? 'Stop voice recording' : 'Record voice message'"
-              @click="toggleRecording"><i :class="recording ? 'bi bi-stop-fill' : 'bi bi-mic-fill'"></i></button>
+              @click="toggleRecording"><span class="gsk-emoji-icon" aria-hidden="true">✨</span></button>
             <input v-model="newMessage" type="text"
               class="form-control form-control-sm border-0 bg-light rounded-pill px-3 py-2 shadow-none"
               placeholder="Type your message…" maxlength="5000">
             <button type="submit" class="btn btn-warning text-dark rounded-circle" style="width:38px;height:38px"
-              :disabled="sending || (!newMessage.trim() && !selectedFile)"><i class="bi bi-send-fill"></i></button>
+              :disabled="sending || (!newMessage.trim() && !selectedFile)"><span class="gsk-emoji-icon" aria-hidden="true">📨</span></button>
           </form>
           <div v-if="selectedFile" class="small text-muted mt-2 d-flex align-items-center justify-content-between">
-            <span><i class="bi bi-paperclip me-1"></i>{{ selectedFile.name }}</span><button
+            <span><span class="gsk-emoji-icon" aria-hidden="true">📎</span>{{ selectedFile.name }}</span><button
               class="btn btn-sm btn-link text-danger p-0" @click="selectedFile = null">Remove</button></div>
           <div v-if="recording" class="small text-danger mt-2"><span
               class="spinner-grow spinner-grow-sm me-1"></span>Recording
@@ -345,40 +342,6 @@ onUnmounted(() => {
   mediaUrlCache.forEach(url => URL.revokeObjectURL(url))
   mediaUrlCache.clear()
 })
-</script>
-
-<style scoped>
-.history-bg {
-  background-color: #f4f5f7
-}
-
-.message-bubble {
-  max-width: 78%;
-  word-break: break-word
-}
-
-.chat-media {
-  display: block;
-  max-width: min(260px, 65vw);
-  max-height: 260px;
-  border-radius: 10px;
-  margin-top: 5px
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none
-}
-
-.rounded-bottom-right-0 {
-  border-bottom-right-radius: 2px !important
-}
-
-.rounded-bottom-left-0 {
-  border-bottom-left-radius: 2px !important
-}
+</script><style scoped>
+.content-area.history-bg{min-height:100dvh;padding:14px 12px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb}.content-area.history-bg>.container-fluid{max-width:720px;margin:0 auto;padding:0!important}.support-banner{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:16px;border-radius:17px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.support-banner-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#ffffff1b;font-size:25px}.support-banner h1{margin:0;color:#fff;font-size:17px;font-weight:900}.support-banner .small{color:#d4e0f0!important;font-size:10px}.support-banner .badge{margin-left:auto}.support-faq-card,.card{border:1px solid #e5ebf3!important;border-radius:16px!important;background:#fff;box-shadow:0 7px 20px #1b365d0b!important}.support-faq-card .card-body{padding:15px}.support-faq-card .btn{min-height:42px;font-size:11px}.message-bubble{max-width:84%;word-break:break-word;font-size:12px;line-height:1.5}.message-bubble.bg-warning{background:#e9f1fc!important;color:#203b5e!important}.message-bubble.bg-white{border-color:#e5ebf3!important}.chat-media{display:block;max-width:min(260px,65vw);max-height:260px;margin-top:6px;border-radius:11px}.card-footer form .form-control{min-height:42px}.no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}.rounded-bottom-right-0{border-bottom-right-radius:3px!important}.rounded-bottom-left-0{border-bottom-left-radius:3px!important}
 </style>
