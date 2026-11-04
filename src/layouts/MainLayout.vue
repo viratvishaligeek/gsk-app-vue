@@ -1,135 +1,63 @@
 <template>
-  <div class="app-layout premium-shell">
-    <div v-if="isSidebarOpen" class="overlay active" @click="closeSidebar" aria-hidden="true"></div>
-
-    <aside ref="sidebarElement" id="sidebar" class="sidebar premium-sidebar"
-      :class="{ active: isSidebarOpen }" :aria-hidden="!isSidebarOpen" aria-label="Main navigation">
-      <div class="sidebar-header premium-sidebar-header">
-        <div class="premium-profile-panel">
-          <div class="user-avatar premium-avatar"><i class="bi bi-person-fill"></i></div>
-          <div class="premium-profile-copy">
-            <small>WELCOME BACK</small>
-            <strong>{{ authStore.name || 'Player' }}</strong>
-            <router-link to="/profile" @click="closeSidebar">Manage profile <i class="bi bi-arrow-up-right"></i></router-link>
-          </div>
+  <div class="gsk-app-shell">
+    <div v-if="isSidebarOpen" class="gsk-drawer-backdrop" @click="closeSidebar" aria-hidden="true"></div>
+    <aside ref="sidebarElement" id="sidebar" class="gsk-drawer" :class="{ 'is-open':isSidebarOpen }"
+      :aria-hidden="!isSidebarOpen" aria-label="Application menu">
+      <div class="drawer-top">
+        <div class="drawer-user">
+          <div class="drawer-avatar">👤</div>
+          <div class="drawer-user-copy"><small>WELCOME BACK</small><strong>{{ authStore.name || 'Player' }}</strong>
+            <router-link to="/profile" @click="closeSidebar">Manage account →</router-link></div>
         </div>
-        <router-link to="/wallet" class="sidebar-wallet-card premium-sidebar-wallet" @click="closeSidebar">
-          <span class="sidebar-wallet-symbol"><i class="bi bi-wallet2"></i></span>
-          <span class="sidebar-wallet-copy">
-            <small>Available balance</small>
-            <strong class="sidebar-wallet-amount">₹ {{ formatWalletAmount }}</strong>
-          </span>
-          <i class="bi bi-arrow-up-right ms-auto"></i>
+        <router-link to="/wallet" class="drawer-balance" @click="closeSidebar">
+          <span>💰</span><span><small>Available balance</small><strong>₹ {{ formatWalletAmount }}</strong></span><b>→</b>
         </router-link>
       </div>
-
-      <nav class="sidebar-menu premium-sidebar-menu" aria-label="App sections">
-        <p class="premium-menu-caption">PLAY</p>
-        <router-link to="/dashboard" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-house-door"></i></span><span>Home</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/play-history" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-controller"></i></span><span>My plays & history</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/monthly-chart" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-bar-chart-line"></i></span><span>Monthly charts</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-
-        <p class="premium-menu-caption mt-3">YOUR ACCOUNT</p>
-        <router-link to="/wallet" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-wallet2"></i></span><span>Wallet transactions</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/wallet/withdraw" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-arrow-down-circle"></i></span><span>Withdraw money</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/profile" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-person-gear"></i></span><span>Profile & settings</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/notifications" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-bell"></i></span><span>Notifications</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/referrals" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-gift"></i></span><span>Refer & earn</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/live-support" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-headset"></i></span><span>Live support</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <a v-if="whatsappUrl" :href="whatsappUrl" class="sidebar-menu-item" target="_blank"
-          rel="noopener noreferrer" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-whatsapp"></i></span><span>WhatsApp support</span><i class="bi bi-box-arrow-up-right ms-auto"></i>
-        </a>
-
-        <p class="premium-menu-caption mt-3">INFORMATION</p>
-        <router-link to="/page/how-to-play" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-book"></i></span><span>How to play</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/page/game-rates" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-percent"></i></span><span>Game rates</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
-        <router-link to="/page/terms-conditions" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d"><i class="bi bi-file-earmark-text"></i></span><span>Terms & conditions</span><i class="bi bi-chevron-right ms-auto"></i>
-        </router-link>
+      <nav class="drawer-navigation">
+        <p>PLAY & EXPLORE</p>
+        <router-link to="/dashboard" @click="closeSidebar"><span>🏠</span>Home <b>›</b></router-link>
+        <router-link to="/play-history" @click="closeSidebar"><span>🎮</span>My plays & history <b>›</b></router-link>
+        <router-link to="/monthly-chart" @click="closeSidebar"><span>📊</span>Monthly charts <b>›</b></router-link>
+        <p>YOUR ACCOUNT</p>
+        <router-link to="/wallet" @click="closeSidebar"><span>💳</span>Wallet transactions <b>›</b></router-link>
+        <router-link to="/wallet/withdraw" @click="closeSidebar"><span>🏦</span>Withdraw money <b>›</b></router-link>
+        <router-link to="/profile" @click="closeSidebar"><span>👤</span>Profile & settings <b>›</b></router-link>
+        <router-link to="/notifications" @click="closeSidebar"><span>🔔</span>Notifications <b>›</b></router-link>
+        <router-link to="/referrals" @click="closeSidebar"><span>🎁</span>Refer & earn <b>›</b></router-link>
+        <router-link to="/live-support" @click="closeSidebar"><span>💬</span>Live support <b>›</b></router-link>
+        <a v-if="whatsappUrl" :href="whatsappUrl" target="_blank" rel="noopener noreferrer" @click="closeSidebar"><span>🟢</span>WhatsApp support <b>↗</b></a>
+        <p>HELP & INFORMATION</p>
+        <router-link to="/page/how-to-play" @click="closeSidebar"><span>📖</span>How to play <b>›</b></router-link>
+        <router-link to="/page/game-rates" @click="closeSidebar"><span>🧮</span>Game rates <b>›</b></router-link>
+        <router-link to="/page/terms-conditions" @click="closeSidebar"><span>📄</span>Terms & conditions <b>›</b></router-link>
       </nav>
-
-      <div class="premium-sidebar-footer">
-        <button :disabled="isLoggingOut" @click="handleLogout" class="btn btn-outline-danger w-100">
-          <span v-if="isLoggingOut" class="spinner-border spinner-border-sm me-2"></span>
-          <i v-else class="bi bi-box-arrow-right me-2"></i>
-          {{ isLoggingOut ? 'Signing out…' : 'Sign out' }}
-        </button>
-        <small>Play responsibly · 18+ only</small>
-      </div>
+      <div class="drawer-footer"><button type="button" class="drawer-logout" :disabled="isLoggingOut" @click="handleLogout">
+        <span v-if="isLoggingOut" class="spinner-border spinner-border-sm"></span><span v-else>🚪</span>
+        {{ isLoggingOut ? 'Signing out…' : 'Sign out' }}</button><small>Play responsibly · 18+ only</small></div>
     </aside>
 
-    <header class="app-header premium-app-header">
-      <div class="premium-header-inner">
-        <div class="d-flex align-items-center gap-2 min-width-0">
-          <button id="menuBtn" ref="menuButtonElement" type="button"
-            class="header-menu-btn premium-menu-trigger" @click="toggleSidebar"
-            :aria-label="isSidebarOpen ? 'Close menu' : 'Open menu'"
-            :aria-expanded="isSidebarOpen" aria-controls="sidebar">
-            <i class="bi" :class="isSidebarOpen ? 'bi-x-lg' : 'bi-list'"></i>
-          </button>
-          <router-link to="/dashboard" class="premium-header-brand">
-            <span class="premium-brand-mark"><i class="bi bi-controller"></i></span>
-            <span class="min-width-0">
-              <strong>GSK Play</strong>
-              <small>Official mobile application</small>
-            </span>
-          </router-link>
-        </div>
-        <div class="premium-header-actions">
-          <router-link to="/notifications" class="premium-notification" aria-label="Notifications">
-            <i class="bi bi-bell"></i>
-          </router-link>
-          <router-link to="/wallet" class="premium-header-wallet" :aria-label="'Wallet balance ₹ ' + formatWalletAmount">
-            <i class="bi bi-wallet2" aria-hidden="true"></i><span>₹ {{ formatWalletAmount }}</span>
-          </router-link>
-        </div>
+    <header class="gsk-topbar">
+      <div class="topbar-leading">
+        <button ref="menuButtonElement" class="menu-trigger" type="button" @click="toggleSidebar"
+          :aria-label="isSidebarOpen?'Close menu':'Open menu'" :aria-expanded="isSidebarOpen" aria-controls="sidebar">
+          <span>{{ isSidebarOpen ? '✕' : '☰' }}</span></button>
+        <router-link to="/dashboard" class="gsk-wordmark"><span>🎮</span><span><strong>GSK Play</strong><small>GAME ZONE</small></span></router-link>
+      </div>
+      <div class="topbar-actions">
+        <router-link to="/notifications" class="topbar-notifications" aria-label="Notifications">🔔</router-link>
+        <router-link to="/wallet" class="topbar-wallet"><span>💰</span><b>₹{{ formatWalletAmount }}</b></router-link>
       </div>
     </header>
 
-    <main class="main-body-content">
-      <router-view />
-    </main>
+    <main class="gsk-main-content"><router-view /></main>
 
-    <footer v-if="!hideBottomNav" class="bottom-nav premium-bottom-nav" aria-label="Primary navigation">
-      <router-link to="/dashboard" class="nav-item" active-class="active">
-        <span class="nav-icon"><i class="bi bi-house-door-fill"></i></span><span class="nav-label">Home</span>
-      </router-link>
-      <router-link to="/play-history" class="nav-item" active-class="active">
-        <span class="nav-icon"><i class="bi bi-controller"></i></span><span class="nav-label">Plays</span>
-      </router-link>
-      <router-link to="/monthly-chart" class="nav-item" active-class="active">
-        <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span><span class="nav-label">Charts</span>
-      </router-link>
-      <router-link to="/wallet" class="nav-item" active-class="active">
-        <span class="nav-icon"><i class="bi bi-wallet2"></i></span><span class="nav-label">Wallet</span>
-      </router-link>
-      <router-link to="/profile" class="nav-item" active-class="active">
-        <span class="nav-icon"><i class="bi bi-person"></i></span><span class="nav-label">Profile</span>
-      </router-link>
-    </footer>
+    <nav v-if="!hideBottomNav" class="gsk-bottom-navigation" aria-label="Primary navigation">
+      <router-link to="/dashboard" active-class="is-active"><span>🏠</span><small>Home</small></router-link>
+      <router-link to="/play-history" active-class="is-active"><span>🎮</span><small>Plays</small></router-link>
+      <router-link to="/monthly-chart" active-class="is-active"><span>📊</span><small>Charts</small></router-link>
+      <router-link to="/wallet" active-class="is-active"><span>💰</span><small>Wallet</small></router-link>
+      <router-link to="/profile" active-class="is-active"><span>👤</span><small>Profile</small></router-link>
+    </nav>
   </div>
 </template>
 
@@ -217,25 +145,19 @@ const handleLogout = async () => {
   }
 }
 // -------------
-</script>
-<style scoped>
-.premium-shell { min-height:100dvh; }
-.premium-sidebar { display:flex; flex-direction:column; height:100dvh; padding-bottom:env(safe-area-inset-bottom); }
-.premium-sidebar-header { flex:0 0 auto; padding:22px 18px 16px; }
-.premium-profile-panel { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
-.premium-avatar { display:grid; place-items:center; width:46px; height:46px; flex:0 0 46px; border-radius:15px; color:var(--gsk-brand); background:#fff; font-size:21px; }
-.premium-profile-copy { display:grid; gap:2px; min-width:0; }
-.premium-profile-copy small { color:rgba(255,255,255,.7); font-size:9px; font-weight:850; letter-spacing:.12em; }
-.premium-profile-copy strong { overflow:hidden; color:#fff; font-size:15px; text-overflow:ellipsis; white-space:nowrap; }
-.premium-profile-copy a { color:rgba(255,255,255,.8); font-size:11px; }
-.premium-sidebar-wallet { display:flex; align-items:center; gap:10px; min-height:62px; padding:10px 12px; color:#fff; }
-.premium-sidebar-wallet .sidebar-wallet-symbol { display:grid; place-items:center; width:36px; height:36px; border-radius:11px; color:#fff; background:rgba(255,255,255,.14); }
-.premium-sidebar-wallet .sidebar-wallet-copy { display:grid; gap:2px; }
-.premium-sidebar-wallet small { color:rgba(255,255,255,.7); font-size:10px; }
-.premium-sidebar-wallet .sidebar-wallet-amount { color:#fff; font-size:16px; }
-.premium-sidebar-menu { flex:1 1 auto; min-height:0; overflow-y:auto; padding:14px 10px; overscroll-behavior:contain; }
-.premium-menu-caption { margin:8px 12px; color:#8b97aa; font-size:9px; font-weight:850; letter-spacing:.13em; }
-.premium-sidebar-footer { flex:0 0 auto; padding:14px 16px max(14px,env(safe-area-inset-bottom)); border-top:1px solid var(--gsk-line); background:#fff; }
-.premium-sidebar-footer small { display:block; margin-top:10px; color:var(--gsk-muted); text-align:center; font-size:10px; }
-@media (prefers-reduced-motion:reduce) { .premium-sidebar-menu .sidebar-menu-item .icon-3d { transition:none; } }
+</script><style>
+.gsk-app-shell{--app-ink:#1e2c42;--app-muted:#7b899d;--app-navy:#1b365d;min-height:100dvh;background:#f5f7fb;color:var(--app-ink)}
+.gsk-topbar{position:sticky;top:0;z-index:1030;display:flex;align-items:center;justify-content:space-between;min-height:66px;padding:9px 15px;padding-top:max(9px,env(safe-area-inset-top));background:#fff;border-bottom:1px solid #e8edf4;box-shadow:0 3px 12px #172e4d09}
+.topbar-leading,.topbar-actions,.gsk-wordmark{display:flex;align-items:center;gap:10px}.menu-trigger{display:grid;place-items:center;width:42px;height:42px;border:1px solid #e6ebf2;border-radius:13px;background:#f7f9fc;color:var(--app-ink);font-size:20px}
+.gsk-wordmark{text-decoration:none;color:var(--app-ink)}.gsk-wordmark>span:first-child{display:grid;place-items:center;width:39px;height:39px;border-radius:13px;background:#eaf1fc;font-size:23px}.gsk-wordmark>span:last-child{display:grid;gap:0}.gsk-wordmark strong{font-size:15px;font-weight:900;line-height:1.1}.gsk-wordmark small{font-size:8px;font-weight:850;letter-spacing:.14em;color:#7d8da5}
+.topbar-actions{gap:8px}.topbar-notifications{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:#f3f6fb;text-decoration:none;font-size:19px}.topbar-wallet{display:flex;align-items:center;gap:6px;padding:10px 11px;border-radius:12px;background:#eaf2ff;color:#244f87;text-decoration:none;font-size:12px}
+.gsk-main-content{min-height:calc(100dvh - 66px);padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.gsk-bottom-navigation{position:fixed;z-index:1020;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 8px max(8px,env(safe-area-inset-bottom));border-top:1px solid #e7edf4;background:#ffffffed;backdrop-filter:blur(14px)}
+.gsk-bottom-navigation a{display:grid;justify-items:center;gap:3px;padding:4px 2px;color:#8290a3;text-decoration:none}.gsk-bottom-navigation a>span{font-size:21px;line-height:1.2}.gsk-bottom-navigation small{font-size:9px;font-weight:750}.gsk-bottom-navigation a.is-active{color:#28558f}.gsk-bottom-navigation a.is-active>span{transform:translateY(-2px)}
+.gsk-drawer-backdrop{position:fixed;inset:0;z-index:1090;background:#14243c80;backdrop-filter:blur(3px)}.gsk-drawer{position:fixed;inset:0 auto 0 0;z-index:1091;display:flex;flex-direction:column;width:min(86vw,340px);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:#fff;box-shadow:18px 0 55px #10274726;transform:translateX(-105%);transition:transform .25s ease}.gsk-drawer.is-open{transform:translateX(0)}
+.drawer-top{padding:20px 17px 15px;background:linear-gradient(135deg,#1b365d,#315f9f);color:#fff}.drawer-user{display:flex;align-items:center;gap:12px;margin-bottom:17px}.drawer-avatar{display:grid;place-items:center;width:46px;height:46px;border-radius:15px;background:#ffffff20;font-size:24px}.drawer-user-copy{display:grid;min-width:0}.drawer-user-copy small{font-size:9px;letter-spacing:.12em;color:#c9d8ec}.drawer-user-copy strong{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.drawer-user-copy a{font-size:10px;color:#e1eaf6;text-decoration:none}.drawer-balance{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid #ffffff26;border-radius:13px;background:#ffffff14;color:#fff;text-decoration:none}.drawer-balance>span:first-child{font-size:25px}.drawer-balance>span:nth-child(2){display:grid;flex:1}.drawer-balance small{font-size:10px;color:#d1def0}.drawer-balance strong{font-size:17px}.drawer-balance>b{font-size:20px}
+.drawer-navigation{flex:1;overflow:auto;padding:13px 11px;overscroll-behavior:contain}.drawer-navigation p{margin:12px 10px 7px;color:#91a0b4;font-size:9px;font-weight:900;letter-spacing:.13em}.drawer-navigation a{display:flex;align-items:center;gap:12px;min-height:45px;padding:8px 10px;border-radius:11px;color:#34445c;text-decoration:none;font-size:12px;font-weight:700}.drawer-navigation a.router-link-active{background:#edf3fc;color:#28558f}.drawer-navigation a>span{display:grid;place-items:center;width:28px;font-size:20px}.drawer-navigation a>b{margin-left:auto;color:#a3afbf;font-size:19px}
+.drawer-footer{padding:13px 16px max(13px,env(safe-area-inset-bottom));border-top:1px solid #e9edf3}.drawer-logout{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:45px;border:1px solid #f0d5d5;border-radius:12px;background:#fff7f7;color:#bd4e4e;font-size:12px;font-weight:800}.drawer-footer>small{display:block;margin-top:9px;text-align:center;color:#96a1b0;font-size:9px}
+@media(min-width:800px){.gsk-app-shell{max-width:520px;margin:0 auto;min-height:100dvh;box-shadow:0 0 55px #10274712}.gsk-topbar{border-radius:0}.gsk-drawer{width:340px}.gsk-bottom-navigation{right:auto;left:50%;width:min(520px,100%);transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.gsk-drawer{transition:none}.gsk-bottom-navigation a>span{transform:none!important}}
 </style>
