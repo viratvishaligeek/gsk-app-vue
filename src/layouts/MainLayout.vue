@@ -1,188 +1,135 @@
 <template>
-  <div class="app-layout">
-    <!-- Sidebar -->
-    <div ref="sidebarElement" class="sidebar" :class="{ active: isSidebarOpen }" id="sidebar">
-      <div class="sidebar-header">
-        <div class="d-flex align-items-center mb-3">
-          <div class="user-avatar me-3">
-            <i class="bi bi-person"></i>
-          </div>
-          <div>
-            <h6 class="mb-1">{{ authStore.name }}</h6>
+  <div class="app-layout premium-shell">
+    <div v-if="isSidebarOpen" class="overlay active" @click="closeSidebar" aria-hidden="true"></div>
+
+    <aside ref="sidebarElement" id="sidebar" class="sidebar premium-sidebar"
+      :class="{ active: isSidebarOpen }" :aria-hidden="!isSidebarOpen" aria-label="Main navigation">
+      <div class="sidebar-header premium-sidebar-header">
+        <div class="premium-profile-panel">
+          <div class="user-avatar premium-avatar"><i class="bi bi-person-fill"></i></div>
+          <div class="premium-profile-copy">
+            <small>WELCOME BACK</small>
+            <strong>{{ authStore.name || 'Player' }}</strong>
+            <router-link to="/profile" @click="closeSidebar">Manage profile <i class="bi bi-arrow-up-right"></i></router-link>
           </div>
         </div>
-        <div class="sidebar-header-actions">
-          <div class="sidebar-wallet-card" aria-label="Wallet balance">
-            <span class="sidebar-wallet-symbol bg-success">
-              <i class="bi bi-wallet2"></i>
-            </span>
-            <div class="sidebar-wallet-copy">
-              <small>Wallet balance</small>
-              <strong class="sidebar-wallet-amount">₹ {{ formatWalletAmount }}</strong>
-            </div>
-          </div>
-          <router-link to="/profile" class="btn btn-sm profile-edit-btn sidebar-profile-btn rounded-3"
-            @click="closeSidebar">
-            <span class="icon-3d">🛠️</span><span>Edit Profile</span>
-          </router-link>
-        </div>
+        <router-link to="/wallet" class="sidebar-wallet-card premium-sidebar-wallet" @click="closeSidebar">
+          <span class="sidebar-wallet-symbol"><i class="bi bi-wallet2"></i></span>
+          <span class="sidebar-wallet-copy">
+            <small>Available balance</small>
+            <strong class="sidebar-wallet-amount">₹ {{ formatWalletAmount }}</strong>
+          </span>
+          <i class="bi bi-arrow-up-right ms-auto"></i>
+        </router-link>
       </div>
 
-      <div class="sidebar-menu">
+      <nav class="sidebar-menu premium-sidebar-menu" aria-label="App sections">
+        <p class="premium-menu-caption">PLAY</p>
         <router-link to="/dashboard" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">🏠</span>
-          <span>Home</span>
+          <span class="icon-3d"><i class="bi bi-house-door"></i></span><span>Home</span><i class="bi bi-chevron-right ms-auto"></i>
         </router-link>
-
-        <router-link to="/wallet" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">💳</span>
-          <span>Wallet Transactions</span>
-        </router-link>
-
         <router-link to="/play-history" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">🎮</span>
-          <span>Played History</span>
+          <span class="icon-3d"><i class="bi bi-controller"></i></span><span>My plays & history</span><i class="bi bi-chevron-right ms-auto"></i>
         </router-link>
-
         <router-link to="/monthly-chart" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">📊</span>
-          <span>Monthly Charts</span>
+          <span class="icon-3d"><i class="bi bi-bar-chart-line"></i></span><span>Monthly charts</span><i class="bi bi-chevron-right ms-auto"></i>
         </router-link>
 
+        <p class="premium-menu-caption mt-3">YOUR ACCOUNT</p>
+        <router-link to="/wallet" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d"><i class="bi bi-wallet2"></i></span><span>Wallet transactions</span><i class="bi bi-chevron-right ms-auto"></i>
+        </router-link>
         <router-link to="/wallet/withdraw" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">💸</span>
-          <span>Money Withdraw</span>
+          <span class="icon-3d"><i class="bi bi-arrow-down-circle"></i></span><span>Withdraw money</span><i class="bi bi-chevron-right ms-auto"></i>
         </router-link>
+        <router-link to="/profile" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d"><i class="bi bi-person-gear"></i></span><span>Profile & settings</span><i class="bi bi-chevron-right ms-auto"></i>
+        </router-link>
+        <router-link to="/notifications" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d"><i class="bi bi-bell"></i></span><span>Notifications</span><i class="bi bi-chevron-right ms-auto"></i>
+        </router-link>
+        <router-link to="/referrals" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d"><i class="bi bi-gift"></i></span><span>Refer & earn</span><i class="bi bi-chevron-right ms-auto"></i>
+        </router-link>
+        <router-link to="/live-support" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d"><i class="bi bi-headset"></i></span><span>Live support</span><i class="bi bi-chevron-right ms-auto"></i>
+        </router-link>
+        <a v-if="whatsappUrl" :href="whatsappUrl" class="sidebar-menu-item" target="_blank"
+          rel="noopener noreferrer" @click="closeSidebar">
+          <span class="icon-3d"><i class="bi bi-whatsapp"></i></span><span>WhatsApp support</span><i class="bi bi-box-arrow-up-right ms-auto"></i>
+        </a>
 
-        <router-link to="/page/terms-conditions" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">📄</span>
-          <span>Terms & Conditions</span>
-        </router-link>
+        <p class="premium-menu-caption mt-3">INFORMATION</p>
         <router-link to="/page/how-to-play" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">🎯</span>
-          <span>How to Play</span>
+          <span class="icon-3d"><i class="bi bi-book"></i></span><span>How to play</span><i class="bi bi-chevron-right ms-auto"></i>
         </router-link>
         <router-link to="/page/game-rates" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">📈</span>
-          <span>Game Rates</span>
+          <span class="icon-3d"><i class="bi bi-percent"></i></span><span>Game rates</span><i class="bi bi-chevron-right ms-auto"></i>
         </router-link>
-
-        <router-link to="/live-support" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">🎧</span>
-          <span>Live Support</span>
+        <router-link to="/page/terms-conditions" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d"><i class="bi bi-file-earmark-text"></i></span><span>Terms & conditions</span><i class="bi bi-chevron-right ms-auto"></i>
         </router-link>
+      </nav>
 
-        <router-link to="/notifications" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">🔔</span>
-          <span>Notification</span>
-        </router-link>
-
-        <router-link to="/referrals" class="sidebar-menu-item" @click="closeSidebar">
-          <span class="icon-3d">🎁</span>
-          <span>Referral Code</span>
-        </router-link>
-      </div>
-
-      <div class="p-3 text-center">
-        <button :disabled="isLoggingOut" @click="handleLogout" class="btn btn-outline-danger w-100 rounded-3">
+      <div class="premium-sidebar-footer">
+        <button :disabled="isLoggingOut" @click="handleLogout" class="btn btn-outline-danger w-100">
           <span v-if="isLoggingOut" class="spinner-border spinner-border-sm me-2"></span>
           <i v-else class="bi bi-box-arrow-right me-2"></i>
-          {{ isLoggingOut ? 'Logging out...' : 'Sign Out' }}
+          {{ isLoggingOut ? 'Signing out…' : 'Sign out' }}
         </button>
+        <small>Play responsibly · 18+ only</small>
       </div>
-    </div>
-    <!-- Overlay -->
-    <div class="overlay" :class="{ active: isSidebarOpen }" id="overlay" @click="closeSidebar"></div>
+    </aside>
 
-    <div class="app-header sticky-top bg-white border-bottom shadow-sm px-2 py-2">
-      <div class="d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center min-width-0">
+    <header class="app-header premium-app-header">
+      <div class="premium-header-inner">
+        <div class="d-flex align-items-center gap-2 min-width-0">
           <button id="menuBtn" ref="menuButtonElement" type="button"
-            class="btn btn-light rounded-circle header-menu-btn d-flex align-items-center justify-content-center p-0"
-            @click="toggleSidebar" :aria-label="isSidebarOpen ? 'Close menu' : 'Open menu'"
+            class="header-menu-btn premium-menu-trigger" @click="toggleSidebar"
+            :aria-label="isSidebarOpen ? 'Close menu' : 'Open menu'"
             :aria-expanded="isSidebarOpen" aria-controls="sidebar">
-            <i class="bi bi-list fs-4"></i>
+            <i class="bi" :class="isSidebarOpen ? 'bi-x-lg' : 'bi-list'"></i>
           </button>
-          <router-link to="/dashboard" class="d-flex align-items-center ms-2 min-width-0">
-            <div class=" me-2">
-              <img src="../assets/img/logo.png" style="height: 35px; width: auto;" alt="">
-            </div>
-            <div class="lh-sm min-width-0">
-              <div class="fw-bold text-dark text-truncate brand-title">
-                Online Khaiwal
-              </div>
-              <small class="text-muted d-flex align-items-center gap-1">
-                <span class="brand-live-dot"></span>
-                Official App
-              </small>
-            </div>
+          <router-link to="/dashboard" class="premium-header-brand">
+            <span class="premium-brand-mark"><i class="bi bi-controller"></i></span>
+            <span class="min-width-0">
+              <strong>GSK Play</strong>
+              <small>Official mobile application</small>
+            </span>
           </router-link>
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <router-link to="/wallet" class="wallet-pill d-flex align-items-center gap-2 px-2 px-sm-3 py-1">
-            <div class="wallet-icon">
-              <i class="bi bi-wallet2"></i>
-            </div>
-            <div class="wallet-info lh-1">
-              <small class="wallet-label d-block">
-                WALLET
-              </small>
-              <span class="fw-bold text-success wallet-amount">
-                ₹ {{ formatWalletAmount }}
-              </span>
-            </div>
+        <div class="premium-header-actions">
+          <router-link to="/notifications" class="premium-notification" aria-label="Notifications">
+            <i class="bi bi-bell"></i>
           </router-link>
-          <router-link to="/notifications" class="notification-btn position-relative text-decoration-none"
-            aria-label="Notifications">
-            <i class="bi bi-bell-fill"></i>
-            <span class="notification-dot"></span>
+          <router-link to="/wallet" class="premium-header-wallet" :aria-label="'Wallet balance ₹ ' + formatWalletAmount">
+            <i class="bi bi-wallet2" aria-hidden="true"></i><span>₹ {{ formatWalletAmount }}</span>
           </router-link>
         </div>
-
       </div>
-    </div>
+    </header>
 
     <main class="main-body-content">
       <router-view />
     </main>
 
-    <div v-if="!hideBottomNav" class="bottom-nav">
-
+    <footer v-if="!hideBottomNav" class="bottom-nav premium-bottom-nav" aria-label="Primary navigation">
       <router-link to="/dashboard" class="nav-item" active-class="active">
-        <span class="nav-icon">
-          <i class="bi bi-house-door-fill"></i>
-        </span>
-        <span class="nav-label">Home</span>
+        <span class="nav-icon"><i class="bi bi-house-door-fill"></i></span><span class="nav-label">Home</span>
       </router-link>
-
-      <router-link to="/wallet" class="nav-item" active-class="active">
-        <span class="nav-icon">
-          <i class="bi bi-wallet"></i>
-        </span>
-        <span class="nav-label">Wallet</span>
+      <router-link to="/play-history" class="nav-item" active-class="active">
+        <span class="nav-icon"><i class="bi bi-controller"></i></span><span class="nav-label">Plays</span>
       </router-link>
-
       <router-link to="/monthly-chart" class="nav-item" active-class="active">
-        <span class="nav-icon">
-          <i class="bi bi-calendar"></i>
-        </span>
-        <span class="nav-label">Chart</span>
+        <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span><span class="nav-label">Charts</span>
       </router-link>
-
-      <router-link to="/page/offers" class="nav-item" active-class="active">
-        <span class="nav-icon">
-          <i class="bi bi-gift"></i>
-        </span>
-        <span class="nav-label">Offers</span>
+      <router-link to="/wallet" class="nav-item" active-class="active">
+        <span class="nav-icon"><i class="bi bi-wallet2"></i></span><span class="nav-label">Wallet</span>
       </router-link>
-      <a v-if="whatsappUrl" :href="whatsappUrl" class="nav-item whatsapp-item" target="_blank"
-        rel="noopener noreferrer">
-        <span class="nav-icon">
-          <i class="bi bi-whatsapp"></i>
-        </span>
-        <span class="nav-label">WhatsApp</span>
-      </a>
-    </div>
+      <router-link to="/profile" class="nav-item" active-class="active">
+        <span class="nav-icon"><i class="bi bi-person"></i></span><span class="nav-label">Profile</span>
+      </router-link>
+    </footer>
   </div>
 </template>
 
@@ -271,857 +218,24 @@ const handleLogout = async () => {
 }
 // -------------
 </script>
-
 <style scoped>
-/* Keep the sign-out action visible while the menu list scrolls. */
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  box-sizing: border-box;
-}
-
-.sidebar-header {
-  flex: 0 0 auto;
-}
-
-.sidebar-menu {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-.sidebar>.p-3.text-center {
-  flex: 0 0 auto;
-  padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
-  background: var(--surface, #fff);
-  border-top: 1px solid #f0f0f0;
-}
-
-.share-submenu {
-  margin-left: 12px;
-  border-left: 2px solid #e7f5ee;
-}
-
-.share-submenu .sidebar-menu-item {
-  padding-left: 12px;
-}
-
-.sidebar-menu-item .icon-3d {
-  font-size: 1.2rem;
-  margin-right: 10px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
-  transition: transform 0.2s ease;
-}
-
-.sidebar-menu-item:hover .icon-3d {
-  transform: scale(1.15);
-}
-
-/* ---------------------------- */
-.shimmer-card {
-  background: linear-gradient(110deg,
-      rgb(98, 2, 235) 20%,
-      rgba(255, 255, 255, 0.9) 45%,
-      rgba(255, 255, 255, 0.9) 55%,
-      rgb(98, 2, 235) 80%);
-  background-size: 200% 100%;
-  animation: pauseFlash 2s infinite ease-in-out;
-}
-
-@keyframes pauseFlash {
-  0% {
-    background-position: 150%;
-  }
-
-  50% {
-    background-position: 75%;
-  }
-
-  100% {
-    background-position: 0%;
-  }
-}
-
-/* -------------------------------------- */
-.app-header {
-  position: sticky;
-  top: 0;
-  min-height: 58px;
-  padding: 7px 10px !important;
-  background: rgba(255, 255, 255, 0.96) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid #eeeeee !important;
-  box-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.06);
-}
-
-.min-width-0 {
-  min-width: 0;
-}
-
-/* =========================================
-   MENU
-========================================= */
-.header-menu-btn {
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #343a40;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
-}
-
-.header-menu-btn:active {
-  transform: scale(0.90);
-  background: #e9f8f0;
-  color: #198754;
-}
-
-/* =========================================
-   BRAND
-========================================= */
-.brand-crown {
-  width: 50px;
-  height: 50px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 11px;
-  background-color: #250f42;
-  box-shadow:
-    0 3px 8px rgba(255, 193, 7, 0.16);
-  font-size: 18px;
-  animation: crownFloat 3s ease-in-out infinite;
-  border-radius: 50%;
-}
-
-@keyframes crownFloat {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
-.brand-title {
-  max-width: 125px;
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 17px;
-}
-
-.brand-live-dot {
-  width: 6px;
-  height: 6px;
-  flex-shrink: 0;
-  display: inline-block;
-  border-radius: 50%;
-  background: #198754;
-  box-shadow:
-    0 0 0 3px rgba(25, 135, 84, 0.10);
-  animation: livePulse 1.6s infinite;
-}
-
-@keyframes livePulse {
-
-  0%,
-  100% {
-    transform: scale(0.85);
-    opacity: 0.7;
-  }
-
-  50% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-}
-
-/* =========================================
-   WALLET
-========================================= */
-.wallet-pill {
-  min-height: 40px;
-  flex-shrink: 0;
-  border-radius: 50px;
-  background:
-    linear-gradient(135deg,
-      #f0fff6,
-      #e5f9ed);
-  border: 1px solid rgba(25, 135, 84, 0.18);
-  box-shadow:
-    0 3px 10px rgba(25, 135, 84, 0.08);
-  transition: transform 0.2s ease;
-}
-
-.wallet-pill:active {
-  transform: scale(0.95);
-}
-
-.wallet-icon {
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: #fff;
-  background:
-    linear-gradient(135deg,
-      #198754,
-      #20c997);
-  box-shadow:
-    0 3px 7px rgba(25, 135, 84, 0.25);
-  font-size: 14px;
-}
-
-.wallet-label {
-  font-size: 8px;
-  font-weight: 800;
-  color: #6c757d;
-  letter-spacing: 0.4px;
-}
-
-.wallet-amount {
-  font-size: 14px;
-  line-height: 15px;
-}
-
-/* =========================================
-   NOTIFICATION
-========================================= */
-.notification-btn {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: #495057;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  box-shadow:
-    0 3px 8px rgba(0, 0, 0, 0.05);
-  font-size: 17px;
-  transition: all 0.2s ease;
-}
-
-.notification-btn:active {
-  transform: scale(0.90);
-  color: #dc3545;
-  background: #fff5f5;
-}
-
-/* Notification indicator */
-.notification-dot {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #dc3545;
-  border: 2px solid #fff;
-  animation: notificationPulse 1.7s infinite;
-}
-
-@keyframes notificationPulse {
-  0% {
-    box-shadow:
-      0 0 0 0 rgba(220, 53, 69, 0.45);
-  }
-
-  70% {
-    box-shadow:
-      0 0 0 5px rgba(220, 53, 69, 0);
-  }
-
-  100% {
-    box-shadow:
-      0 0 0 0 rgba(220, 53, 69, 0);
-  }
-}
-
-/* =========================================
-   SMALL MOBILE SCREEN
-========================================= */
-@media (max-width: 360px) {
-  .app-header {
-    padding-left: 7px !important;
-    padding-right: 7px !important;
-  }
-
-  .header-menu-btn {
-    width: 39px;
-    height: 39px;
-  }
-
-  .brand-crown {
-    width: 33px;
-    height: 33px;
-    font-size: 16px;
-  }
-
-  .brand-title {
-    max-width: 95px;
-    font-size: 13px;
-  }
-
-  .wallet-pill {
-    min-height: 38px;
-    padding-left: 6px !important;
-    padding-right: 7px !important;
-  }
-
-  .wallet-icon {
-    width: 28px;
-    height: 28px;
-  }
-
-  .notification-btn {
-    width: 38px;
-    height: 38px;
-  }
-}
-
-/* ----------------------------- */
-.bottom-nav {
-  position: fixed;
-  left: 50%;
-  bottom: 12px;
-  transform: translateX(-50%);
-
-  width: calc(100% - 18px);
-  max-width: 560px;
-
-  height: 68px;
-  padding: 7px 7px;
-
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  align-items: center;
-
-  z-index: 1050;
-
-  background:
-    linear-gradient(135deg, var(--primary-color), var(--primary-light));
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 22px;
-
-  box-shadow:
-    0 18px 45px rgba(0, 0, 0, 0.28),
-    0 5px 15px rgba(0, 0, 0, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  isolation: isolate;
-}
-
-/* Top shine */
-
-.bottom-nav::before {
-  content: '';
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  top: 0;
-
-  height: 1px;
-
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 193, 7, 0.7),
-      transparent);
-
-  opacity: 0.7;
-}
-
-/* Moving glow */
-
-.bottom-nav::after {
-  content: '';
-  position: absolute;
-
-  width: 90px;
-  height: 90px;
-
-  top: -55px;
-  left: 10%;
-
-  border-radius: 50%;
-
-  background: rgba(13, 110, 253, 0.22);
-
-  filter: blur(30px);
-
-  pointer-events: none;
-
-  animation: navGlowMove 7s ease-in-out infinite alternate;
-}
-
-@keyframes navGlowMove {
-  0% {
-    left: 5%;
-    opacity: 0.35;
-  }
-
-  50% {
-    left: 45%;
-    opacity: 0.6;
-  }
-
-  100% {
-    left: 82%;
-    opacity: 0.35;
-  }
-}
-
-
-/* =========================================================
-   NAV ITEM
-========================================================= */
-
-.bottom-nav .nav-item {
-  position: relative;
-
-  height: 56px;
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-
-  color: rgba(255, 255, 255, 0.52);
-
-  text-decoration: none;
-
-  border-radius: 17px;
-
-  transition:
-    color 0.25s ease,
-    transform 0.25s cubic-bezier(.2, .8, .2, 1);
-}
-
-
-/* =========================================================
-   ICON
-========================================================= */
-
-.bottom-nav .nav-icon {
-  position: relative;
-
-  width: 36px;
-  height: 30px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 12px;
-
-  transition:
-    transform 0.3s cubic-bezier(.2, .8, .2, 1),
-    background 0.3s ease,
-    box-shadow 0.3s ease;
-}
-
-.bottom-nav .nav-icon i {
-  position: relative;
-  z-index: 2;
-
-  font-size: 1.15rem;
-
-  transition:
-    transform 0.3s cubic-bezier(.2, .8, .2, 1),
-    color 0.25s ease,
-    filter 0.25s ease;
-}
-
-
-/* =========================================================
-   LABEL
-========================================================= */
-
-.bottom-nav .nav-label {
-  font-size: 0.58rem;
-  line-height: 1;
-
-  font-weight: 700;
-
-  letter-spacing: 0.01em;
-
-  white-space: nowrap;
-
-  transition:
-    color 0.25s ease,
-    transform 0.25s ease;
-}
-
-
-/* =========================================================
-   ACTIVE ITEM
-========================================================= */
-
-.bottom-nav .nav-item.active {
-  color: #ffc107;
-}
-
-.bottom-nav .nav-item.active .nav-icon {
-  background:
-    linear-gradient(135deg,
-      rgba(255, 193, 7, 0.22),
-      rgba(255, 193, 7, 0.08));
-
-  box-shadow:
-    0 0 0 1px rgba(255, 193, 7, 0.18),
-    0 5px 18px rgba(255, 193, 7, 0.18);
-
-  transform: translateY(-3px);
-}
-
-.bottom-nav .nav-item.active .nav-icon i {
-  color: #ffc107;
-
-  transform: scale(1.12);
-
-  filter:
-    drop-shadow(0 0 6px rgba(255, 193, 7, 0.65));
-}
-
-.bottom-nav .nav-item.active .nav-label {
-  color: #ffc107;
-
-  transform: translateY(-1px);
-}
-
-
-/* Active indicator */
-
-.bottom-nav .nav-item.active::after {
-  content: '';
-
-  position: absolute;
-
-  bottom: 1px;
-  left: 50%;
-
-  width: 5px;
-  height: 5px;
-
-  transform: translateX(-50%);
-
-  border-radius: 50%;
-
-  background: #ffc107;
-
-  box-shadow:
-    0 0 7px rgba(255, 193, 7, 0.9),
-    0 0 14px rgba(255, 193, 7, 0.55);
-
-  animation: activeDot 1.8s ease-in-out infinite;
-}
-
-@keyframes activeDot {
-
-  0%,
-  100% {
-    transform: translateX(-50%) scale(1);
-    opacity: 0.8;
-  }
-
-  50% {
-    transform: translateX(-50%) scale(1.45);
-    opacity: 1;
-  }
-}
-
-
-/* =========================================================
-   TAP / HOVER EFFECT
-========================================================= */
-
-.bottom-nav .nav-item:active {
-  transform: scale(0.9);
-}
-
-.bottom-nav .nav-item:active .nav-icon i {
-  transform: scale(0.88);
-}
-
-@media (hover: hover) {
-  .bottom-nav .nav-item:hover {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .bottom-nav .nav-item:hover .nav-icon {
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateY(-2px);
-  }
-
-  .bottom-nav .nav-item:hover .nav-icon i {
-    transform: scale(1.08);
-  }
-
-  .bottom-nav .nav-item.active:hover {
-    color: #ffc107;
-  }
-
-  .bottom-nav .nav-item.active:hover .nav-icon {
-    background:
-      linear-gradient(135deg,
-        rgba(255, 193, 7, 0.28),
-        rgba(255, 193, 7, 0.1));
-  }
-}
-
-
-/* =========================================================
-   WHATSAPP SPECIAL EFFECT
-========================================================= */
-
-.bottom-nav .whatsapp-item .nav-icon i {
-  color: #25d366;
-}
-
-.bottom-nav .whatsapp-item.active .nav-icon {
-  background:
-    linear-gradient(135deg,
-      rgba(37, 211, 102, 0.22),
-      rgba(37, 211, 102, 0.06));
-
-  box-shadow:
-    0 0 0 1px rgba(37, 211, 102, 0.18),
-    0 5px 18px rgba(37, 211, 102, 0.18);
-}
-
-.bottom-nav .whatsapp-item.active .nav-icon i {
-  color: #25d366;
-
-  filter:
-    drop-shadow(0 0 6px rgba(37, 211, 102, 0.65));
-}
-
-.bottom-nav .whatsapp-item.active .nav-label {
-  color: #25d366;
-}
-
-
-/* =========================================================
-   ICON FLOAT ANIMATION
-========================================================= */
-
-.bottom-nav .nav-item.active .nav-icon i {
-  animation: activeIconFloat 2.2s ease-in-out infinite;
-}
-
-@keyframes activeIconFloat {
-
-  0%,
-  100% {
-    transform: translateY(0) scale(1.1);
-  }
-
-  50% {
-    transform: translateY(-2px) scale(1.16);
-  }
-}
-
-
-/* =========================================================
-   MOBILE SAFE AREA
-========================================================= */
-
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .bottom-nav {
-    bottom: calc(8px + env(safe-area-inset-bottom));
-  }
-}
-
-
-/* =========================================================
-   VERY SMALL DEVICES
-========================================================= */
-
-@media (max-width: 360px) {
-  .bottom-nav {
-    width: calc(100% - 12px);
-    height: 64px;
-    bottom: 7px;
-    padding: 5px;
-    border-radius: 19px;
-  }
-
-  .bottom-nav .nav-item {
-    height: 52px;
-    border-radius: 15px;
-  }
-
-  .bottom-nav .nav-icon {
-    width: 32px;
-    height: 27px;
-  }
-
-  .bottom-nav .nav-icon i {
-    font-size: 1.05rem;
-  }
-
-  .bottom-nav .nav-label {
-    font-size: 0.53rem;
-  }
-}
-
-/* Responsive wallet header and a pinned sign-out action. */
-.sidebar {
-  padding-bottom: 0 !important;
-  overflow: hidden;
-}
-
-.sidebar-header {
-  flex: 0 0 auto;
-  padding: 16px 16px 14px;
-}
-
-.sidebar-header-actions {
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-  min-width: 0;
-  justify-content: space-between;
-}
-
-.sidebar-wallet-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 0 1 auto;
-  min-width: 0;
-  padding: 4px 4px;
-  border: 1px solid rgba(25, 135, 84, .16);
-  border-radius: 9px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
-}
-
-.sidebar-wallet-symbol {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  flex: 0 0 20px;
-  border-radius: 6px;
-  color: #fff;
-  /* background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); */
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.sidebar-wallet-copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 3px;
-  line-height: 1.1;
-}
-
-.sidebar-wallet-copy small {
-  color: #fff;
-  font-size: 8px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.sidebar-wallet-amount {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 900;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.sidebar-profile-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  flex: 0 0 auto;
-  min-width: 0;
-  padding: 7px 9px;
-  white-space: nowrap;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.sidebar-profile-btn .icon-3d {
-  margin: 0;
-}
-
-.sidebar-menu {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-}
-
-.sidebar>.p-3.text-center {
-  flex: 0 0 auto;
-  padding: 12px 16px max(12px, env(safe-area-inset-bottom)) !important;
-  background: var(--surface, #fff);
-  border-top: 1px solid #f0f0f0;
-}
-
-@media (max-width:320px) {
-  .sidebar-header {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .sidebar-profile-btn {
-    padding-left: 6px;
-    padding-right: 6px;
-    font-size: 10px;
-  }
-
-  .sidebar-wallet-card {
-    gap: 6px;
-    padding-left: 7px;
-    padding-right: 7px;
-  }
-}
-
-@media (prefers-reduced-motion:reduce) {
-  .sidebar-menu-item .icon-3d {
-    transition: none;
-  }
-}
+.premium-shell { min-height:100dvh; }
+.premium-sidebar { display:flex; flex-direction:column; height:100dvh; padding-bottom:env(safe-area-inset-bottom); }
+.premium-sidebar-header { flex:0 0 auto; padding:22px 18px 16px; }
+.premium-profile-panel { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.premium-avatar { display:grid; place-items:center; width:46px; height:46px; flex:0 0 46px; border-radius:15px; color:var(--gsk-brand); background:#fff; font-size:21px; }
+.premium-profile-copy { display:grid; gap:2px; min-width:0; }
+.premium-profile-copy small { color:rgba(255,255,255,.7); font-size:9px; font-weight:850; letter-spacing:.12em; }
+.premium-profile-copy strong { overflow:hidden; color:#fff; font-size:15px; text-overflow:ellipsis; white-space:nowrap; }
+.premium-profile-copy a { color:rgba(255,255,255,.8); font-size:11px; }
+.premium-sidebar-wallet { display:flex; align-items:center; gap:10px; min-height:62px; padding:10px 12px; color:#fff; }
+.premium-sidebar-wallet .sidebar-wallet-symbol { display:grid; place-items:center; width:36px; height:36px; border-radius:11px; color:#fff; background:rgba(255,255,255,.14); }
+.premium-sidebar-wallet .sidebar-wallet-copy { display:grid; gap:2px; }
+.premium-sidebar-wallet small { color:rgba(255,255,255,.7); font-size:10px; }
+.premium-sidebar-wallet .sidebar-wallet-amount { color:#fff; font-size:16px; }
+.premium-sidebar-menu { flex:1 1 auto; min-height:0; overflow-y:auto; padding:14px 10px; overscroll-behavior:contain; }
+.premium-menu-caption { margin:8px 12px; color:#8b97aa; font-size:9px; font-weight:850; letter-spacing:.13em; }
+.premium-sidebar-footer { flex:0 0 auto; padding:14px 16px max(14px,env(safe-area-inset-bottom)); border-top:1px solid var(--gsk-line); background:#fff; }
+.premium-sidebar-footer small { display:block; margin-top:10px; color:var(--gsk-muted); text-align:center; font-size:10px; }
+@media (prefers-reduced-motion:reduce) { .premium-sidebar-menu .sidebar-menu-item .icon-3d { transition:none; } }
 </style>
