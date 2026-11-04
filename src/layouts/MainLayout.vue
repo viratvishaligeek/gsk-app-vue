@@ -16,6 +16,7 @@
       <nav class="drawer-navigation">
         <p>PLAY & EXPLORE</p>
         <router-link to="/dashboard" @click="closeSidebar"><span>🏠</span>Home <b>›</b></router-link>
+        <router-link to="/games" @click="closeSidebar"><span>🎮</span>Explore games <b>›</b></router-link>
         <router-link to="/play-history" @click="closeSidebar"><span>🎮</span>My plays & history <b>›</b></router-link>
         <router-link to="/monthly-chart" @click="closeSidebar"><span>📊</span>Monthly charts <b>›</b></router-link>
         <p>YOUR ACCOUNT</p>
@@ -52,9 +53,9 @@
     <main class="gsk-main-content"><router-view /></main>
 
     <nav v-if="!hideBottomNav" class="gsk-bottom-navigation" aria-label="Primary navigation">
-      <router-link to="/dashboard" active-class="is-active"><span>🏠</span><small>Home</small></router-link>
-      <router-link to="/play-history" active-class="is-active"><span>🎮</span><small>Plays</small></router-link>
-      <router-link to="/monthly-chart" active-class="is-active"><span>📊</span><small>Charts</small></router-link>
+      <router-link to="/dashboard" active-class="is-active" exact-active-class="is-active"><span>🏠</span><small>Home</small></router-link>
+      <router-link to="/games" active-class="is-active"><span>🎮</span><small>Games</small></router-link>
+      <router-link to="/play-history" active-class="is-active"><span>📜</span><small>Plays</small></router-link>
       <router-link to="/wallet" active-class="is-active"><span>💰</span><small>Wallet</small></router-link>
       <router-link to="/profile" active-class="is-active"><span>👤</span><small>Profile</small></router-link>
     </nav>

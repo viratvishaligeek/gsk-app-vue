@@ -37,6 +37,16 @@
               <img :src="banner.imageUrl" class="d-block w-100" :alt="banner.title || 'GSK promotion'" />
             </div>
           </div>
+          <template v-if="banners.length > 1">
+            <button class="carousel-control-prev gsk-banner-control" type="button"
+              aria-label="Previous promotion" @click="goToBanner((activeBannerIndex + banners.length - 1) % banners.length)">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next gsk-banner-control" type="button"
+              aria-label="Next promotion" @click="goToBanner((activeBannerIndex + 1) % banners.length)">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+          </template>
         </div>
       </section>
 
@@ -68,35 +78,24 @@
         <div v-else class="dashboard-inline-empty"><span>🗓️</span><p>No featured result is available yet.</p></div>
       </section>
 
-      <section class="market-section">
-        <div class="section-heading"><div><span class="eyebrow">EXPLORE & PLAY</span><h2>🎯 Live markets</h2></div>
-          <router-link to="/monthly-chart" class="section-link">View charts →</router-link></div>
+      <section class="market-section lobby-preview">
+        <div class="section-heading"><div><span class="eyebrow">YOUR NEXT MOVE</span><h2>🎮 Markets to explore</h2></div>
+          <router-link to="/games" class="section-link">Open game lobby →</router-link></div>
         <div v-if="errorMessage" class="alert alert-danger rounded-4">{{ errorMessage }}
           <button class="btn btn-sm btn-outline-danger ms-2" @click="fetchGames">Retry</button></div>
-        <div v-else-if="isLoading" class="py-2"><LoadingState variant="market-list" :count="3" /></div>
+        <div v-else-if="isLoading" class="py-2"><LoadingState variant="market-list" :count="2" /></div>
         <div v-else-if="games.length === 0" class="dashboard-inline-empty"><span>🎲</span><h3>No markets available</h3><p>Please check again later.</p></div>
-        <div v-else class="market-list">
-          <article v-for="game in games" :key="game.id" v-memo="[game,isGamePlayable(game),serverOffset]"
-            class="market-item" :class="{'market-item-closed':!isGamePlayable(game)}">
-            <div class="market-item-main">
-              <div class="market-symbol">🎮</div>
-              <div class="market-info"><h3>{{ game.name }}</h3>
-                <span class="market-status" :class="isGamePlayable(game)?'status-open':'status-closed'">
-                  <i></i>{{ game.monthly_closure ? 'Month-end closed' : getGameStatus(game) }}
-                </span>
-                <small v-if="game.monthly_closure" class="closure-note">{{ game.play_status_message || 'आज महीने का आखिरी दिन है, इसलिए आज सभी खेल बंद रहेंगे। 1 तारीख से सभी खेल फिर से शुरू करेंगे। धन्यवाद।' }}</small>
-              </div>
-              <div class="market-result"><small>Today</small><strong>{{ game.latest_result?.date === todayDate ? (game.latest_result?.number ?? '--') : '--' }}</strong>
-                <small v-if="isGamePlayable(game)" class="countdown"><GameCountdown :end-at="game.play_window_end_at" :server-offset="serverOffset" /></small>
-              </div>
-            </div>
-            <div class="market-item-footer"><span>Last result: <b>{{ game.previous_result?.number ?? '--' }}</b></span>
-              <span>🕒 {{ formatTime(game.result_time) }}</span>
-              <router-link v-if="isGamePlayable(game)" :to="{name:'play-game',params:{id:game.id}}" class="market-play">Play now →</router-link>
-              <span v-else class="market-closed-label">Closed</span>
-            </div>
+        <div v-else class="lobby-preview-track" aria-label="Featured markets">
+          <article v-for="game in games.slice(0, 5)" :key="game.id" class="lobby-preview-card"
+            :class="{ 'is-closed': !isGamePlayable(game) }">
+            <div class="lobby-preview-top"><span>🎯</span><small :class="isGamePlayable(game) ? 'is-open' : 'is-closed-label'">{{ isGamePlayable(game) ? 'OPEN NOW' : 'CLOSED' }}</small></div>
+            <h3>{{ game.name }}</h3>
+            <div class="lobby-preview-result"><small>Today's result</small><strong>{{ game.latest_result?.date === todayDate ? (game.latest_result?.number ?? '--') : '--' }}</strong></div>
+            <router-link v-if="isGamePlayable(game)" :to="{ name: 'play-game', params: { id: game.id } }">Play market →</router-link>
+            <router-link v-else :to="{ name: 'monthly-chart', query: { game: game.id } }">View chart →</router-link>
           </article>
         </div>
+        <router-link to="/games" class="lobby-preview-all">Explore all {{ marketCount }} markets <span>→</span></router-link>
       </section>
       <section class="dashboard-bottom-link"><span>📊</span><div><strong>Explore monthly charts</strong><small>Browse historical market results</small></div>
         <router-link to="/monthly-chart" aria-label="Open monthly charts">→</router-link></section>
@@ -544,4 +543,6 @@ onUnmounted(() => {
 .market-list{display:grid;gap:11px}.market-item{padding:14px;border:1px solid #e5ebf3;border-radius:17px;background:#fff;box-shadow:0 5px 15px #213b5b09}.market-item-main{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:10px}.market-symbol{display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:#edf3fc;font-size:21px}.market-info{min-width:0}.market-info h3{margin:0 0 4px;font-size:14px;font-weight:850;text-transform:capitalize;overflow-wrap:anywhere}.market-status{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:850;text-transform:uppercase}.market-status i{width:6px;height:6px;border-radius:50%;background:currentColor}.status-open{color:#239667}.status-closed{color:#d16a6a}.closure-note{display:block;margin-top:5px;color:#bd5b55;font-size:10px}.market-result{text-align:right}.market-result small{display:block;color:var(--gsk-muted);font-size:9px}.market-result strong{display:block;font-size:22px;font-weight:900;color:var(--gsk-navy)}.market-result .countdown{color:#b66b29;font-weight:750}.market-item-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid #edf0f5;color:#718096;font-size:10px}.market-item-footer b{color:#273c59}.market-play{margin-left:auto;padding:7px 11px;border-radius:9px;background:#eaf2ff;color:#28558f;font-size:10px;font-weight:850;text-decoration:none}.market-closed-label{margin-left:auto;color:#b66a6a;font-weight:800}.market-item-closed{background:#fcfcfd}.dashboard-inline-empty,.dashboard-empty{display:grid;justify-items:center;text-align:center;padding:28px 18px;border:1px dashed #d8e0eb;border-radius:17px;background:#fff}.dashboard-inline-empty>span,.dashboard-empty-emoji{font-size:35px}.dashboard-inline-empty h3,.dashboard-empty h1{margin:8px 0 4px;font-size:15px;font-weight:850}.dashboard-inline-empty p,.dashboard-empty p{margin:0;color:var(--gsk-muted);font-size:12px}.dashboard-empty{min-height:50vh;align-content:center;gap:10px}.dashboard-empty-emoji{font-size:46px}.dashboard-bottom-link{display:flex;align-items:center;gap:12px;margin-top:20px;padding:14px;border:1px solid #e4eaf2;border-radius:16px;background:#fff}.dashboard-bottom-link>span{font-size:28px}.dashboard-bottom-link div{display:grid;flex:1}.dashboard-bottom-link strong{font-size:12px}.dashboard-bottom-link small{font-size:10px;color:var(--gsk-muted)}.dashboard-bottom-link>a{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#eaf2ff;color:#315f9f;text-decoration:none;font-size:20px}
 @media(min-width:700px){.gsk-dashboard{max-width:760px;margin:0 auto;padding-top:24px}.dashboard-actions{gap:14px}.dashboard-action{padding:17px}.market-list{grid-template-columns:repeat(2,minmax(0,1fr))}.market-item-footer{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.announcement-track{animation:none}}
+.lobby-preview-track{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}.lobby-preview-track::-webkit-scrollbar{display:none}.lobby-preview-card{display:flex;flex:0 0 min(68vw,220px);flex-direction:column;gap:9px;padding:13px;border:1px solid #e3eaf3;border-radius:16px;background:#fff;box-shadow:0 5px 15px #213b5b09;scroll-snap-align:start}.lobby-preview-card.is-closed{background:#fafbfd}.lobby-preview-top{display:flex;align-items:center;justify-content:space-between}.lobby-preview-top>span{font-size:22px}.lobby-preview-top small{font-size:8px;font-weight:900;color:#239667}.lobby-preview-top small.is-closed-label{color:#8b96a7}.lobby-preview-card h3{margin:0;font-size:13px;font-weight:900}.lobby-preview-result{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:10px;background:#f1f5fa}.lobby-preview-result small{color:#78869a;font-size:9px}.lobby-preview-result strong{font-size:21px;font-weight:950;color:#182d4d}.lobby-preview-card>a{margin-top:auto;color:#315f9f;font-size:10px;font-weight:900}.lobby-preview-all{display:flex;align-items:center;justify-content:space-between;margin-top:3px;padding:13px 14px;border:1px solid #dce6f2;border-radius:13px;background:#edf3fc;color:#244e83;font-size:11px;font-weight:900;text-decoration:none}
+.dashboard-promotions .carousel{position:relative}.gsk-banner-control{width:38px;height:38px;top:50%;bottom:auto;transform:translateY(-50%);border:1px solid #ffffff80;border-radius:50%;background:#142b4b80;opacity:.95}.gsk-banner-control.carousel-control-prev{left:10px}.gsk-banner-control.carousel-control-next{right:10px}.gsk-banner-control .carousel-control-prev-icon,.gsk-banner-control .carousel-control-next-icon{width:14px;height:14px}
 </style>

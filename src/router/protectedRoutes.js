@@ -12,6 +12,11 @@ export default [
         component: () => import('../views/DashboardView.vue'),
       },
       {
+        path: '/games',
+        name: 'games',
+        component: () => import('../views/GamesView.vue'),
+      },
+      {
         path: '/profile',
         name: 'profile',
         component: () => import('../views/EditProfile.vue'),

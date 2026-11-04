@@ -1,7 +1,7 @@
 <template>
   <div class="content-area pb-5 history-bg min-vh-100 d-flex flex-column">
     <div class="container-fluid px-2 px-md-3 py-2 flex-grow-1 d-flex flex-column">
-      <div class="support-banner">
+      <div class="support-banner support-workspace-header">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
           <div class="d-flex align-items-center gap-3">
             <div
@@ -17,7 +17,7 @@
             connected ? 'Online' : 'Reconnecting' }}</span>
         </div>
       </div>
-      <section v-if="!humanSupportRequested" class="support-faq-card mb-3">
+      <section v-if="!humanSupportRequested" class="support-faq-card support-faq-workspace mb-3">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
             <div>
@@ -344,4 +344,8 @@ onUnmounted(() => {
 })
 </script><style scoped>
 .content-area.history-bg{min-height:100dvh;padding:14px 12px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb}.content-area.history-bg>.container-fluid{max-width:720px;margin:0 auto;padding:0!important}.support-banner{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:16px;border-radius:17px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.support-banner-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#ffffff1b;font-size:25px}.support-banner h1{margin:0;color:#fff;font-size:17px;font-weight:900}.support-banner .small{color:#d4e0f0!important;font-size:10px}.support-banner .badge{margin-left:auto}.support-faq-card,.card{border:1px solid #e5ebf3!important;border-radius:16px!important;background:#fff;box-shadow:0 7px 20px #1b365d0b!important}.support-faq-card .card-body{padding:15px}.support-faq-card .btn{min-height:42px;font-size:11px}.message-bubble{max-width:84%;word-break:break-word;font-size:12px;line-height:1.5}.message-bubble.bg-warning{background:#e9f1fc!important;color:#203b5e!important}.message-bubble.bg-white{border-color:#e5ebf3!important}.chat-media{display:block;max-width:min(260px,65vw);max-height:260px;margin-top:6px;border-radius:11px}.card-footer form .form-control{min-height:42px}.no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}.rounded-bottom-right-0{border-bottom-right-radius:3px!important}.rounded-bottom-left-0{border-bottom-left-radius:3px!important}
+</style>
+<style scoped>
+.history-bg{background:radial-gradient(ellipse at top right,#eaf2fc 0,transparent 38%),#f4f7fb}.support-workspace-header{padding:18px;border-radius:20px;background:linear-gradient(125deg,#152d4d,#315f9f);box-shadow:0 12px 25px #18385c1c}.support-faq-workspace{max-width:760px;margin:14px auto!important;border:1px solid #e2eaf3;border-radius:18px;background:#fff;box-shadow:0 8px 22px #1b365d0a}.support-faq-workspace .card-body{padding:17px}.support-faq-workspace .border.rounded-3{border-color:#e5ebf3!important;border-radius:13px!important}.support-faq-workspace .border.rounded-3>button{min-height:48px;padding:11px 13px;color:#2d4563;font-size:11px}.support-faq-workspace .border.rounded-3>div{font-size:10px;line-height:1.6}.support-banner-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:#ffffff20;font-size:25px}.support-workspace-header h1{font-size:20px!important}.support-workspace-header .badge{padding:7px 10px}.content-area:has(.message-bubble){padding-bottom:calc(14px + env(safe-area-inset-bottom))}.content-area:has(.message-bubble) .container-fluid{max-width:820px}.content-area:has(.message-bubble) .card.flex-grow-1{max-height:calc(100dvh - 190px)!important;min-height:420px!important;border:1px solid #e3eaf3!important;border-radius:18px!important}.content-area:has(.message-bubble) .card-body.bg-light-subtle{background:#f5f8fc!important}.content-area:has(.message-bubble) .card-footer{position:sticky;bottom:0;padding:11px!important}.message-bubble{max-width:min(88%,520px);font-size:11px;line-height:1.55}.content-area:has(.message-bubble) .card-footer input.form-control{min-height:42px;font-size:12px}.content-area:has(.message-bubble) .card-footer button{flex:0 0 40px!important;width:40px!important;height:40px!important}
+@media(prefers-reduced-motion:reduce){.support-faq-workspace{scroll-behavior:auto}}
 </style>
