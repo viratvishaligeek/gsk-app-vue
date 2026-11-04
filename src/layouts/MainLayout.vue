@@ -207,5 +207,5 @@ const handleLogout = async () => {
 .gsk-page-enter-active,.gsk-page-leave-active{transition:opacity .18s ease,transform .18s ease}
 .gsk-page-enter-from{opacity:0;transform:translateY(7px)}
 .gsk-page-leave-to{opacity:0;transform:translateY(-4px)}
-@media(prefers-reduced-motion:reduce){.gsk-drawer,.drawer-navigation a,.menu-trigger,.gsk-bottom-navigation a,.gsk-bottom-navigation a>span{transition:none!important;animation:none!important}}
+@media(prefers-reduced-motion:reduce){.gsk-drawer,.drawer-navigation a,.menu-trigger,.gsk-bottom-navigation a,.gsk-bottom-navigation a>span,.gsk-page-enter-active,.gsk-page-leave-active{transition:none!important;animation:none!important}}
 </style>
