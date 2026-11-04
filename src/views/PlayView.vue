@@ -9,9 +9,9 @@
       </div>
     </div>
     <template v-else-if="game">
-      <div
-        class="d-flex align-items-center justify-content-between p-2 mb-2 rounded-3 shadow-sm border play-game-header">
-        <h5 class="m-0 text-dark fw-bold d-flex align-items-center gap-2">
+      <div class="play-game-header">
+        <router-link to="/dashboard" class="play-back" aria-label="Back to markets">←</router-link>
+        <h5 class="m-0 fw-bold d-flex align-items-center gap-2">
           {{ game.name }}
         </h5>
 
