@@ -10,7 +10,7 @@
 
       <div v-else-if="errorMessage" class="page-card error-card">
         <div class="error-icon">
-          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span class="gsk-emoji-icon" aria-hidden="true">⚠️</span>
         </div>
         <h5 class="fw-bold mb-2">
           Page unavailable
@@ -19,7 +19,7 @@
           {{ errorMessage }}
         </p>
         <router-link to="/dashboard" class="btn btn-warning rounded-pill px-4 fw-bold">
-          <i class="bi bi-house-fill me-1"></i>
+          <span class="gsk-emoji-icon" aria-hidden="true">🏠</span>
           Back Home
         </router-link>
       </div>
