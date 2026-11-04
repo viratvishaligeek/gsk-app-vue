@@ -209,65 +209,6 @@ const currentPage = ref(1)
 const lastPage = ref(1)
 const hasMore = ref(false)
 
-const notificationTypes = [
-  {
-    keywords: [
-      'wallet',
-      'credit',
-      'credited',
-      'debit',
-      'debited',
-      'payment',
-      'transaction',
-    ],
-    icon: 'bi bi-credit-card',
-    className: 'secondary',
-  },
-  {
-    keywords: [
-      'booking',
-      'bet',
-      'game',
-      'play',
-      'result',
-    ],
-    icon: 'bi bi-ticket-perforated',
-    className: 'primary',
-  },
-  {
-    keywords: [
-      'offer',
-      'bonus',
-      'discount',
-      'promotion',
-      'promo',
-    ],
-    icon: 'bi bi-gift',
-    className: 'accent',
-  },
-  {
-    keywords: [
-      'welcome',
-    ],
-    icon: 'bi bi-person-plus',
-    className: 'primary',
-  },
-  {
-    keywords: [
-      'security',
-      'password',
-      'login',
-    ],
-    icon: 'bi bi-shield-check',
-    className: 'warning',
-  },
-]
-
-const defaultNotification = {
-  icon: 'bi bi-bell',
-  className: 'warning',
-}
-
 const isInitialLoading = computed(() => {
   return isLoading.value && notifications.value.length === 0
 })
@@ -379,24 +320,6 @@ const loadMore = () => {
   }
 
   fetchNotifications(currentPage.value + 1)
-}
-
-const getNotificationType = (subject) => {
-  const value = String(subject || '').toLowerCase()
-
-  return notificationTypes.find(type =>
-    type.keywords.some(keyword =>
-      value.includes(keyword)
-    )
-  ) || defaultNotification
-}
-
-const getNotificationIcon = (subject) => {
-  return getNotificationType(subject).icon
-}
-
-const getNotificationIconClass = (subject) => {
-  return getNotificationType(subject).className
 }
 
 const isToday = (date) => {
