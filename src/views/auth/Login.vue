@@ -1,11 +1,11 @@
 <template>
   <div class="overlay" id="overlay"></div>
-  <main class="auth-container auth-container--premium">
+  <div class="auth-container">
     <div class="text-center mb-4">
-      <div class="mb-3">
-        <img src="../../assets/img/logo.png" class="auth-brand-logo" alt="" />
+      <div class=" mb-3">
+        <img src="../../assets/img/logo.png" style="height: 120px; width: auto;" alt="">
       </div>
-      <h4 class="fw-bold text-primary-color">Gali Satta Kings</h4>
+      <h4 class="fw-bold text-primary-color">gali satta kings</h4>
       <p class="text-muted">Sign in to your account</p>
     </div>
     <div v-if="errors.api" class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -16,20 +16,10 @@
       <div class="mb-3">
         <label for="phone" class="form-label">Phone Number</label>
         <div class="input-group">
-          <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-telephone text-danger"></i>
-          </span>
           <span class="input-group-text bg-transparent border-end-0">+91</span>
-          <input
-            type="text"
-            inputmode="numeric"
-            class="form-control border-start-0"
-            :class="{ 'is-invalid': errors.phone }"
-            id="phone"
-            :value="form.phone"
-            placeholder="Enter mobile number"
-            @input="handlePhoneInput"
-          />
+          <input type="text" inputmode="numeric" class="form-control border-start-0" maxlength="10"
+            :class="{ 'is-invalid': errors.phone }" id="phone" :value="form.phone" placeholder="Enter mobile number"
+            @input="handlePhoneInput" />
         </div>
         <div v-if="errors.phone" class="invalid-feedback d-block small mt-1">
           {{ errors.phone }}
@@ -47,22 +37,11 @@
           <span class="input-group-text bg-transparent border-end-0">
             <i class="bi bi-lock text-success"></i>
           </span>
-          <input
-            :type="showPassword ? 'text' : 'password'"
-            class="form-control border-start-0 border-end-0"
-            :class="{ 'is-invalid': errors.password }"
-            id="password"
-            v-model="form.password"
-            placeholder="Enter your password"
-            @input="clearFieldError('password')"
-          />
-          <button
-            type="button"
-            class="input-group-text bg-transparent border-start-0"
-            id="togglePassword"
-            @click="showPassword = !showPassword"
-            aria-label="Toggle password visibility"
-          >
+          <input :type="showPassword ? 'text' : 'password'" class="form-control border-start-0 border-end-0"
+            :class="{ 'is-invalid': errors.password }" id="password" v-model="form.password"
+            placeholder="Enter your password" @input="clearFieldError('password')" />
+          <button type="button" class="input-group-text bg-transparent border-start-0" id="togglePassword"
+            @click="showPassword = !showPassword" aria-label="Toggle password visibility">
             <i :class="['bi', showPassword ? 'bi-eye-slash' : 'bi-eye', 'text-info']"></i>
           </button>
         </div>
@@ -78,12 +57,7 @@
 
       <div class="d-grid gap-2 mb-4">
         <button type="submit" class="btn btn-app btn-primary" :disabled="isLoading">
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm me-2"
-            role="status"
-            aria-hidden="true"
-          ></span>
+          <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
           <span>{{ isLoading ? 'Signing In...' : 'Sign In' }}</span>
         </button>
       </div>
@@ -97,11 +71,10 @@
         </p>
       </div>
     </form>
-  </main>
+  </div>
 </template>
 
 <script setup>
-defineOptions({ name: 'AuthLoginView' })
 import { reactive, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
@@ -134,7 +107,7 @@ const clearFieldError = (field) => {
 
 const validateForm = () => {
   let isValid = true
-  console.log(form)
+  console.log(form);
   if (!form.phone) {
     errors.phone = 'Phone number is required.'
     isValid = false
@@ -181,24 +154,38 @@ const handleLogin = async () => {
 
     const responseData = response.data
 
-    if (responseData?.success && responseData?.data?.token) {
+    if (
+      responseData?.success &&
+      responseData?.data?.token
+    ) {
       const userData = responseData.data.user || {}
 
-      authStore.setAuth(responseData.data.token, userData, form.rememberMe)
+      authStore.setAuth(
+        responseData.data.token,
+        userData,
+        form.rememberMe
+      )
 
       const redirectPath =
-        typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard'
+        typeof route.query.redirect === 'string'
+          ? route.query.redirect
+          : '/dashboard'
 
       await router.push(redirectPath)
 
       return
     }
 
-    errors.api = responseData?.message || 'Login failed. Please try again.'
+    errors.api =
+      responseData?.message ||
+      'Login failed. Please try again.'
   } catch (error) {
-    errors.api = error.response?.data?.message || 'Unable to login. Please try again.'
+    errors.api =
+      error.response?.data?.message ||
+      'Unable to login. Please try again.'
   } finally {
     isLoading.value = false
   }
 }
+
 </script>

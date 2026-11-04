@@ -17,11 +17,6 @@ export default [
         component: () => import('../views/EditProfile.vue'),
       },
       {
-        path: '/market-games',
-        name: 'market-games',
-        component: () => import('../views/MarketGamesView.vue'),
-      },
-      {
         path: '/play-game/:id',
         name: 'play-game',
         component: () => import('../views/PlayView.vue'),

@@ -1,210 +1,232 @@
 <template>
-  <div v-if="!hasInitialLoadCompleted" class="content-area premium-page" aria-busy="true">
-    <div class="premium-section">
+  <div v-if="!hasInitialLoadCompleted" class="content-area dashboard-initial-loading" aria-busy="true">
+    <div class="px-3 pt-4 pb-3">
       <LoadingState variant="featured" />
-      <LoadingState variant="market-list" :count="3" />
+      <LoadingState variant="market-list" :count="4" />
     </div>
   </div>
-  <div v-else-if="errorMessage && games.length === 0" class="content-area premium-page">
-    <section class="premium-empty-state">
-      <span class="premium-empty-icon">
-        <i class="bi bi-wifi-off"> </i>
-      </span>
-      <h2>We couldn't load the markets</h2>
-      <p>{{ errorMessage }}</p>
-      <button class="btn btn-primary" @click="fetchGames">
-        <i class="bi bi-arrow-clockwise me-2"> </i>Try again
-      </button>
-    </section>
+  <div v-else-if="errorMessage && games.length === 0" class="content-area dashboard-initial-error">
+    <div class="alert alert-danger m-3" role="alert">{{ errorMessage }} <button class="btn btn-sm btn-danger ms-2"
+        @click="fetchGames">Retry</button></div>
   </div>
-  <div v-else ref="dashboardRootElement" class="content-area premium-page">
-    <section v-if="marqueeText" class="premium-announcement" aria-label="Announcement">
-      <span class="premium-announcement-icon">
-        <i class="bi bi-megaphone-fill"> </i>
-      </span>
-      <div class="premium-marquee-viewport">
-        <div class="premium-marquee-track">
-          <span>{{ marqueeText }}</span>
-          <span aria-hidden="true">{{ marqueeText }}</span>
+  <div v-else ref="dashboardRootElement" class="content-area">
+    <div id="heroCarousel" ref="heroCarouselElement" class="carousel slide m-1 mb-2">
+      <div class="carousel-indicators" v-if="banners.length > 1">
+        <button v-for="(banner, index) in banners" :key="banner.id" type="button"
+          :class="{ active: index === activeBannerIndex }" :aria-label="`Show banner ${index + 1}`"
+          :aria-current="index === activeBannerIndex ? 'true' : undefined" @click="goToBanner(index)"></button>
+      </div>
+      <div class="carousel-inner rounded-3">
+        <div v-for="(banner, index) in banners" :key="banner.id" class="carousel-item" :class="{ active: index === 0 }">
+          <img :src="banner.imageUrl" class="d-block w-100" :alt="banner.title || 'Hero Banner'" />
         </div>
       </div>
-    </section>
-    <section v-if="banners.length" class="premium-banner-wrap" aria-label="Featured promotions">
-      <div id="heroCarousel" ref="heroCarouselElement" class="carousel slide premium-banner">
-        <div class="carousel-indicators" v-if="banners.length > 1">
-          <button v-for="(banner, index) in banners" :key="banner.id" type="button"
-            :class="{ active: index === activeBannerIndex }" :aria-label="'Show banner ' + (index + 1)"
-            :aria-current="index === activeBannerIndex ? 'true' : undefined" @click="goToBanner(index)"></button>
-        </div>
-        <div class="carousel-inner">
-          <div v-for="(banner, index) in banners" :key="banner.id" class="carousel-item"
-            :class="{ active: index === 0 }">
-            <a v-if="banner.destinationUrl" :href="banner.destinationUrl"
-              :target="isExternalBannerUrl(banner.destinationUrl) ? '_blank' : undefined"
-              :rel="isExternalBannerUrl(banner.destinationUrl) ? 'noopener noreferrer' : undefined">
-              <img :src="banner.imageUrl" class="d-block w-100" :alt="banner.title" width="1200" height="360"
-                fetchpriority="high" />
-            </a>
-            <img v-else :src="banner.imageUrl" class="d-block w-100" :alt="banner.title" width="1200" height="360" />
+    </div>
+    <div v-if="marqueeText" class="row m-2 marquee-row">
+      <div class="col-12 px-0">
+        <div class="marquee-wrapper">
+          <div class="marquee-icon">
+            📢
+          </div>
+          <div class="marquee-viewport">
+            <div class="marquee-track">
+              <span class="marquee-item">
+                {{ marqueeText }}
+              </span>
+              <span class="marquee-item" aria-hidden="true">
+                {{ marqueeText }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </section>
-    <section class="reference-wallet-card" aria-label="Wallet balance">
-      <div class="reference-wallet-brand">
-        <span>{{ authStore.name }}</span>
-      </div>
-      <div class="reference-wallet-body">
-        <div>
-          <strong class="reference-wallet-balance">₹{{ formatWalletAmount }}</strong>
-          <span>My Balance</span>
+    </div>
+
+    <!-- =========================================================
+     NOTICE
+========================================================= -->
+    <div v-if="noticeEnabled && noticeText" class="row m-2 notice-row">
+      <div class="col-12 px-0">
+        <div class="notice-card">
+          <div class="notice-header">
+            <div class="notice-title-wrap">
+              <span class="notice-title-icon">
+                ⚠️
+              </span>
+              <div>
+                <div class="notice-title">
+                  Important Notice
+                </div>
+                <div class="notice-subtitle">
+                  Please read carefully before playing
+                </div>
+              </div>
+            </div>
+            <span class="notice-badge">
+              NOTICE
+            </span>
+          </div>
+          <div class="notice-divider"></div>
+          <div class="notice-content">
+            <div v-for="(line, index) in noticeLines" :key="index" class="notice-line">
+              <span class="notice-bullet">
+                {{ index + 1 }}
+              </span>
+              <span class="notice-line-text">
+                {{ line }}
+              </span>
+            </div>
+          </div>
         </div>
-        <router-link to="/wallet/add" class="reference-add-money">
-          <i class="bi bi-plus-lg"> </i>
+      </div>
+    </div>
+    <div class="row g-2 mb-4 ms-2 me-2">
+      <div class="col-4">
+        <router-link to="/wallet/add" class="btn  w-100 text-light">
+          <span class="icon-3d">✚</span>
           <span>Add Money</span>
         </router-link>
       </div>
-    </section>
-
-    <section v-if="featuredGame" class="featured-winner-card" aria-label="Featured latest market result">
-      <div class="featured-winner-glow" aria-hidden="true"></div>
-      <img class="featured-winner-trophy featured-winner-trophy-left" src="https://img.icons8.com/color/96/trophy.png"
-        alt="" width="100" height="100" loading="lazy" />
-      <div class="featured-winner-content">
-        <h2 class="fs-1">{{ featuredGame.name }}</h2>
-        <p class="featured-winner-time">Result Time <span>{{ formatTime(featuredGame.result_time) }}</span></p>
-        <div class="featured-winner-number" :class="{ 'is-pending': featuredGame.today_result?.date !== todayDate }"
-          aria-label="Today's result">
-          {{ featuredGame.today_result?.date === todayDate ? (featuredGame.today_result?.number ?? '--') : '--' }}
-        </div>
-        <span v-if="featuredGame.today_result?.date === todayDate"
-          class="featured-winner-live featured-winner-live-dot">
-          🔴 Live Result</span>
-        <span v-else class="featured-winner-pending">TODAY'S RESULT AWAITED</span>
-      </div>
-      <img class="featured-winner-trophy featured-winner-trophy-right" src="https://img.icons8.com/color/96/trophy.png"
-        alt="" width="100" height="100" loading="lazy" />
-    </section>
-    <section v-if="noticeEnabled && noticeText" class="premium-notice">
-      <div class="premium-notice-title">
-        <i class="bi bi-info-circle-fill"></i>
-        <strong>Important notice</strong>
-      </div>
-      <p v-for="(line, index) in noticeLines" :key="index">{{ line }}</p>
-    </section>
-    <section class="premium-section premium-games-section">
-      <div class="premium-section-heading">
-        <div>
-          <span class="premium-eyebrow">LATEST RESULTS</span>
-          <h2>Markets</h2>
-          <p>{{ marketCount }} markets · swipe to explore</p>
-        </div>
-        <router-link to="/market-games" class="btn btn-primary animate">Play Game <i class="bi bi-arrow-up-right"> </i>
+      <div class="col-4">
+        <router-link to="/wallet/withdraw" class="btn  w-100 text-light">
+          <span class="icon-3d">🏛️</span>
+          Withdraw
         </router-link>
       </div>
-      <div v-if="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
-        <button class="btn btn-sm btn-outline-danger ms-2" @click="fetchGames">Retry</button>
+      <div class="col-4">
+        <router-link to="/live-support" class="btn w-100 text-light">
+          <img src="../assets/img/live-chat.png" style="height: 25px; width: auto;" alt="">
+          <!-- <span class="icon-3d">🎧</span> -->
+          Live Chat
+
+        </router-link>
       </div>
-      <div v-else-if="isLoading" class="premium-loading-row">
-        <LoadingState variant="market-list" :count="3" />
+    </div>
+    <div class="d-flex justify-content-between align-items-center px-2 mb-2">
+      <h6 class="p-1 pb-0 text-black fw-bold mb-0">🗓️ Today's Result</h6>
+      <span class="badge bg-primary-soft text-primary"> {{ marketCount }} Markets </span>
+    </div>
+    <LoadingState v-if="isLoading" variant="featured" />
+    <div v-else-if="featuredGame" class="row g-2 px-3 mb-4">
+      <div class="col-12">
+        <div class="live-result-box">
+          <div class="horizontal-result-content">
+            <div>
+              <h2 class="city-name text-white mb-0">
+                {{ featuredGame.name }}
+              </h2>
+              <small class="opacity-75  text-white">
+                Result Time:
+                {{ formatTime(featuredGame.result_time) }}
+              </small>
+            </div>
+            <span v-if="featuredGame.today_result?.date === todayDate" class="live-tag text-white">
+              <span class="live-dot"></span>
+              Live
+            </span>
+            <h3 class="result-number mb-0" aria-label="Today's result">
+              {{ featuredGame.today_result?.date === todayDate ? (featuredGame.today_result?.number ?? '--') : '--' }}
+            </h3>
+          </div>
+        </div>
       </div>
-      <div v-else-if="games.length === 0" class="premium-empty-inline">
-        <i class="bi bi-grid"> </i>
-        <strong>No markets available right now</strong>
-        <span>Please check back soon.</span>
+    </div>
+
+    <h3 class="p-1 pt-0 text-black fw-bold">📊 Live Market</h3>
+    <div v-if="errorMessage" class="alert alert-danger mx-2">
+      {{ errorMessage }}
+      <button class="btn btn-sm btn-danger ms-2" @click="fetchGames">Retry</button>
+    </div>
+    <div v-else-if="isLoading" class="px-2">
+      <LoadingState variant="market-list" :count="3" />
+    </div>
+    <div v-else-if="games.length === 0" class="card mx-2 border-0 shadow-sm">
+      <div class="card-body text-center py-5">
+        <div class="fs-1">📊</div>
+        <h5 class="fw-bold mt-2">No Markets Available</h5>
+        <p class="text-muted mb-0">Please check again later.</p>
       </div>
-      <div v-else class="premium-game-scroller" aria-label="Available market games">
-        <article v-for="(game, index) in games" :key="game.id" v-memo="[game, isGamePlayable(game), serverOffset]"
-          class="premium-game-card" :class="{ 'premium-game-card-closed': !isGamePlayable(game) }">
-          <div class="premium-game-card-top">
-            <h3>{{ game.name }}</h3>
-            <span class="premium-market-status" :class="isGamePlayable(game) ? 'is-open' : 'is-closed'">
-              {{ game.monthly_closure ? 'Month-end closed' : getGameStatus(game) }}
+    </div>
+    <div v-else class="row g-3 ms-2 me-2">
+      <div v-for="(game, index) in games" :key="game.id" v-memo="[game, isGamePlayable(game), serverOffset]"
+        class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden custom-card"
+          :class="{ 'game-closed': !isGamePlayable(game) }">
+          <div class="bg-white p-3 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2" style="min-width:48%">
+              <i class="bi bi-geo-alt-fill fs-5 icon-color"></i>
+              <div>
+                <h6 class="fw-bold text-dark mb-0 text-uppercase fs-3">
+                  {{ game.name }}
+                </h6>
+                <span class="small fw-semibold d-flex align-items-center gap-1"
+                  :class="isGamePlayable(game) ? 'text-success' : 'text-danger'">
+                  <span class="dot-running" :class="{
+                    'bg-danger': !isGamePlayable(game),
+                  }"></span>
+                  {{ game.monthly_closure ? 'MONTH-END CLOSED' : getGameStatus(game) }}
+                </span>
+                <small v-if="game.monthly_closure" class="d-block text-danger mt-1">
+                  {{
+                    game.play_status_message ||
+                    'आज महीने का आखिरी दिन है, इसलिए आज सभी खेल बंद रहेंगे। 1 तारीख से सभी खेल फिर से शुरू करेंगे। धन्यवाद।' }}
+                </small>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="fw-bold fs-3 text-dark">
+                {{ game.latest_result?.date === todayDate ? (game.latest_result?.number ?? '--') : '--' }}
+              </div>
+              <div v-if="isGamePlayable(game)" class="text-danger small">
+                <GameCountdown :end-at="game.play_window_end_at" :server-offset="serverOffset" />
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <router-link v-if="isGamePlayable(game)" :to="{
+                name: 'play-game',
+                params: {
+                  id: game.id,
+                },
+              }" class="btn btn-success btn-sm rounded-3 ">
+                <i class="bi bi-play-circle-fill"></i>
+                Play
+              </router-link>
+              <button v-else class="btn btn-light border btn-sm small  rounded-3 text-secondary" disabled>
+                Closed
+              </button>
+            </div>
+          </div>
+          <div
+            class="bg-success text-white px-3 py-2 d-flex justify-content-between align-items-center fs-7 fw-semibold">
+            <span>
+              Last Result:
+              {{ game.previous_result?.number ?? '--' }}
+            </span>
+            <span>
+              RESULT TIME:
+              {{ formatTime(game.result_time) }}
             </span>
           </div>
-          <span class="small"><i class="bi bi-clock me-1"></i>{{ formatTime(game.result_time) }}</span>
-          <div class="row position-relative align-items-center">
-            <div class="col-6 text-center">
-              <div class="m-0 py-0 fw-bold text- btn btn-outline-danger premium-game-result-large">
-                {{ game.previous_result?.number }}
-              </div>
-              <p class="m-0 text-danger">( कल )</p>
-            </div>
-            <span class="result-center-dot" aria-label="Live" role="status"></span>
-
-            <div class="col-6 text-center">
-              <div class="m-0 py-0 fw-bold text-success btn btn-outline-success premium-game-result-large">
-                {{ game.today_result?.date === todayDate ? (game.today_result?.number ?? '--') : '--' }}
-              </div>
-              <p class="m-0 text-success">( आज )</p>
-            </div>
-          </div>
-          <p v-if="game.monthly_closure" class="premium-closed-note">
-            {{ game.play_status_message || 'Market closed for month-end.' }}
-          </p>
-        </article>
-      </div>
-      <div v-if="games.length > 1" class="premium-scroll-hint">
-        <i class="bi bi-arrow-left-right"> </i> Swipe to explore more markets
-      </div>
-    </section>
-    <section v-if="bottomBanners.length" class="premium-banner-wrap premium-bottom-banner-wrap"
-      aria-label="More promotions">
-      <div id="bottomBannerCarousel" ref="bottomCarouselElement" class="carousel slide premium-banner">
-        <div class="carousel-indicators" v-if="bottomBanners.length > 1">
-          <button v-for="(banner, index) in bottomBanners" :key="banner.id" type="button"
-            :class="{ active: index === activeBottomBannerIndex }" :aria-label="'Show bottom banner ' + (index + 1)"
-            :aria-current="index === activeBottomBannerIndex ? 'true' : undefined"
-            @click="goToBottomBanner(index)"></button>
-        </div>
-        <div class="carousel-inner">
-          <div v-for="(banner, index) in bottomBanners" :key="banner.id" class="carousel-item"
-            :class="{ active: index === 0 }">
-            <a v-if="banner.destinationUrl" :href="banner.destinationUrl"
-              :target="isExternalBannerUrl(banner.destinationUrl) ? '_blank' : undefined"
-              :rel="isExternalBannerUrl(banner.destinationUrl) ? 'noopener noreferrer' : undefined">
-              <img :src="banner.imageUrl" class="d-block w-100" :alt="banner.title" width="1200" height="360"
-                loading="lazy" />
-            </a>
-            <img v-else :src="banner.imageUrl" class="d-block w-100" :alt="banner.title" width="1200" height="360"
-              loading="lazy" />
-          </div>
         </div>
       </div>
-      <footer class="premium-page-footer mb-2">
-        Play responsibly · 18+ only <span>•</span>
-        <router-link to="/page/terms-conditions">Terms & conditions</router-link>
-      </footer>
-    </section>
+    </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Carousel } from 'bootstrap'
 import api from '../plugins/axios'
 import LoadingState from '@/components/LoadingState.vue'
 import GameCountdown from '@/components/GameCountdown.vue'
-import { useAuthStore } from '@/utils/auth'
-
-const authStore = useAuthStore()
-const formatWalletAmount = computed(() =>
-  new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(
-    Number(authStore.amount) || 0,
-  ),
-)
 
 const games = ref([])
 const featuredGame = ref(null)
 const banners = ref([])
-const bottomBanners = ref([])
 const heroCarouselElement = ref(null)
-const bottomCarouselElement = ref(null)
 const dashboardRootElement = ref(null)
 const activeBannerIndex = ref(0)
-const activeBottomBannerIndex = ref(0)
 let heroCarouselInstance = null
-let bottomCarouselInstance = null
 let dashboardAnimationObserver = null
 
 const isLoading = ref(false)
@@ -242,7 +264,7 @@ const todayDate = computed(() => {
     month: '2-digit',
     day: '2-digit',
   }).formatToParts(now)
-  const value = (type) => parts.find((part) => part.type === type)?.value || ''
+  const value = (type) => parts.find(part => part.type === type)?.value || ''
   return `${value('year')}-${value('month')}-${value('day')}`
 })
 
@@ -269,7 +291,7 @@ const noticeLines = computed(() => {
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
     .split('\n')
-    .map((line) => line.trim())
+    .map(line => line.trim())
     .filter(Boolean)
 })
 
@@ -300,7 +322,9 @@ const getTimestamp = (value) => {
     return null
   }
   const timestamp = new Date(value).getTime()
-  return Number.isNaN(timestamp) ? null : timestamp
+  return Number.isNaN(timestamp)
+    ? null
+    : timestamp
 }
 
 /*
@@ -337,7 +361,9 @@ const getGameStatus = (game) => {
   if (!game || game.status !== 'active') {
     return 'CLOSED'
   }
-  return isGamePlayable(game) ? 'RUNNING' : 'CLOSED'
+  return isGamePlayable(game)
+    ? 'RUNNING'
+    : 'CLOSED'
 }
 
 /*
@@ -353,7 +379,9 @@ const formatTime = (time) => {
   /*
    * API normally returns H:i:s.
    */
-  const parts = String(time).split(':').map(Number)
+  const parts = String(time)
+    .split(':')
+    .map(Number)
   if (parts.length < 2 || parts.some(Number.isNaN)) {
     return '--'
   }
@@ -361,7 +389,12 @@ const formatTime = (time) => {
   const minutes = parts[1]
   const seconds = parts[2] || 0
   const date = new Date()
-  date.setHours(hours, minutes, seconds, 0)
+  date.setHours(
+    hours,
+    minutes,
+    seconds,
+    0
+  )
   return date.toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
@@ -382,12 +415,16 @@ const normalizeGame = (game) => {
     ...game,
     // Ignore legacy/stale latest_result values unless the date proves they
     // belong to the server's current calendar day.
-    latest_result:
-      game.today_result ??
-      (game.latest_result?.date === todayDate.value ? game.latest_result : null),
+    latest_result: game.today_result ?? (
+      game.latest_result?.date === todayDate.value ? game.latest_result : null
+    ),
     previous_result: game.previous_result ?? null,
-    is_playable: Boolean(game.is_playable),
-    remaining_seconds: Number(game.remaining_seconds ?? 0),
+    is_playable: Boolean(
+      game.is_playable
+    ),
+    remaining_seconds: Number(
+      game.remaining_seconds ?? 0
+    ),
   }
 }
 
@@ -408,13 +445,12 @@ const fetchGames = async () => {
   }
   errorMessage.value = ''
   try {
-    const response = await api.get('/games/list', {
-      params: { _ts: Date.now() },
-      headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
-    })
+    const response = await api.get('/games/list', { params: { _ts: Date.now() }, headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' } })
     const data = response.data
     if (!data?.status) {
-      throw new Error(data?.message || 'Unable to load games.')
+      throw new Error(
+        data?.message || 'Unable to load games.'
+      )
     }
     /*
     |--------------------------------------------------------------------------
@@ -427,102 +463,66 @@ const fetchGames = async () => {
     | Banners
     |--------------------------------------------------------------------------
     */
-    const rawBanners = [...(Array.isArray(data.banners) ? data.banners : []), ...(Array.isArray(data.bottom_banners) ? data.bottom_banners : [])]
-
-    const normalizeBanner = (banner, placement) => {
-      const rawUrl = String(
-        banner.destination_url || banner.link_url || banner.url || '',
-      ).trim()
-
-      return {
-        id: banner.id ?? `${placement}-${banner.image_url || banner.image || ''}`,
+    const nextBanners = Array.isArray(data.banners)
+      ? data.banners.map((banner) => ({
+        id: banner.id,
         title: banner.title || banner.name || 'Banner',
-        imageUrl: banner.image_url || banner.image || '',
-        destinationUrl: isSafeBannerUrl(rawUrl) ? rawUrl : '',
-      }
-    }
-
-    const topSource = Array.isArray(data.banners) ? data.banners : []
-    const bottomSource = Array.isArray(data.bottom_banners)
-      ? data.bottom_banners
+        imageUrl: banner.image_url || banner.image,
+      }))
       : []
-
-    // Records with no app_screen retain the legacy top-banner behavior.
-    const nextBanners = topSource
-      .filter((banner) => !banner.app_screen || banner.app_screen === 'top')
-      .map((banner) => normalizeBanner(banner, 'top'))
-      .filter((banner) => banner.imageUrl)
-
-    // Bottom banners can come from either API collection.
-    const nextBottomBanners = [
-      ...topSource.filter((banner) => banner.app_screen === 'bottom'),
-      ...bottomSource,
-    ]
-      .map((banner) => normalizeBanner(banner, 'bottom'))
-      .filter((banner) => banner.imageUrl)
-
-    // Prevent duplicate records if the API returns them in both collections.
-    const uniqueBanners = (items) => [
-      ...new Map(items.map((banner) => [String(banner.id), banner])).values(),
-    ]
-
-    const finalTopBanners = uniqueBanners(nextBanners)
-    const finalBottomBanners = uniqueBanners(nextBottomBanners)
-
-    const signature = (items) =>
-      items
-        .map((banner) =>
-          `${banner.id}:${banner.imageUrl}:${banner.destinationUrl}`,
-        )
-        .join('|')
-
-    const topChanged = signature(banners.value) !== signature(finalTopBanners)
-    const bottomChanged =
-      signature(bottomBanners.value) !== signature(finalBottomBanners)
-
-    if (topChanged) {
-      banners.value = finalTopBanners
+    const previousBannerSignature = banners.value.map(banner => `${banner.id}:${banner.imageUrl}`).join('|')
+    const nextBannerSignature = nextBanners.map(banner => `${banner.id}:${banner.imageUrl}`).join('|')
+    if (previousBannerSignature !== nextBannerSignature) {
+      banners.value = nextBanners
       activeBannerIndex.value = 0
-    }
-
-    if (bottomChanged) {
-      bottomBanners.value = finalBottomBanners
-      activeBottomBannerIndex.value = 0
-    }
-
-    if (topChanged || bottomChanged) {
       await nextTick()
-
-      if (topChanged) initializeBannerCarousel()
-      if (bottomChanged) initializeBottomBannerCarousel()
-    }    /*
+      initializeBannerCarousel()
+    }
+    /*
     |--------------------------------------------------------------------------
     | Marquee
     |--------------------------------------------------------------------------
     */
-    marqueeText.value = typeof data.marquee?.content === 'string' ? data.marquee.content.trim() : ''
+    marqueeText.value =
+      typeof data.marquee?.content === 'string'
+        ? data.marquee.content.trim()
+        : ''
     /*
 |--------------------------------------------------------------------------
 | Notice
 |--------------------------------------------------------------------------
 */
-    noticeEnabled.value = Boolean(data.notice?.status)
-    noticeText.value = typeof data.notice?.content === 'string' ? data.notice.content.trim() : ''
+    noticeEnabled.value =
+      Boolean(data.notice?.status)
+    noticeText.value =
+      typeof data.notice?.content === 'string'
+        ? data.notice.content.trim()
+        : ''
     /*
 |--------------------------------------------------------------------------
 | Featured Game
 |--------------------------------------------------------------------------
 */
-    featuredGame.value = data.featured_game ? normalizeGame(data.featured_game) : null
+    featuredGame.value = data.featured_game
+      ? normalizeGame(data.featured_game)
+      : null
     /*
   |--------------------------------------------------------------------------
   | Games
   |--------------------------------------------------------------------------
   */
-    games.value = Array.isArray(data.games) ? data.games.map(normalizeGame) : []
+    games.value = Array.isArray(data.games)
+      ? data.games.map(normalizeGame)
+      : []
   } catch (error) {
-    console.error('Games API Error:', error)
-    errorMessage.value = error.response?.data?.message || error.message || 'Unable to load games.'
+    console.error(
+      'Games API Error:',
+      error
+    )
+    errorMessage.value =
+      error.response?.data?.message ||
+      error.message ||
+      'Unable to load games.'
   } finally {
     isLoading.value = false
     hasInitialLoadCompleted.value = true
@@ -537,128 +537,32 @@ const fetchGames = async () => {
 |--------------------------------------------------------------------------
 */
 
-const isSafeBannerUrl = (value) => {
-  if (!value) return false
-  if (value.startsWith('/') && !value.startsWith('//')) return true
-  try { return ['https:', 'http:'].includes(new URL(value).protocol) } catch { return false }
-}
-const isExternalBannerUrl = (value) => /^https?:\/\//i.test(value || '')
-
-
 const initializeBannerCarousel = () => {
-  setupBannerCarousel(
-    heroCarouselElement.value,
-    'hero',
-    handleBannerSlid,
-    (index) => {
-      activeBannerIndex.value = index
-    },
-  )
-}
-
-const initializeBottomBannerCarousel = () => {
-  setupBannerCarousel(
-    bottomCarouselElement.value,
-    'bottom',
-    handleBottomBannerSlid,
-    (index) => {
-      activeBottomBannerIndex.value = index
-    },
-  )
-}
-
-const carouselInstances = {
-  hero: null,
-  bottom: null,
-}
-
-const dragCleanups = {
-  hero: null,
-  bottom: null,
-}
-
-const setupBannerCarousel = (element, key, slideHandler, updateIndex) => {
-  if (!element) return
-
-  // Clean up the previous instance and drag listeners.
-  if (carouselInstances[key]) {
-    element.removeEventListener('slid.bs.carousel', slideHandler)
-    carouselInstances[key].dispose()
-    carouselInstances[key] = null
+  if (!heroCarouselElement.value || banners.value.length < 2) {
+    if (heroCarouselInstance && heroCarouselElement.value) {
+      heroCarouselElement.value.removeEventListener('slid.bs.carousel', handleBannerSlid)
+      heroCarouselInstance.dispose()
+    }
+    heroCarouselInstance = null
+    activeBannerIndex.value = 0
+    return
   }
-
-  dragCleanups[key]?.()
-  dragCleanups[key] = null
-
-  updateIndex(0)
-
-  const items = element.querySelectorAll('.carousel-item')
-  if (items.length < 2) return
-
-  const reduceMotion =
-    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-
-  const instance = new Carousel(element, {
-    interval: reduceMotion ? false : 4500,
-    ride: false,
+  if (heroCarouselInstance) {
+    heroCarouselElement.value.removeEventListener('slid.bs.carousel', handleBannerSlid)
+    heroCarouselInstance.dispose()
+  }
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+  heroCarouselInstance = new Carousel(heroCarouselElement.value, {
+    interval: reduceMotion ? false : 4000,
+    ride: reduceMotion ? false : 'carousel',
     pause: 'hover',
     wrap: true,
     touch: true,
-    keyboard: true,
   })
-
-  carouselInstances[key] = instance
-
-  element.addEventListener('slid.bs.carousel', slideHandler)
-
-  // Desktop mouse dragging.
-  let startX = 0
-  let startY = 0
-  let dragging = false
-
-  const onPointerDown = (event) => {
-    if (event.pointerType === 'touch') return
-    if (event.button !== 0) return
-    if (event.target.closest('a, button')) return
-
-    startX = event.clientX
-    startY = event.clientY
-    dragging = true
-  }
-
-  const onPointerUp = (event) => {
-    if (!dragging) return
-    dragging = false
-
-    const deltaX = event.clientX - startX
-    const deltaY = event.clientY - startY
-
-    if (Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY)) {
-      return
-    }
-
-    if (deltaX < 0) instance.next()
-    else instance.prev()
-  }
-
-  const onPointerCancel = () => {
-    dragging = false
-  }
-
-  element.addEventListener('pointerdown', onPointerDown)
-  window.addEventListener('pointerup', onPointerUp)
-  window.addEventListener('pointercancel', onPointerCancel)
-
-  dragCleanups[key] = () => {
-    element.removeEventListener('pointerdown', onPointerDown)
-    window.removeEventListener('pointerup', onPointerUp)
-    window.removeEventListener('pointercancel', onPointerCancel)
-  }
-
-  // Start autoplay only after the instance and listeners are ready.
-  if (!reduceMotion) instance.cycle()
+  heroCarouselElement.value.addEventListener('slid.bs.carousel', handleBannerSlid)
+  heroCarouselInstance.to(activeBannerIndex.value)
+  heroCarouselInstance.cycle()
 }
-
 
 const observeDashboardAnimations = () => {
   if (dashboardAnimationObserver) {
@@ -669,19 +573,13 @@ const observeDashboardAnimations = () => {
   const root = dashboardRootElement.value
   if (!root || typeof IntersectionObserver === 'undefined') return
 
-  dashboardAnimationObserver = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        entry.target.classList.toggle('dashboard-animation-paused', !entry.isIntersecting)
-      }
-    },
-    { rootMargin: '100px 0px', threshold: 0.01 },
-  )
+  dashboardAnimationObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      entry.target.classList.toggle('dashboard-animation-paused', !entry.isIntersecting)
+    }
+  }, { rootMargin: '100px 0px', threshold: 0.01 })
 
-  root
-    .querySelectorAll(
-      '.marquee-wrapper, .notice-card, .live-result-box, .custom-card, .row.g-2.mb-4.ms-2.me-2 .btn',
-    )
+  root.querySelectorAll('.marquee-wrapper, .notice-card, .live-result-box, .custom-card, .row.g-2.mb-4.ms-2.me-2 .btn')
     .forEach((element) => dashboardAnimationObserver.observe(element))
 }
 
@@ -689,15 +587,9 @@ const handleBannerSlid = (event) => {
   activeBannerIndex.value = event.to
 }
 
-const handleBottomBannerSlid = (event) => { activeBottomBannerIndex.value = event.to }
-
 const goToBanner = (index) => {
   activeBannerIndex.value = index
   heroCarouselInstance?.to(index)
-}
-const goToBottomBanner = (index) => {
-  activeBottomBannerIndex.value = index
-  bottomCarouselInstance?.to(index)
 }
 
 /*
@@ -730,1173 +622,1387 @@ onMounted(async () => {
   startRefreshTimer()
 })
 
-
 onUnmounted(() => {
-  for (const key of ['hero', 'bottom']) {
-    const instance = carouselInstances[key]
-    const element =
-      key === 'hero'
-        ? heroCarouselElement.value
-        : bottomCarouselElement.value
-
-    const handler =
-      key === 'hero'
-        ? handleBannerSlid
-        : handleBottomBannerSlid
-
-    if (instance) {
-      if (element) {
-        element.removeEventListener('slid.bs.carousel', handler)
-      }
-      instance.dispose()
-      carouselInstances[key] = null
-    }
-
-    dragCleanups[key]?.()
-    dragCleanups[key] = null
+  if (heroCarouselInstance && heroCarouselElement.value) {
+    heroCarouselElement.value.removeEventListener('slid.bs.carousel', handleBannerSlid)
+    heroCarouselInstance.dispose()
   }
-
+  heroCarouselInstance = null
   if (dashboardAnimationObserver) {
     dashboardAnimationObserver.disconnect()
     dashboardAnimationObserver = null
   }
-
   if (clockTimer) {
     clearInterval(clockTimer)
     clockTimer = null
   }
-
   if (refreshTimer) {
     clearInterval(refreshTimer)
     refreshTimer = null
   }
 })
-
 </script>
 
 <style scoped>
-.result-center-dot {
+.content-area {
+  --blue: #3977ff;
+  --red: #ff4056;
+  --orange: #ff8a00;
+  --ink: #172033;
+  --muted: #718096;
+  --border: #e8eef0;
+  position: relative;
+  min-height: 100vh;
+  background: #fff;
+  color: var(--ink);
+  overflow-x: hidden;
+  isolation: isolate;
+}
+
+#heroCarousel {
+  position: relative;
+  margin: 6px 5px 10px !important;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow:
+    0 14px 35px rgba(18, 35, 52, .11),
+    0 3px 8px rgba(18, 35, 52, .06);
+}
+
+#heroCarousel .carousel-inner {
+  position: relative;
+  border-radius: 18px !important;
+}
+
+#heroCarousel .carousel-item img {
+  width: 100%;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+/* premium bottom fade */
+
+#heroCarousel .carousel-inner::before {
+  content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 2;
-  width: 9px;
-  height: 9px;
-  padding: 0;
-  border-radius: 50%;
-  background: #033c07;
-  box-shadow: 0 0 0 4px rgba(173, 33, 8, 0.12);
-  transform: translate(-50%, -50%);
-  animation: center-dot-blink 1s ease-in-out infinite;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 35%;
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, .12),
+      transparent);
   pointer-events: none;
 }
 
-@keyframes center-dot-blink {
-
-  0%,
-  100% {
-    opacity: 1;
-    scale: 1;
-    box-shadow: 0 0 0 3px rgba(173, 33, 8, 0.18);
-  }
-
-  50% {
-    opacity: 0.35;
-    scale: 1.4;
-    box-shadow: 0 0 0 6px rgba(173, 33, 8, 0.04);
-  }
+.carousel-indicators {
+  z-index: 5;
+  bottom: 3px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .result-center-dot {
-    animation: none;
-  }
+.carousel-indicators button {
+  width: 6px !important;
+  height: 6px !important;
+  margin: 0 3px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+  background: rgba(255, 255, 255, .72) !important;
+  transition: background .2s ease, opacity .2s ease !important;
 }
 
-
-/* Animated live-result indicator */
-.animate {
-  animation: live-result-blink 3s ease-in-out infinite;
+.carousel-indicators button.active {
+  background: #00c895 !important;
+  box-shadow: 0 0 5px rgba(0, 200, 149, .55);
 }
 
-@keyframes live-result-blink {
+/* =========================================================
+   MARQUEE
+========================================================= */
 
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(23, 184, 144, 0.5);
-  }
-
-  50% {
-    opacity: 0.8;
-    transform: scale(1.15);
-    box-shadow: 0 0 0 5px rgba(23, 184, 144, 0.08);
-  }
+.marquee-row {
+  margin-top: 8px !important;
+  margin-bottom: 10px !important;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-
-/* Featured result card */
-.featured-winner-card {
+.marquee-wrapper {
   position: relative;
-  isolation: isolate;
-  display: grid;
-  grid-template-columns: clamp(42px, 15vw, 76px) minmax(0, 1fr) clamp(42px, 15vw, 76px);
-  align-items: center;
-  gap: clamp(5px, 2vw, 14px);
-  overflow: hidden;
-  padding: 5px 5px;
-  border: 1px solid rgba(173, 33, 8, .09);
-  border-radius: 22px;
-  background: linear-gradient(135deg, #fff 0%, #fffdf8 58%, #fff3df 100%);
-  box-shadow: 0 8px 24px rgba(83, 35, 15, .10);
-  text-align: center
-}
-
-.featured-winner-glow {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 0, rgba(217, 131, 0, .14), transparent 64%)
-}
-
-.featured-winner-content {
-  min-width: 0
-}
-
-.featured-winner-trophy {
-  display: block;
+  height: 42px;
   width: 100%;
-  max-width: 76px;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 5px 4px rgba(120, 69, 12, .15));
-  animation: featured-trophy-float 3s ease-in-out infinite
-}
-
-.featured-winner-trophy-right {
-  animation-delay: 1.5s;
-  transform: scaleX(-1)
-}
-
-.featured-winner-kicker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  margin-bottom: 8px;
-  color: #b96b00;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: .12em
-}
-
-.featured-winner-content h2 {
-  margin: 0;
-  color: #a8240b;
-  font-size: clamp(16px, 4.4vw, 23px);
-  font-weight: 900;
-  line-height: 1.2;
-  overflow-wrap: anywhere
-}
-
-.featured-winner-time {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px;
-  margin: 7px 0 12px;
-  color: #858585;
-  font-size: 11px
-}
-
-.featured-winner-time span {
-  color: #555;
-  font-weight: 750
-}
-
-.featured-winner-number {
-  display: grid;
-  place-items: center;
-  width: clamp(62px, 18vw, 82px);
-  height: clamp(62px, 18vw, 82px);
-  margin: 0 auto 9px;
-  border: 4px solid #fff;
-  border-radius: 50%;
-  background: #033c07;
-  box-shadow: 0 5px 14px rgba(173, 33, 8, .2);
-  color: #fff;
-  font-size: clamp(23px, 6vw, 31px);
-  font-weight: 900;
-  font-variant-numeric: tabular-nums
-}
-
-.featured-winner-number.is-pending {
-  background: #c98077;
-  box-shadow: 0 5px 14px rgba(201, 128, 119, .2)
-}
-
-.featured-winner-live,
-.featured-winner-pending {
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: .035em
-}
-
-.featured-winner-live-dot {
-  border-radius: 50%;
-  animation: featured-live-pulse 2s ease-in-out infinite
-}
-
-@keyframes featured-trophy-float {
-
-  0%,
-  100% {
-    translate: 0 0
-  }
-
-  50% {
-    translate: 0 -5px
-  }
-}
-
-@keyframes featured-live-pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.0;
-  }
-}
-
-@media(max-width:380px) {
-  .featured-winner-card {
-    padding: 16px 8px;
-    grid-template-columns: 42px minmax(0, 1fr) 42px;
-    border-radius: 18px
-  }
-
-  .featured-winner-trophy {
-    width: 42px
-  }
-
-  .featured-winner-kicker {
-    font-size: 8px
-  }
-
-  .featured-winner-time {
-    font-size: 10px
-  }
-}
-
-@media(prefers-reduced-motion:reduce) {
-
-  .featured-winner-trophy,
-  .featured-winner-live-dot {
-    animation: none
-  }
-}
-
-.reference-wallet-card {
-  margin: 16px 0 26px;
+  align-items: center;
   overflow: hidden;
-  border-radius: 22px;
-  background: #29432a;
-  box-shadow: 0 8px 20px rgba(86, 42, 12, 0.14);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg,
+      #ffffff,
+      #f8fffc);
+  border: 1px solid #dceee8;
+  box-shadow:
+    0 7px 20px rgba(21, 47, 61, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .9);
 }
 
-.reference-wallet-brand {
-  display: grid;
-  gap: 2px;
-  padding: 15px 10px;
-  text-align: center;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-}
+/* =========================================================
+   MARQUEE ICON
+========================================================= */
 
-.reference-wallet-brand small {
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  opacity: 0.8;
-}
-
-.reference-wallet-body {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-top: -1px;
-  padding: 10px 30px;
-  border-radius: 18px;
-  background: #fff;
-}
-
-.reference-wallet-body>div {
-  display: grid;
-  gap: 1px;
-}
-
-.reference-wallet-balance {
-  color: #111;
-  font-size: clamp(30px, 8vw, 42px);
-  font-weight: 850;
-  letter-spacing: -0.05em;
-}
-
-.reference-wallet-body>div>span {
-  color: #8a8a8a;
-  font-size: 14px;
-}
-
-.reference-add-money {
-  display: grid;
-  justify-items: center;
-  gap: 7px;
-  color: #a91f08;
-  font-size: 12px;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.reference-add-money i {
-  display: grid;
-  place-items: center;
+.marquee-icon {
+  position: relative;
+  z-index: 10;
   width: 45px;
-  height: 45px;
-  border-radius: 12px;
-  background: #033c07;
-  color: white;
-  font-size: 30px;
-  box-shadow: 0 5px 12px #033c072b;
-}
-
-.premium-game-result-large {
-  font-size: clamp(32px, 9vw, 42px) !important;
-}
-
-.premium-market-card-foot {
+  min-width: 45px;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid #f0e7e3;
-  color: #b52a15;
-  font-size: 11px;
-  font-weight: 850;
+  justify-content: center;
+  background:
+    linear-gradient(135deg,
+      var(--primary-color),
+      var(--primary-light));
+  border-radius: 13px 0 0 13px;
+  font-size: 17px;
+  box-shadow:
+    5px 0 14px rgba(0, 126, 92, .12);
+  animation:
+    marqueeSpeaker 2.5s ease-in-out infinite;
 }
 
-.premium-market-card-foot i {
-  font-size: 18px;
-}
+/* =========================================================
+   VIEWPORT
+========================================================= */
 
-.premium-page {
-  min-height: calc(100vh - 70px);
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: 10px 14px 15px;
-  background: #f5f7fb;
-  color: #033c07;
+.marquee-viewport {
+  position: relative;
+  flex: 1;
+  height: 100%;
   overflow: hidden;
-}
-
-.premium-welcome {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 7px 2px 20px;
+  /*
+   * Fade edges
+   */
+  mask-image:
+    linear-gradient(to right,
+      transparent 0,
+      black 4%,
+      black 96%,
+      transparent 100%);
+  -webkit-mask-image:
+    linear-gradient(to right,
+      transparent 0,
+      black 4%,
+      black 96%,
+      transparent 100%);
 }
 
-.premium-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #7b8799;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-}
+/* =========================================================
+   TRACK
+========================================================= */
 
-.premium-live-pip,
-.premium-result-status>span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #17b890;
-  box-shadow: 0 0 0 4px rgba(23, 184, 144, 0.12);
-}
-
-.premium-welcome h1 {
-  margin: 8px 0 5px;
-  font-size: clamp(27px, 7vw, 39px);
-  font-weight: 800;
-  letter-spacing: -0.06em;
-}
-
-.premium-welcome h1 em {
-  color: #0ca17c;
-  font-style: normal;
-}
-
-.premium-welcome p {
-  margin: 0;
-  max-width: 300px;
-  color: #748096;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.premium-welcome-chip {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 12px;
-  border: 1px solid #e5eaf2;
-  border-radius: 15px;
-  background: #fff;
-  color: #e1a527;
-  box-shadow: 0 4px 14px rgba(23, 27, 53, 0.04);
-}
-
-.premium-welcome-chip>i {
-  font-size: 20px;
-}
-
-.premium-welcome-chip span {
-  display: grid;
-  color: #033c07;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.premium-welcome-chip small {
-  color: #8995a7;
-  font-size: 8px;
-  font-weight: 700;
-}
-
-.premium-banner-wrap {
-  margin: 0 0 10px;
-}
-
-.premium-bottom-banner-wrap {
-  padding: 10px 0px;
-  padding-bottom: 30px;
-}
-
-.premium-banner {
-  border-radius: 13px;
-}
-
-.premium-banner .carousel-inner,
-.premium-banner .carousel-item {
-  border-radius: 13px;
-}
-
-.premium-banner a {
-  display: block;
-}
-
-.premium-banner img {
-  display: block;
-  width: 100%;
-  max-height: max-content;
-  object-fit: contain;
-}
-
-.premium-banner .carousel-indicators {
-  margin-bottom: 5px;
-}
-
-.premium-banner .carousel-indicators button {
-  width: 6px;
-  height: 6px;
-}
-
-.premium-banner {
-  overflow: hidden;
-  border-radius: 20px;
-  background: #033c07;
-  box-shadow: 0 12px 30px rgba(23, 27, 53, 0.12);
-}
-
-.premium-banner .carousel-inner,
-.premium-banner .carousel-item {
-  border-radius: 20px;
-}
-
-.premium-banner img {
-  width: 100%;
-  max-height: max-content;
-  object-fit: contain;
-}
-
-.premium-banner .carousel-indicators {
-  z-index: 2;
-  margin-bottom: 9px;
-}
-
-.premium-banner .carousel-indicators button {
-  width: 7px;
-  height: 7px;
-  border: 0;
-  border-radius: 99px;
-}
-
-.premium-announcement {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin: 0px 0;
-  padding: 5px 5px;
-  border: 1px solid #f1dfb7;
-  border-radius: 12px;
-  background: #fff9eb;
-  overflow: hidden;
-}
-
-.premium-marquee-viewport {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.premium-marquee-track {
+.marquee-track {
   display: flex;
   width: max-content;
-  gap: 44px;
-  animation: reference-marquee 22s linear infinite;
+  flex-shrink: 0;
+  white-space: nowrap;
+  animation:
+    marqueeScroll 32s linear infinite;
 }
 
-.premium-marquee-track span {
-  flex: 0 0 auto;
-  color: #705c34;
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-right: 100px;
+  color: #344054;
   font-size: 12px;
-  font-weight: 750;
+  font-weight: 700;
+  letter-spacing: .15px;
 }
 
-.premium-announcement:hover .premium-marquee-track {
-  animation-play-state: paused;
-}
+/* =========================================================
+   MARQUEE ANIMATION
+========================================================= */
 
-@keyframes reference-marquee {
+@keyframes marqueeScroll {
+  from {
+    transform: translateX(0);
+  }
+
   to {
     transform: translateX(-50%);
   }
+
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .premium-marquee-track {
-    animation: none;
-    white-space: normal;
-    width: auto;
-    display: block;
+/* =========================================================
+   SPEAKER
+========================================================= */
+
+@keyframes marqueeSpeaker {
+
+  0%,
+  100% {
+    transform: scale(1);
   }
 
-  .premium-marquee-track span+span {
-    display: none;
+  50% {
+    transform: scale(1.06);
+    filter: brightness(1.08);
   }
+
 }
 
-.premium-announcement-icon {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
-  border-radius: 12px;
-  background: #ffedc3;
-  color: #98680a;
+/* =========================================================
+   NOTICE CARD
+========================================================= */
+
+.notice-row {
+  margin-top: 4px !important;
+  margin-bottom: 16px !important;
 }
 
-.premium-announcement small {
-  color: #9a7933;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-}
-
-.premium-announcement p {
-  margin: 3px 0 0;
-  color: #705c34;
-  font-size: 12px;
-  font-weight: 650;
-}
-
-.premium-notice {
-  margin: 12px 0;
-  padding: 15px;
-  border: 1px solid #f0dfb9;
-  border-radius: 17px;
-  background: #fff;
-}
-
-.premium-notice-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  color: #8b681a;
-}
-
-.premium-notice-title strong {
-  font-size: 12px;
-}
-
-.premium-notice p {
-  margin: 5px 0;
-  color: #6d7583;
-  font-size: 11px;
-}
-
-.premium-quick-actions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px;
-  margin: 14px 0 20px;
-}
-
-.premium-quick-action {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-  padding: 12px 10px;
-  border: 1px solid #e6eaf2;
-  border-radius: 17px;
-  background: #fff;
-  box-shadow: 0 4px 14px rgba(23, 27, 53, 0.035);
-  transition:
-    transform 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.premium-quick-action:active {
-  transform: scale(0.98);
-}
-
-.premium-quick-action>span {
-  display: grid;
-  place-items: center;
-  width: 33px;
-  height: 33px;
-  margin-bottom: 10px;
-  border-radius: 11px;
-  background: #edf2ff;
-  color: #252b4c;
-  font-size: 16px;
-}
-
-.premium-quick-add>span {
-  background: #e0f9f0;
-  color: #0b9a75;
-}
-
-.premium-quick-action strong {
-  color: #202641;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.premium-quick-action small {
-  margin-top: 3px;
-  color: #8c97a9;
-  font-size: 9px;
-  line-height: 1.4;
-}
-
-.premium-featured-result {
+.notice-card {
   position: relative;
   overflow: hidden;
-  margin: 18px 0 25px;
-  padding: 18px;
-  border-radius: 21px;
+  padding: 14px;
+  border-radius: 17px;
   background:
-    radial-gradient(circle at 100% 0, rgba(23, 184, 144, 0.26), transparent 42%),
-    linear-gradient(130deg, #033c07, #282e50);
-  box-shadow: 0 14px 34px rgba(23, 27, 53, 0.16);
-  color: #fff;
+    linear-gradient(145deg,
+      #ffffff 0%,
+      #fafffd 100%);
+  border: 1px solid #dfeee9;
+  box-shadow:
+    0 9px 25px rgba(20, 45, 55, .075),
+    0 2px 5px rgba(20, 45, 55, .035);
+  animation:
+    noticeCardEnter .6s cubic-bezier(.2, .8, .2, 1) both;
 }
 
-.premium-featured-top {
+/*
+ * Green animated top line
+ */
+
+.notice-card::before {
+  --shine-start: -40%;
+  --shine-end: 140%;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 40%;
+  height: 2px;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      #00c895,
+      #74ffd8,
+      transparent);
+  animation:
+    sharedShine 4s linear infinite;
+}
+
+/*
+ * Soft background glow
+ */
+
+.notice-card::after {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  right: -50px;
+  top: -55px;
+  border-radius: 50%;
+  background:
+    rgba(0, 200, 149, .055);
+  box-shadow:
+    0 0 40px rgba(0, 200, 149, .08);
+  animation:
+    noticeOrb 5s ease-in-out infinite;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.notice-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-.premium-featured-top .premium-eyebrow {
-  color: #aebbd1;
-}
-
-.premium-result-status {
+.notice-title-wrap {
   display: flex;
   align-items: center;
-  gap: 7px;
-  color: #a7eedc;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-}
-
-.premium-result-status>span {
-  width: 6px;
-  height: 6px;
-}
-
-.premium-featured-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  margin: 20px 0;
-}
-
-.premium-featured-main h2 {
-  margin: 0;
-  color: #fff;
-  font-size: 21px;
-  font-weight: 800;
-}
-
-.premium-featured-main p {
-  margin: 5px 0 0;
-  color: #b7c2d6;
-  font-size: 11px;
-}
-
-.premium-featured-number {
-  display: grid;
-  place-items: center;
-  width: 80px;
-  height: 80px;
-  flex: 0 0 80px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 23px;
-  background: rgba(255, 255, 255, 0.09);
-  color: #f7c95d;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-.premium-featured-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 10px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  color: #b5c1d6;
-  font-size: 9px;
 }
 
-.premium-featured-footer a {
-  color: #83e4ca;
-  font-weight: 850;
-}
-
-.premium-section {
-  margin: 24px 0;
-}
-
-.premium-section-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.premium-section-heading h2 {
-  margin: 5px 0 3px;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.045em;
-}
-
-.premium-section-heading p {
-  margin: 0;
-  color: #8792a4;
-  font-size: 11px;
-}
-
-.premium-text-link {
-  flex: 0 0 auto;
-  color: #0d9c78;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.premium-game-scroller {
-  display: grid;
-  grid-auto-columns: minmax(235px, 76%);
-  grid-auto-flow: column;
-  gap: 12px;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding: 2px 2px 12px;
-}
-
-.premium-game-scroller::-webkit-scrollbar {
-  display: none;
-}
-
-.premium-game-card {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 5px 15px;
-  border: 1px solid #e3e9f2;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(23, 27, 53, 0.045);
-  scroll-snap-align: start;
-}
-
-.premium-game-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.premium-game-mark {
-  display: grid;
-  place-items: center;
+.notice-title-icon {
   width: 38px;
   height: 38px;
-  border-radius: 13px;
-  background: #edf2ff;
-  color: #353d68;
-  font-size: 18px;
-}
-
-.premium-market-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
-  border-radius: 9px;
-  font-size: 8px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.035em;
-}
-
-.premium-market-status>span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.premium-market-status.is-open {
-  background: #e5faf2;
-  color: #0b926d;
-}
-
-.premium-market-status.is-open>span {
-  background: #17b890;
-}
-
-.premium-market-status.is-closed {
-  background: #f1f3f7;
-  color: #7f899a;
-}
-
-.premium-market-status.is-closed>span {
-  background: #9ca6b5;
-}
-
-.premium-game-card h3 {
-  margin: 15px 0 4px;
-  color: #033c07;
-  font-size: 20px;
-  font-weight: 850;
-}
-
-.premium-game-result-label {
-  color: #8a96a9;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-}
-
-.premium-game-result {
-  margin: 2px 0 0px;
-  color: #222947;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-}
-
-.premium-game-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 30px;
-  color: #8b96a7;
-  font-size: 9px;
-}
-
-.premium-game-meta>span:last-child {
-  color: #0c9c78;
-  font-weight: 800;
-}
-
-.premium-closed-note {
-  margin: 5px 0;
-  color: #a05b29;
-  font-size: 9px;
-}
-
-.premium-game-play {
-  width: 100%;
-  margin-top: auto;
-  min-height: 42px;
-  border-radius: 12px;
-  font-size: 11px;
-}
-
-.premium-game-card-closed {
-  background: #fbfcfe;
-}
-
-.premium-game-card-closed .premium-game-result {
-  color: #a6afbe;
-}
-
-.premium-scroll-hint {
+  flex: 0 0 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  margin-top: 1px;
-  color: #9aa4b4;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg,
+      #fff4dc,
+      #fff9ee);
+  border: 1px solid #ffe5b0;
+  font-size: 18px;
+  box-shadow:
+    0 5px 12px rgba(255, 167, 0, .10);
+  animation:
+    noticeIconPulse 2.4s ease-in-out infinite;
+}
+
+.notice-title {
+  color: #172033;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: .1px;
+}
+
+.notice-subtitle {
+  margin-top: 3px;
+  color: #7a8696;
   font-size: 9px;
   font-weight: 700;
 }
 
-.premium-empty-inline {
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  padding: 30px 15px;
-  border: 1px dashed #dbe2ed;
-  border-radius: 18px;
-  background: #fff;
-  color: #8792a4;
-  font-size: 11px;
+/* =========================================================
+   BADGE
+========================================================= */
+
+.notice-badge {
+  position: relative;
+  z-index: 3;
+  padding: 5px 8px;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg,
+      #fff1f1,
+      #fff8f8);
+  border: 1px solid #ffd9dc;
+  color: #d6374b;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .6px;
+  box-shadow:
+    0 4px 10px rgba(214, 55, 75, .07);
+  animation:
+    noticeBadge 2.5s ease-in-out infinite;
 }
 
-.premium-empty-inline i {
-  font-size: 26px;
-  color: #aeb9c8;
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.notice-divider {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 1px;
+  margin: 12px 0;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      #dcebe6,
+      transparent);
 }
 
-.premium-empty-inline strong {
-  color: #333c56;
-  font-size: 12px;
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.notice-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.premium-loading-row {
-  padding: 4px;
+.notice-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 9px;
+  border-radius: 11px;
+  background:
+    linear-gradient(135deg,
+      #fbfefd,
+      #f6fbf9);
+  border: 1px solid #edf4f1;
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease,
+    background .25s ease;
 }
 
-.premium-journey-card {
+.notice-line:hover {
+  transform: translateX(3px);
+  background:
+    #ffffff;
+  box-shadow:
+    0 5px 14px rgba(20, 45, 55, .06);
+}
+
+/* =========================================================
+   NUMBER
+========================================================= */
+
+.notice-bullet {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 24px 0;
-  padding: 15px;
-  border: 1px solid #e2e8f1;
-  border-radius: 18px;
-  background: #fff;
+  justify-content: center;
+  margin-top: 1px;
+  border-radius: 50%;
+  background:
+    linear-gradient(135deg,
+      var(--primary-color),
+      var(--primary-light));
+  color: #fff;
+  font-size: 8px;
+  font-weight: 900;
+  box-shadow:
+    0 3px 8px rgba(0, 150, 110, .18);
 }
 
-.premium-journey-icon {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  border-radius: 13px;
-  background: #fff4d8;
-  color: #b7831c;
-  font-size: 18px;
-}
+/* =========================================================
+   TEXT
+========================================================= */
 
-.premium-journey-card>div:nth-child(2) {
-  flex: 1;
-  min-width: 0;
-}
-
-.premium-journey-card strong {
-  color: #252b4c;
-  font-size: 12px;
-}
-
-.premium-journey-card p {
-  margin: 3px 0 0;
-  color: #8b96a7;
+.notice-line-text {
+  color: #4c5868;
   font-size: 10px;
+  line-height: 1.55;
+  font-weight: 650;
+  word-break: break-word;
 }
 
-.premium-journey-card>a {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
+/* =========================================================
+   NOTICE ANIMATIONS
+========================================================= */
+
+@keyframes noticeCardEnter {
+  from {
+    opacity: 0;
+    transform:
+      translateY(12px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0) scale(1);
+  }
+
+}
+
+@keyframes noticeOrb {
+
+  0%,
+  100% {
+    transform:
+      translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform:
+      translate(-10px, 10px) scale(1.08);
+  }
+
+}
+
+@keyframes noticeIconPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
+
+}
+
+@keyframes noticeBadge {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+}
+
+.row.g-2.mb-4.ms-2.me-2 {
+  position: relative;
+  margin-left: 7px !important;
+  margin-right: 7px !important;
+}
+
+.row.g-2.mb-4.ms-2.me-2 .col-4 {
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.row.g-2.mb-4.ms-2.me-2 .btn {
+  position: relative;
+  min-height: 58px;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow:
+    0 9px 20px rgba(20, 35, 45, .13),
+    inset 0 1px 0 rgba(255, 255, 255, .4),
+    inset 0 -2px 0 rgba(0, 0, 0, .08);
+  transform: translateY(0);
+  transition:
+    transform .3s cubic-bezier(.2, .8, .2, 1),
+    box-shadow .3s ease,
+    filter .3s ease;
+}
+
+/* moving shine */
+
+.row.g-2.mb-4.ms-2.me-2 .btn::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -20%;
+  left: -100%;
+  width: 55%;
+  height: 140%;
+  transform: skewX(-22deg);
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, .12),
+      rgba(255, 255, 255, .65),
+      rgba(255, 255, 255, .12),
+      transparent);
+  animation: sharedShine 5s linear infinite;
+}
+
+/* glow layer */
+
+.row.g-2.mb-4.ms-2.me-2 .btn::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 15px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+/* add money */
+
+.row.g-2.mb-4.ms-2.me-2 .col-4:nth-child(1) .btn {
+  background:
+    linear-gradient(135deg, var(--primary-color), var(--primary-light)) !important;
+}
+
+/* withdraw */
+
+.row.g-2.mb-4.ms-2.me-2 .col-4:nth-child(2) .btn {
+  background:
+    linear-gradient(145deg,
+      #d9273d,
+      #f13d50,
+      #ff5968) !important;
+}
+
+/* support */
+
+.row.g-2.mb-4.ms-2.me-2 .col-4:nth-child(3) .btn {
+  background:
+    linear-gradient(135deg, var(--primary-light), var(--primary-light)) !important;
+}
+
+.row.g-2.mb-4.ms-2.me-2 .btn:active {
+  transform: scale(.93);
+  box-shadow:
+    0 3px 8px rgba(20, 35, 45, .15);
+}
+
+.icon-3d {
+  position: relative;
+  z-index: 3;
+  font-size: 1.35rem;
+  display: inline-block;
+  filter:
+    drop-shadow(0 4px 3px rgba(0, 0, 0, .22));
+}
+
+
+.content-area>h3 {
+  position: relative;
+  margin-left: 10px;
+  padding-left: 8px !important;
+  font-size: 19px;
+  letter-spacing: -.3px;
+  color: #182333 !important;
+}
+
+.content-area>h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 4px;
+  height: 23px;
   border-radius: 10px;
-  background: #f2f5fa;
-  color: #333c59;
+  background:
+    linear-gradient(180deg,
+      #00c895,
+      #007e5b);
+  box-shadow:
+    0 0 8px rgba(0, 200, 149, .4);
+  animation: titleBar 2s ease-in-out infinite alternate;
 }
 
-.premium-page-footer {
-  padding: 10px 0 8px;
-  color: #9aa4b3;
-  text-align: center;
+.content-area>h3::after {
+  content: "";
+  display: block;
+  width: 55px;
+  height: 3px;
+  margin-top: 5px;
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg,
+      #00a878,
+      #00d5a0,
+      transparent);
+  animation: titleUnderline 2s ease-in-out infinite alternate;
+}
+
+.badge.bg-primary-soft {
+  position: relative;
+  overflow: hidden;
+  color: #008b68 !important;
+  background:
+    linear-gradient(135deg,
+      #e8faf4,
+      #f4fffb) !important;
+  border: 1px solid #c8eee3;
+  border-radius: 20px;
+  padding: 6px 9px;
+  box-shadow:
+    0 5px 12px rgba(0, 150, 110, .08);
+}
+
+.live-result-box {
+  position: relative;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 20px;
+  padding: 17px 14px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  box-shadow:
+    0 14px 30px rgba(0, 144, 104, .23),
+    0 4px 8px rgba(0, 100, 80, .08),
+    inset 0 1px 0 rgba(255, 255, 255, .4);
+}
+
+.live-result-box::before {
+  --shine-start: -60%;
+  --shine-end: 140%;
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -80%;
+  left: -50%;
+  width: 45%;
+  height: 260%;
+  transform: rotate(25deg);
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, .08),
+      rgba(255, 255, 255, .42),
+      rgba(255, 255, 255, .08),
+      transparent);
+  animation: sharedShine 4s ease-in-out infinite;
+}
+
+/* floating orb */
+
+.horizontal-result-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 6px;
+  padding: 0px 15px;
+}
+
+.city-name {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: .7px;
+  text-shadow:
+    0 2px 5px rgba(0, 0, 0, .2);
+}
+
+.horizontal-result-content small {
   font-size: 9px;
 }
 
-.premium-page-footer span {
-  padding: 0 4px;
+.live-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 7px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, .16);
+  border: 1px solid rgba(255, 255, 255, .12);
+  backdrop-filter: blur(8px);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .35px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .14);
 }
 
-.premium-page-footer a {
-  color: #77849a;
+.live-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #79ffb1;
+  box-shadow:
+    0 0 5px #79ffb1,
+    0 0 13px #79ffb1,
+    0 0 22px rgba(121, 255, 177, .7);
+  animation: livePulse 1s ease-in-out infinite;
+}
+
+.result-number {
+  font-size: 1.75rem;
+  font-weight: 950;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow:
+    0 3px 7px rgba(0, 0, 0, .3),
+    0 0 12px rgba(255, 255, 255, .14);
+}
+
+.custom-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e7edef !important;
+  border-left: 5px solid var(--primary-color) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow:
+    0 9px 24px rgba(20, 36, 48, .075),
+    0 2px 5px rgba(20, 36, 48, .04);
+  transform: translateZ(0);
+  transition:
+    transform .35s cubic-bezier(.2, .8, .2, 1),
+    box-shadow .35s ease,
+    border-color .35s ease;
+}
+
+
+/* Closed markets stay visually still to reduce continuous paint work. */
+.custom-card.game-closed,
+.custom-card.game-closed *,
+.custom-card.game-closed *::before,
+.custom-card.game-closed *::after,
+.custom-card.game-closed::before,
+.custom-card.game-closed::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+.custom-card.game-closed::before,
+.custom-card.game-closed::after,
+.custom-card.game-closed .btn-light::before,
+.custom-card.game-closed .btn-success::before,
+.custom-card.game-closed>.bg-success::before {
+  display: none;
+}
+
+/* animated edge */
+
+.custom-card::before {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 2px;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      #00c895,
+      #6fffd1,
+      #00a878,
+      transparent);
+  background-size: 250% 100%;
+}
+
+/* subtle moving reflection */
+
+.custom-card::after {
+  --shine-start: -50%;
+  --shine-end: 140%;
+  content: "";
+  position: absolute;
+  z-index: 4;
+  top: -100%;
+  left: -50%;
+  width: 35%;
+  height: 300%;
+  transform: rotate(25deg);
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, .5),
+      transparent);
+  pointer-events: none;
+  opacity: .35;
+  animation: sharedShine 7s ease-in-out infinite;
+}
+
+.custom-card:hover {
+  transform: translateY(-5px);
+  border-color: #cceee4 !important;
+  box-shadow:
+    0 18px 35px rgba(20, 36, 48, .11),
+    0 0 25px rgba(0, 168, 120, .07);
+}
+
+.custom-card .bg-white {
+  background: #fff !important;
+}
+
+.custom-card .icon-color {
+  color: #009d73;
+  filter:
+    drop-shadow(0 3px 5px rgba(0, 157, 115, .22));
+}
+
+.custom-card h6 {
+  color: #172033 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: .5px;
+}
+
+.custom-card .small {
+  color: #008f69 !important;
   font-weight: 800;
 }
 
-.premium-empty-state {
-  display: grid;
-  justify-items: center;
-  text-align: center;
-  padding: 70px 20px;
+.dot-running {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #00b67d !important;
+  box-shadow:
+    0 0 0 3px rgba(0, 182, 125, .09),
+    0 0 8px rgba(0, 182, 125, .4);
+  animation: statusPulse 1.4s infinite;
 }
 
-.premium-empty-icon {
-  display: grid;
-  place-items: center;
-  width: 62px;
-  height: 62px;
-  border-radius: 20px;
-  background: #fff0f2;
-  color: #d9485b;
-  font-size: 24px;
+.custom-card .text-dark.fs-3 {
+  color: #172033 !important;
+  /* font-size: 1.4rem !important; */
+  font-weight: 950 !important;
+  /* letter-spacing: .5px; */
+  animation: marketNumber 3s ease-in-out infinite;
 }
 
-.premium-empty-state h2 {
-  margin: 18px 0 5px;
-  font-size: 20px;
+.custom-card .btn-light {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg,
+      #fff,
+      #f4faf8) !important;
+  color: #536173 !important;
+  border: 1px solid #dce9e5 !important;
+  border-radius: 10px !important;
+  box-shadow:
+    0 3px 7px rgba(20, 35, 45, .04);
+  transition:
+    transform .25s ease,
+    color .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
 }
 
-.premium-empty-state p {
-  color: #7b8799;
-  font-size: 12px;
+.custom-card .btn-light::before {
+  content: "";
+  position: absolute;
+  left: -100%;
+  top: 0;
+  width: 70%;
+  height: 100%;
+  transform: skewX(-20deg);
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(0, 168, 120, .10),
+      transparent);
+  animation: sharedShine 4s linear infinite;
 }
 
-@media (min-width: 640px) {
-  .premium-page {
-    padding: 10px 24px 20px;
+.custom-card .btn-light:hover {
+  transform: translateY(-2px);
+  color: #008f68 !important;
+  border-color: #bde5d8 !important;
+  box-shadow:
+    0 6px 13px rgba(0, 168, 120, .10);
+}
+
+.custom-card .btn-success {
+  position: relative;
+  overflow: hidden;
+  border: 0 !important;
+  padding: 5px 20px;
+  background:
+    linear-gradient(135deg,
+      #008b64,
+      #00b681,
+      #00cc96) !important;
+  box-shadow:
+    0 7px 16px rgba(0, 158, 112, .23),
+    inset 0 1px 0 rgba(255, 255, 255, .35) !important;
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease;
+}
+
+.custom-card .btn-success::before {
+  content: "";
+  position: absolute;
+  left: -120%;
+  top: 0;
+  width: 70%;
+  height: 100%;
+  transform: skewX(-20deg);
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, .15),
+      rgba(255, 255, 255, .65),
+      rgba(255, 255, 255, .15),
+      transparent);
+  animation: sharedShine 2.5s linear infinite;
+}
+
+.custom-card .btn-success i {
+  position: relative;
+  z-index: 2;
+  animation: playButtonIcon 1.3s ease-in-out infinite;
+}
+
+.custom-card .btn-success:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow:
+    0 11px 23px rgba(0, 158, 112, .30),
+    0 0 16px rgba(0, 200, 145, .12) !important;
+}
+
+.custom-card .btn-secondary {
+  background:
+    linear-gradient(145deg,
+      #eef1f3,
+      #e4e8eb) !important;
+  color: #737d88 !important;
+  border: 1px solid #dfe4e8 !important;
+  box-shadow:
+    inset 0 1px 0 #fff;
+}
+
+.custom-card>.bg-success {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  background-size: 300% 100%;
+  color: #fff !important;
+  font-size: 9px !important;
+  font-weight: 800;
+  letter-spacing: .25px;
+}
+
+.custom-card>.bg-success::before {
+  --shine-start: -40%;
+  --shine-end: 140%;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 30%;
+  height: 100%;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, .25),
+      transparent);
+  transform: skewX(-20deg);
+  animation: sharedShine 8s linear infinite;
+}
+
+.spinner-border {
+  width: 30px !important;
+  height: 30px !important;
+  color: #00a878 !important;
+  border-width: 3px !important;
+  filter:
+    drop-shadow(0 0 7px rgba(0, 168, 120, .3));
+  animation:
+    spinner-grow 1s linear infinite;
+}
+
+.alert-danger {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg,
+      #fff7f8,
+      #fff) !important;
+  color: #c72e40 !important;
+  border: 1px solid #ffd7dc !important;
+  border-radius: 14px !important;
+  box-shadow:
+    0 8px 20px rgba(220, 50, 70, .07);
+  animation: errorEntrance .5s ease both;
+}
+
+.card.mx-2.border-0 {
+  background: #fff !important;
+  border: 1px solid #e7edef !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 10px 25px rgba(20, 36, 48, .06) !important;
+}
+
+.card.mx-2.border-0 .fs-1 {
+  animation:
+    emptyIcon 2.5s ease-in-out infinite;
+}
+
+.card.mx-2.border-0 h5 {
+  color: #172033 !important;
+}
+
+@keyframes titleBar {
+  from {
+    height: 18px;
   }
 
-  .premium-game-scroller {
-    grid-auto-columns: minmax(250px, 31%);
-  }
-
-  .premium-quick-action {
-    padding: 15px;
-  }
-
-  .premium-welcome {
-    padding-bottom: 24px;
+  to {
+    height: 27px;
   }
 }
 
-@media (min-width: 900px) {
-  .premium-page {
-    padding: 10px 30px 15px;
+@keyframes titleUnderline {
+  from {
+    width: 35px;
   }
 
-  .premium-game-scroller {
-    grid-auto-columns: minmax(250px, calc(25% - 9px));
-  }
-
-  .premium-welcome h1 {
-    font-size: 42px;
-  }
-
-  .premium-featured-result {
-    padding: 23px;
+  to {
+    width: 72px;
   }
 }
 
-@media (max-width: 380px) {
-  .premium-page {
-    padding: 15px 10px 20px;
+@keyframes livePulse {
+  0% {
+    transform: scale(.8);
+    opacity: 1;
   }
 
-  .premium-welcome-chip {
-    padding: 8px;
+  50% {
+    transform: scale(1.35);
+    opacity: .65;
   }
 
-  .premium-welcome-chip>i {
-    font-size: 17px;
+  100% {
+    transform: scale(.8);
+    opacity: 1;
+  }
+}
+
+@keyframes statusPulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(0, 182, 125, .5);
   }
 
-  .premium-quick-actions {
-    gap: 6px;
+  70% {
+    box-shadow:
+      0 0 0 7px rgba(0, 182, 125, 0);
   }
 
-  .premium-quick-action {
-    padding: 10px 8px;
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(0, 182, 125, 0);
+  }
+}
+
+@keyframes marketNumber {
+
+  0%,
+  100% {
+    transform: scale(1);
   }
 
-  .premium-quick-action strong {
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes playButtonIcon {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+@keyframes errorEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes emptyIcon {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+
+
+@media (max-width: 576px) {
+  .content-area {
+    width: 100%;
+    min-height: 100vh;
+    background: #fff;
+  }
+
+  /* HERO */
+  #heroCarousel {
+    margin: 5px 5px 9px !important;
+  }
+
+  #heroCarousel .carousel-item img {
+    min-height: 135px;
+    max-height: 185px;
+  }
+
+
+  /* TOP ACTIONS */
+  .row.g-2.mb-4.ms-2.me-2 {
+    margin-top: 1px !important;
+    margin-bottom: 17px !important;
+  }
+
+  .row.g-2.mb-4.ms-2.me-2 .btn {
+    min-height: 56px;
+    padding: 6px 3px !important;
+  }
+
+  /* TODAY RESULT */
+  .d-flex.justify-content-between.align-items-center.px-2 {
+    padding-left: 9px !important;
+    padding-right: 9px !important;
+  }
+
+  .d-flex.justify-content-between.align-items-center.px-2 h6 {
+    font-size: 14px;
+  }
+
+  /* FEATURED */
+  .row.g-2.px-3.mb-4 {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    margin-bottom: 17px !important;
+  }
+
+  .live-result-box {
+    padding: 15px 11px;
+  }
+
+  /* MARKET */
+  .row.g-3.ms-2.me-2 {
+    margin-left: 7px !important;
+    margin-right: 7px !important;
+  }
+
+  .custom-card {
+    border-left-width: 5px !important;
+    border-radius: 17px !important;
+  }
+
+  .custom-card .bg-white.p-3 {
+    padding: 6px !important;
+  }
+
+  .custom-card>.bg-success {
+    padding: 8px 10px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  #heroCarousel .carousel-item img {
+    min-height: 120px;
+    max-height: 160px;
+  }
+
+  .row.g-2.mb-4.ms-2.me-2 .btn {
+    min-height: 52px;
     font-size: 10px;
   }
 
-  .premium-game-scroller {
-    grid-auto-columns: minmax(225px, 83%);
+  .icon-3d {
+    font-size: 1.2rem;
   }
 
-  .premium-featured-result {
-    padding: 14px;
+  .live-tag {
+    font-size: 7px;
   }
 
-  .premium-featured-number {
-    width: 65px;
-    height: 65px;
-    flex-basis: 65px;
-    font-size: 25px;
+  .custom-card h6 {
+    font-size: 14px !important;
   }
+}
+
+/* Pause decorative motion while sections are outside the viewport. The same
+   animations resume at their previous position when the user scrolls back. */
+.dashboard-animation-paused,
+.dashboard-animation-paused *,
+.dashboard-animation-paused::before,
+.dashboard-animation-paused::after,
+.dashboard-animation-paused *::before,
+.dashboard-animation-paused *::after {
+  animation-play-state: paused !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
 
-  .premium-game-card,
-  .premium-quick-action {
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
+  .notice-track {
+    animation: none !important;
+  }
+}
+
+/* =========================================
+   CENTRAL ANIMATION SYSTEM
+   ========================================= */
+
+/* Shared shine animation */
+@keyframes sharedShine {
+  0% {
+    left: var(--shine-start, -120%);
+  }
+
+  40%,
+  100% {
+    left: var(--shine-end, 140%);
+  }
+}
+
+/* Reusable shine timing */
+.row.g-2.mb-4.ms-2.me-2 .btn::before,
+.custom-card .btn-light::before,
+.custom-card .btn-success::before,
+.custom-card>.bg-success::before {
+  animation-duration: 8s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Keep visual effects, reduce expensive rendering */
+.custom-card,
+.live-result-box,
+.notice-card,
+.marquee-wrapper {
+  backface-visibility: hidden;
+}
+
+.custom-card::after,
+.live-result-box::before,
+.notice-card::before,
+.notice-card::after {
+  pointer-events: none;
+}
+
+/* Pause animations when the tab is hidden */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none !important;
+  }
+}
+
+/* Avoid hover movement on touch devices */
+@media (hover: none) {
+  .custom-card:hover {
+    transform: none;
+  }
+
+  .custom-card .btn-success:hover,
+  .custom-card .btn-light:hover {
+    transform: none;
   }
 }
 </style>

@@ -4,11 +4,16 @@ import { LocalNotifications } from '@capacitor/local-notifications'
 import api from '@/plugins/axios'
 import { getAuthToken } from '@/utils/auth'
 import router from '@/router'
+import { createPushRegistrationCoordinator } from '@/utils/pushRegistration'
 
 let currentToken = ''
 let currentPlatform = 'web'
 let nativeListenersRegistered = false
 let webMessageListenerRegistered = false
+const pushRegistration = createPushRegistrationCoordinator({
+  register: (endpoint, payload) => api.post(endpoint, payload),
+  storage: typeof localStorage !== 'undefined' ? localStorage : null,
+})
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -23,10 +28,9 @@ async function registerToken(token, platform) {
   if (!token) return false
   currentToken = token
   currentPlatform = platform
+
   const endpoint = getAuthToken() ? '/push/register-user' : '/push/subscribe'
-  await api.post(endpoint, { token, platform })
-  localStorage.setItem('push_registration_token', token)
-  return true
+  return pushRegistration.ensureRegistered({ token, platform, endpoint })
 }
 
 export async function syncPushSubscription() {
@@ -61,7 +65,7 @@ async function initNativePush(requestPermission = true) {
       ok: false,
       message:
         Capacitor.getPlatform() === 'android'
-          ? 'Notifications are blocked. Open Android Settings → Apps → Gali Satta Kings → Notifications and enable them, then reopen the app.'
+          ? 'Notifications are blocked. Open Android Settings → Apps → gali satta kings → Notifications and enable them, then reopen the app.'
           : 'Notifications are blocked. Enable them in your device notification settings, then try again.',
     }
   }
@@ -118,7 +122,7 @@ async function initNativePush(requestPermission = true) {
           notifications: [
             {
               id: Math.max(1, Date.now() % 2147483647),
-              title: notification.title || 'Gali Satta Kings',
+              title: notification.title || 'gali satta kings',
               body: notification.body || '',
               schedule: { at: new Date(Date.now() + 250) },
               channelId: 'game-alerts-v2',
@@ -193,7 +197,7 @@ async function initWebPush(allowPermissionPrompt = true) {
   if (!webMessageListenerRegistered) {
     webMessageListenerRegistered = true
     messagingSdk.onMessage(messaging, (payload) => {
-      const title = payload.notification?.title || 'Gali Satta Kings'
+      const title = payload.notification?.title || 'gali satta kings'
       const body = payload.notification?.body || ''
       const notification = new Notification(title, {
         body,
@@ -250,7 +254,7 @@ export async function disablePush() {
     if (Capacitor.isNativePlatform()) {
       await PushNotifications.unregister()
       currentToken = ''
-      localStorage.removeItem('push_registration_token')
+      pushRegistration.clear()
       return { ok: true, message: 'Push alerts disabled for this device.' }
     }
 
@@ -275,7 +279,7 @@ export async function disablePush() {
     }
 
     currentToken = ''
-    localStorage.removeItem('push_registration_token')
+    pushRegistration.clear()
     return {
       ok: true,
       message:

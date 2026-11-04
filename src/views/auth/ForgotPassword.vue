@@ -1,10 +1,10 @@
 <template>
   <div class="overlay" id="overlay"></div>
 
-  <main class="auth-container auth-container--premium">
+  <div class="auth-container">
     <div class="text-center mb-4">
       <div class=" mb-3">
-        <img src="../../assets/img/logo.png" class="auth-brand-logo" alt="">
+        <img src="../../assets/img/logo.png" style="height: 120px; width: auto;" alt="">
       </div>
       <h4 class="fw-bold text-primary-color">Reset Password</h4>
       <p class="text-muted small">
@@ -125,58 +125,9 @@
         <i class="bi bi-arrow-left me-1"></i> Back to Login
       </router-link>
     </div>
-  </main>
+  </div>
 </template>
 
-
-<style scoped>
-.auth-container--premium {
-  position: relative;
-  isolation: isolate
-}
-
-.auth-brand-logo {
-  display: block;
-  width: auto;
-  max-width: 180px;
-  max-height: 78px;
-  margin-inline: auto;
-  object-fit: contain
-}
-
-.auth-container--premium:before {
-  content: '';
-  display: block;
-  width: 52px;
-  height: 4px;
-  margin: -8px auto 24px;
-  border-radius: 99px;
-  background: linear-gradient(90deg, #17b890, #f4b942)
-}
-
-.auth-container--premium .form-label {
-  color: #344054;
-  font-size: 12px;
-  font-weight: 800
-}
-
-.auth-container--premium .form-control {
-  min-height: 46px;
-  border: 1px solid #d5deea;
-  border-radius: 12px
-}
-
-.auth-container--premium .btn {
-  min-height: 44px;
-  border-radius: 12px;
-  font-weight: 800
-}
-
-.auth-container--premium h4 {
-  color: #033c07 !important;
-  font-size: 24px
-}
-</style>
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'

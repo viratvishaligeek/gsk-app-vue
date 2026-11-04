@@ -11,7 +11,7 @@ export default defineConfig([
     files: ['**/*.{vue,js,mjs,jsx}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'src/assets/js/rocket-loader.min.js']),
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
 
   {
     languageOptions: {
@@ -19,16 +19,6 @@ export default defineConfig([
         ...globals.browser,
       },
     },
-  },
-
-  {
-    files: ['scripts/**/*.mjs'],
-    languageOptions: { globals: { ...globals.node } },
-  },
-
-  {
-    files: ['public/firebase-messaging-sw.js'],
-    languageOptions: { globals: { ...globals.serviceworker, firebase: 'readonly' } },
   },
 
   js.configs.recommended,

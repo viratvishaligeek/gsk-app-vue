@@ -1,6 +1,6 @@
 <template>
-  <div class="content-area premium-page premium-dynamic-page dynamic-page-bg">
-    <div class="container-fluid">
+  <div class="content-area pb-5 mb-5 dynamic-page-bg">
+    <div class="container-fluid px-2 px-md-3 py-3">
       <div v-if="isLoading" class="page-card loading-card">
         <div class="spinner-border text-warning"></div>
         <p class="text-muted mb-0 mt-3">
@@ -26,6 +26,13 @@
 
       <template v-else-if="page">
         <div class="page-card overflow-hidden">
+          <div class="page-header">
+            <div class="flex-grow-1">
+              <h1 class="page-title">
+                {{ page.name }}
+              </h1>
+            </div>
+          </div>
           <div class="cms-content" v-html="responsiveContent"></div>
         </div>
       </template>
@@ -126,7 +133,7 @@ watch(() => route.params.slug, fetchPage)
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  margin: 10px 0;
+  margin: 16px 0;
   overflow: hidden;
   border-radius: 12px;
   background: #000;
@@ -154,7 +161,7 @@ watch(() => route.params.slug, fetchPage)
 }
 
 .dynamic-page-bg {
-  /* min-height: 100vh; */
+  min-height: 100vh;
   background:
     radial-gradient(circle at top right,
       rgba(255, 193, 7, 0.08),
@@ -247,7 +254,7 @@ watch(() => route.params.slug, fetchPage)
 }
 
 .cms-content {
-  padding: 15px;
+  padding: 20px;
 
   color: #343a40;
 
@@ -261,7 +268,7 @@ watch(() => route.params.slug, fetchPage)
 .cms-content :deep(h2),
 .cms-content :deep(h3),
 .cms-content :deep(h4) {
-  /* margin-top: 1.4rem; */
+  margin-top: 1.4rem;
   margin-bottom: 0.7rem;
 
   color: #212529;
@@ -387,50 +394,5 @@ watch(() => route.params.slug, fetchPage)
   border: 0;
   display: block;
   pointer-events: auto;
-}
-
-.premium-dynamic-page {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  max-width: 960px
-}
-
-.premium-dynamic-page .page-card {
-  overflow: hidden;
-  border: 1px solid #e2e8f1 !important;
-  border-radius: 20px !important;
-  background: #fff !important;
-  box-shadow: 0 6px 20px rgba(23, 27, 53, .045)
-}
-
-.premium-dynamic-page .page-header {
-  padding: 20px !important;
-  background: #033c07 !important;
-  color: #fff
-}
-
-.premium-dynamic-page .page-header h1,
-.premium-dynamic-page .page-header h2,
-.premium-dynamic-page .page-header h3,
-.premium-dynamic-page .page-header h4,
-.premium-dynamic-page .page-header h5 {
-  color: #fff !important
-}
-
-.premium-dynamic-page .page-body {
-  padding: 20px !important;
-  color: #566279
-}
-
-.premium-dynamic-page .btn {
-  border-radius: 11px;
-  font-size: 11px;
-  font-weight: 850
-}
-
-@media(min-width:700px) {
-  .premium-dynamic-page {
-    padding-inline: 24px
-  }
 }
 </style>

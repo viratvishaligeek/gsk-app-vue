@@ -1,5 +1,5 @@
 <template>
-  <div class="content-area premium-page premium-history-page position-relative history-bg">
+  <div class="content-area pb-5 mb-5 position-relative history-bg">
     <div class="container-fluid px-2 px-md-3 py-2">
       <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-dark text-white position-relative overflow-hidden">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 position-relative z-1">
@@ -10,8 +10,12 @@
             </div>
 
             <div>
-              <h6 class="fw-black text-white mb-0">Play History & Slip Ledger</h6>
-              <span class="fs-8 text-white-50"> Instant Bet & Result Breakdown </span>
+              <h6 class="fw-black text-white mb-0">
+                Play History & Slip Ledger
+              </h6>
+              <span class="fs-8 text-white-50">
+                Instant Bet & Result Breakdown
+              </span>
             </div>
           </div>
 
@@ -34,7 +38,9 @@
       <div class="row g-2 mb-3">
         <div class="col-4">
           <div class="card border-0 shadow-xs rounded-3 p-2 text-center bg-white border-start border-3 border-danger">
-            <span class="fs-8 text-muted fw-bold text-uppercase d-block"> Amount </span>
+            <span class="fs-8 text-muted fw-bold text-uppercase d-block">
+              Amount
+            </span>
 
             <strong class="text-dark fs-7 font-monospace">
               ₹{{ formatCurrency(dailyStats.totalSpent) }}
@@ -44,7 +50,9 @@
 
         <div class="col-4">
           <div class="card border-0 shadow-xs rounded-3 p-2 text-center bg-white border-start border-3 border-warning">
-            <span class="fs-8 text-muted fw-bold text-uppercase d-block"> Total Slips </span>
+            <span class="fs-8 text-muted fw-bold text-uppercase d-block">
+              Total Slips
+            </span>
 
             <strong class="text-dark fs-7 font-monospace">
               {{ dailyStats.totalSlips }}
@@ -54,7 +62,9 @@
 
         <div class="col-4">
           <div class="card border-0 shadow-xs rounded-3 p-2 text-center bg-white border-start border-3 border-success">
-            <span class="fs-8 text-muted fw-bold text-uppercase d-block"> Winnings </span>
+            <span class="fs-8 text-muted fw-bold text-uppercase d-block">
+              Winnings
+            </span>
 
             <strong class="text-success fs-7 font-monospace">
               ₹{{ formatCurrency(dailyStats.totalWon) }}
@@ -69,16 +79,22 @@
             <div class="text-center py-5">
               <div class="spinner-grow spinner-grow-sm text-warning" role="status"></div>
 
-              <p class="text-muted fs-8 mt-2 mb-0">Loading play history...</p>
+              <p class="text-muted fs-8 mt-2 mb-0">
+                Loading play history...
+              </p>
             </div>
           </div>
 
           <div v-else-if="history.length === 0" class="card border-0 shadow-xs rounded-4 py-4 text-center bg-white">
             <i class="bi bi-ticket-perforated display-5 text-warning mb-2"></i>
 
-            <h6 class="fw-bold text-dark fs-7 mb-1">No Slips Found for {{ selectedDate }}</h6>
+            <h6 class="fw-bold text-dark fs-7 mb-1">
+              No Slips Found for {{ selectedDate }}
+            </h6>
 
-            <p class="text-muted fs-8 mb-2">Try selecting another date or play a new game.</p>
+            <p class="text-muted fs-8 mb-2">
+              Try selecting another date or play a new game.
+            </p>
 
             <div>
               <router-link to="/play" class="btn btn-sm btn-warning rounded-pill fw-bold px-3 text-dark">
@@ -112,18 +128,24 @@
                     class="badge bg-success text-white fw-bold px-2 py-1 rounded-pill fs-8">
                     <i class="bi bi-trophy-fill me-1"></i>
                     WON
-                    <span v-if="slip.winning_number"> ({{ slip.winning_number }}) </span>
+                    <span v-if="slip.winning_number">
+                      ({{ slip.winning_number }})
+                    </span>
                   </span>
 
                   <span v-else-if="slip.status === 'loss' || slip.status === 'lost'"
                     class="badge bg-secondary text-white fw-semibold px-2 py-1 rounded-pill fs-8">
                     LOST
-                    <span v-if="slip.winning_number"> ({{ slip.winning_number }}) </span>
+                    <span v-if="slip.winning_number">
+                      ({{ slip.winning_number }})
+                    </span>
                   </span>
 
                   <span v-else class="badge bg-secondary text-white fw-semibold px-2 py-1 rounded-pill fs-8">
                     CLOSED
-                    <span v-if="slip.winning_number"> ({{ slip.winning_number }}) </span>
+                    <span v-if="slip.winning_number">
+                      ({{ slip.winning_number }})
+                    </span>
                   </span>
                 </div>
               </div>
@@ -131,7 +153,9 @@
               <div class="p-2 px-3 bg-light-subtle d-flex align-items-center justify-content-between gap-2">
                 <div class="d-flex align-items-center gap-3">
                   <div>
-                    <span class="text-muted fs-8 d-block"> Time / ID </span>
+                    <span class="text-muted fs-8 d-block">
+                      Time / ID
+                    </span>
 
                     <strong class="text-dark fs-8 font-monospace">
                       {{ formatTime(slip.created_at) }}
@@ -140,15 +164,21 @@
                   </div>
 
                   <div class="border-start ps-3 d-none d-sm-block">
-                    <span class="text-muted fs-8 d-block"> Bets Selection </span>
+                    <span class="text-muted fs-8 d-block">
+                      Bets Selection
+                    </span>
 
-                    <strong class="text-dark fs-8"> {{ slip.total_bets_count }} Number(s) </strong>
+                    <strong class="text-dark fs-8">
+                      {{ slip.total_bets_count }} Number(s)
+                    </strong>
                   </div>
                 </div>
 
                 <div class="d-flex align-items-center gap-2">
                   <div class="text-end me-1">
-                    <span class="text-muted fs-8 d-block fw-semibold"> Total Amount </span>
+                    <span class="text-muted fs-8 d-block fw-semibold">
+                      Total Amount
+                    </span>
 
                     <span class="fs-7 fw-black text-danger font-monospace">
                       ₹{{ formatCurrency(slip.total_amount) }}
@@ -163,7 +193,9 @@
                       " style="width: 32px; height: 32px">
                     <i :class="[
                       'bi',
-                      activeExpandedId === slip.id ? 'bi-chevron-up' : 'bi-chevron-down',
+                      activeExpandedId === slip.id
+                        ? 'bi-chevron-up'
+                        : 'bi-chevron-down',
                     ]"></i>
                   </button>
                 </div>
@@ -195,6 +227,7 @@
                 </div>
 
                 <div v-else-if="slip.mode === 'harup'" class="row g-2">
+
                   <div v-if="slip.harup_result?.ander !== null || slip.harup_result?.bahar !== null" class="col-12">
                     <div class="p-2 rounded-3 bg-dark text-white">
                       <div class="d-flex align-items-center justify-content-between">
@@ -228,47 +261,59 @@
 
                   <div v-if="Object.keys(slip.harup_bets?.ander || {}).length" class="col-12 col-sm-6">
                     <div class="p-2 border rounded-3 bg-primary-subtle border-primary-subtle">
+
                       <span class="fs-8 fw-bold text-primary d-block mb-1">
                         🅰️ Ander (Inside):
                       </span>
 
                       <div class="d-flex flex-wrap gap-1">
+
                         <span v-for="(amt, digit) in slip.harup_bets.ander" :key="'a-' + digit"
                           class="badge bg-white text-primary border border-primary p-1 rounded-2 fs-8 font-monospace"
                           :class="{
                             'border-success text-success bg-success-subtle':
-                              String(digit) === String(slip.harup_result?.ander),
+                              String(digit) === String(slip.harup_result?.ander)
                           }">
-                          Digit {{ digit }} = ₹{{ formatCurrency(amt) }}
+                          Digit {{ digit }} =
+                          ₹{{ formatCurrency(amt) }}
 
                           <span v-if="String(digit) === String(slip.harup_result?.ander)" class="ms-1">
                             ✓ WIN
                           </span>
                         </span>
+
                       </div>
                     </div>
                   </div>
 
                   <div v-if="Object.keys(slip.harup_bets?.bahar || {}).length" class="col-12 col-sm-6">
                     <div class="p-2 border rounded-3 bg-info-subtle border-info-subtle">
-                      <span class="fs-8 fw-bold text-info d-block mb-1"> 🅱️ Bahar (Outside): </span>
+
+                      <span class="fs-8 fw-bold text-info d-block mb-1">
+                        🅱️ Bahar (Outside):
+                      </span>
 
                       <div class="d-flex flex-wrap gap-1">
+
                         <span v-for="(amt, digit) in slip.harup_bets.bahar" :key="'b-' + digit"
                           class="badge bg-white text-info border border-info p-1 rounded-2 fs-8 font-monospace" :class="{
                             'border-success text-success bg-success-subtle':
-                              String(digit) === String(slip.harup_result?.bahar),
+                              String(digit) === String(slip.harup_result?.bahar)
                           }">
-                          Digit {{ digit }} = ₹{{ formatCurrency(amt) }}
+                          Digit {{ digit }} =
+                          ₹{{ formatCurrency(amt) }}
 
                           <span v-if="String(digit) === String(slip.harup_result?.bahar)" class="ms-1">
                             ✓ WIN
                           </span>
                         </span>
+
                       </div>
                     </div>
                   </div>
+
                 </div>
+
 
                 <div v-else-if="slip.mode === 'crossing'">
                   <div class="mb-2 d-flex align-items-center gap-1 fs-8 text-muted flex-wrap">
@@ -300,7 +345,9 @@
                     Winning Amount Credited:
                   </span>
 
-                  <span class="fs-7 font-monospace"> +₹{{ formatCurrency(slip.win_amount) }} </span>
+                  <span class="fs-7 font-monospace">
+                    +₹{{ formatCurrency(slip.win_amount) }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -334,10 +381,12 @@
                     </li>
 
                     <li class="page-item" :class="{
-                      disabled: pagination.current_page === pagination.last_page,
+                      disabled:
+                        pagination.current_page === pagination.last_page,
                     }">
                       <button class="page-link rounded-circle border-0" @click="goToPage(pagination.current_page + 1)"
-                        :disabled="pagination.current_page === pagination.last_page">
+                        :disabled="pagination.current_page === pagination.last_page
+                          ">
                         <i class="bi bi-chevron-right"></i>
                       </button>
                     </li>
@@ -409,7 +458,10 @@ const visiblePages = computed(() => {
     end = last
   }
 
-  return Array.from({ length: end - start + 1 }, (_, index) => start + index)
+  return Array.from(
+    { length: end - start + 1 },
+    (_, index) => start + index
+  )
 })
 
 const fetchPlayHistory = async (page = 1) => {
@@ -417,7 +469,10 @@ const fetchPlayHistory = async (page = 1) => {
     return
   }
 
-  if (pagination.value.last_page > 0 && page > pagination.value.last_page) {
+  if (
+    pagination.value.last_page > 0 &&
+    page > pagination.value.last_page
+  ) {
     return
   }
 
@@ -481,7 +536,11 @@ const fetchPlayHistory = async (page = 1) => {
 }
 
 const goToPage = (page) => {
-  if (page < 1 || page > pagination.value.last_page || page === pagination.value.current_page) {
+  if (
+    page < 1 ||
+    page > pagination.value.last_page ||
+    page === pagination.value.current_page
+  ) {
     return
   }
 
@@ -489,7 +548,8 @@ const goToPage = (page) => {
 }
 
 const toggleSlipDetails = (id) => {
-  activeExpandedId.value = activeExpandedId.value === id ? null : id
+  activeExpandedId.value =
+    activeExpandedId.value === id ? null : id
 }
 
 const resetToToday = () => {
@@ -626,67 +686,5 @@ onMounted(() => {
 
 .transition-all {
   transition: all 0.2s ease;
-}
-
-.premium-history-page {
-  padding-top: 22px;
-  padding-bottom: 110px;
-}
-
-.premium-history-page .card {
-  border: 1px solid #e2e8f1 !important;
-  border-radius: 19px !important;
-  background: #fff !important;
-  color: #202642 !important;
-  box-shadow: 0 5px 18px rgba(23, 27, 53, 0.045) !important;
-}
-
-.premium-history-page .bg-dark {
-  background:
-    radial-gradient(circle at 100% 0, rgba(23, 184, 144, 0.22), transparent 40%),
-    linear-gradient(130deg, #033c07, #292f52) !important;
-  color: #fff !important;
-}
-
-.premium-history-page .bg-dark h6,
-.premium-history-page .bg-dark .text-white {
-  color: #fff !important;
-}
-
-.premium-history-page .bg-dark .text-white-50 {
-  color: #bac5d8 !important;
-}
-
-.premium-history-page .form-select,
-.premium-history-page .form-control {
-  min-height: 40px;
-  border: 1px solid #dfe6ef;
-  border-radius: 11px;
-  background: #fff;
-  color: #252c49;
-  font-size: 11px;
-}
-
-.premium-history-page .table {
-  font-size: 11px;
-}
-
-.premium-history-page .table th {
-  background: #f1f5fa;
-  color: #657188;
-  font-size: 9px;
-  font-weight: 900;
-}
-
-.premium-history-page .table td,
-.premium-history-page .table th {
-  padding: 10px 8px;
-  border-color: #e8edf4;
-}
-
-@media (min-width: 700px) {
-  .premium-history-page {
-    padding-inline: 24px;
-  }
 }
 </style>

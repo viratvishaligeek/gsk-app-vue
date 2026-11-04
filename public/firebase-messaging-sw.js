@@ -1,20 +1,17 @@
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  const target = new URL(event.notification.data?.url || '/notifications', self.location.origin)
-    .href
-  event.waitUntil(
-    (async () => {
-      const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
-      for (const client of windows) {
-        if ('focus' in client) {
-          await client.focus()
-          if ('navigate' in client) await client.navigate(target)
-          return
-        }
+  const target = new URL(event.notification.data?.url || '/notifications', self.location.origin).href
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+    for (const client of windows) {
+      if ('focus' in client) {
+        await client.focus()
+        if ('navigate' in client) await client.navigate(target)
+        return
       }
-      await self.clients.openWindow(target)
-    })(),
-  )
+    }
+    await self.clients.openWindow(target)
+  })())
 })
 
 importScripts('/firebase-config.js')
@@ -31,7 +28,7 @@ if (self.FIREBASE_CONFIG && self.FIREBASE_CONFIG.apiKey && self.FIREBASE_CONFIG.
     // messages to avoid showing every push twice.
     if (payload.notification) return
 
-    const title = payload.notification?.title || 'Gali Satta Kings'
+    const title = payload.notification?.title || 'gali satta kings'
     const options = {
       body: payload.notification?.body || '',
       icon: '/icons/icon-192.webp',

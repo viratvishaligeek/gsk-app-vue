@@ -1,5 +1,5 @@
 <template>
-  <div class="content-area premium-page premium-results-page history-bg">
+  <div class="content-area pb-5 mb-5 history-bg">
     <div class="container-fluid px-2 px-md-3 py-2">
       <div class="card border-0 shadow-sm theme-bg rounded-4 p-3 mb-3 text-white position-relative overflow-hidden">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 position-relative z-1">
@@ -18,14 +18,14 @@
           <div
             class="d-flex align-items-center gap-2 bg-white bg-opacity-10 p-1 px-2 rounded-pill border border-white-15">
             <select v-model="selectedMonth" @change="fetchMonthlyResults"
-              class="form-select form-select-sm bg-transparent text-dark border-0 fw-bold fs-8 cursor-pointer shadow-none py-0">
+              class="form-select form-select-sm bg-transparent text-white border-0 fw-bold fs-8 cursor-pointer shadow-none py-0">
               <option v-for="(month, index) in months" :key="index" :value="index + 1" class="text-dark">
                 {{ month }}
               </option>
             </select>
 
             <select v-model="selectedYear" @change="fetchMonthlyResults"
-              class="form-select form-select-sm bg-transparent text-dark border-0 fw-bold fs-8 cursor-pointer shadow-none py-0">
+              class="form-select form-select-sm bg-transparent text-white border-0 fw-bold fs-8 cursor-pointer shadow-none py-0">
               <option v-for="year in years" :key="year" :value="year" class="text-dark">
                 {{ year }}
               </option>
@@ -59,7 +59,7 @@
         </div>
       </div>
 
-      <div class="card border-0 shadow-xs rounded-0 bg-white overflow-hidden">
+      <div class="card border-0 shadow-xs rounded-4 bg-white overflow-hidden">
         <div v-if="isLoading" class="text-center py-5">
           <div class="spinner-border text-warning" role="status"></div>
 
@@ -79,7 +79,7 @@
         </div>
 
         <div v-else class="table-responsive result-table-wrapper">
-          <table class="table border table-hover align-middle mb-0 text-center font-monospace fs-8">
+          <table class="table  table-hover align-middle mb-0 text-center font-monospace fs-8">
             <thead class=" text-uppercase fs-8">
               <tr>
                 <th class="date-sticky date-header p-0 py-2 text-danger">
@@ -88,9 +88,10 @@
 
                 <th v-for="game in gameHeaders" :key="game.id" class="p-1 text-white" :style="{
                   backgroundColor: 'brown',
+                  minWidth: game.name.trim().split(/\s+/).length >= 2 ? '100px' : 'auto'
                 }">
                   <div class="d-flex align-items-center justify-content-center gap-1">
-                    <span>{{ game.name.slice(0, 5) }}</span>
+                    <span>{{ game.name }}</span>
                   </div>
                 </th>
               </tr>
@@ -118,7 +119,7 @@
                     {{ row.results[game.id] }}
                   </span>
 
-                  <span v-else class="text-muted opacity-25 fw-bold">
+                  <span v-else class=" fw-bold">
                     --
                   </span>
                 </td>
@@ -374,6 +375,17 @@ onBeforeUnmount(async () => {
   white-space: nowrap;
 }
 
+.result-table-wrapper .date-sticky {
+  position: sticky;
+  left: 0;
+  min-width: 65px;
+  width: 65px;
+  max-width: 65px;
+  background-color: #fff !important;
+  z-index: 2;
+  border-right: 2px solid #dee2e6;
+}
+
 .result-table-wrapper .date-header {
   z-index: 4;
   background-color: #f8f9fa !important;
@@ -385,55 +397,5 @@ onBeforeUnmount(async () => {
 
 .result-table-wrapper tbody tr.table-warning .date-cell {
   background-color: #fff3cd !important;
-}
-
-
-.premium-results-page .card {
-  overflow: hidden;
-  border: 1px solid #e2e8f1 !important;
-  border-radius: 0px !important;
-  background: #fff !important;
-  color: #202642 !important;
-  box-shadow: 0 5px 18px rgba(23, 27, 53, .045) !important
-}
-
-.premium-results-page .theme-bg {
-  background: #033c07 !important;
-  color: #fff !important
-}
-
-.premium-results-page .theme-bg h6,
-.premium-results-page .theme-bg .text-white {
-  color: #fff !important
-}
-
-.premium-results-page .theme-bg .text-white-50 {
-  color: #bac5d8 !important
-}
-
-.premium-results-page .form-select {
-  min-height: 39px;
-  border: 1px solid rgba(255, 255, 255, .18);
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, .1);
-  font-size: 11px
-}
-
-.premium-results-page .form-select option {
-  color: #202642;
-}
-
-.premium-results-page .date-sticky {
-  background: #f1f5fa !important
-}
-
-.premium-results-page .badge {
-  border-radius: 8px !important
-}
-
-@media(min-width:700px) {
-  .premium-results-page {
-    padding-inline: 24px
-  }
 }
 </style>

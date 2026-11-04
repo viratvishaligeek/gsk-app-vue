@@ -1,6 +1,32 @@
 <template>
-  <main class="content-area premium-page premium-add-page">
-    <div class="container-fluid px-0">
+  <div class="add-money-page pb-5">
+
+    <main class="container-fluid px-3">
+      <section class="activity-section">
+        <transition name="activity-slide" mode="out-in">
+          <div :key="activityIndex" class="activity-card">
+            <div class="activity-avatar">
+              {{ currentActivity.initials }}
+            </div>
+            <div class="activity-content">
+              <div class="activity-message">
+                <strong>{{ currentActivity.name }}</strong>
+                added
+                <strong>₹{{ currentActivity.amount }}</strong>
+                to wallet
+              </div>
+              <small>
+                <i class="bi bi-check-circle-fill"></i>
+                Payment completed • Just now
+              </small>
+            </div>
+            <div class="activity-money">
+              ₹{{ currentActivity.amount }}
+            </div>
+          </div>
+        </transition>
+      </section>
+
       <section class="amount-card">
         <div class="section-label">
           <span class="section-icon green">
@@ -46,9 +72,13 @@
             <div class="gateway-main">
               <div class="gateway-title-row">
                 <strong>UPI Payment</strong>
-                <span class="recommended-badge"> Recommended </span>
+                <span class="recommended-badge">
+                  Recommended
+                </span>
               </div>
-              <small> Pay instantly using your preferred UPI app </small>
+              <small>
+                Pay instantly using your preferred UPI app
+              </small>
             </div>
             <div class="gateway-lightning">
               <i class="bi bi-lightning-charge-fill"></i>
@@ -58,25 +88,25 @@
           <div class="upi-apps">
             <div class="upi-app">
               <div class="upi-icon">
-                <img src="../../assets/img/gpay.jpg" height="20px" alt="" />
+                <img src="../../assets/img/gpay.jpg" height="20px" alt="">
               </div>
               <small>Google Pay</small>
             </div>
             <div class="upi-app">
               <div class="upi-icon">
-                <img src="../../assets/img/phone.jpg" height="20px" alt="" />
+                <img src="../../assets/img/phone.jpg" height="20px" alt="">
               </div>
               <small>PhonePe</small>
             </div>
             <div class="upi-app">
               <div class="upi-icon">
-                <img src="../../assets/img/paytm.jpg" height="20px" alt="" />
+                <img src="../../assets/img/paytm.jpg" height="20px" alt="">
               </div>
               <small>Paytm</small>
             </div>
             <div class="upi-app">
               <div class="upi-icon bhim">
-                <img src="../../assets/img/bhim.jpg" height="20px" alt="" />
+                <img src="../../assets/img/bhim.jpg" height="20px" alt="">
               </div>
               <small>BHIM</small>
             </div>
@@ -104,7 +134,9 @@
             </div>
             <div class="manual-content">
               <strong>Manual UPI</strong>
-              <small> Pay by QR and submit UTR </small>
+              <small>
+                Pay by QR and submit UTR
+              </small>
             </div>
             <i class="bi bi-chevron-right manual-arrow"></i>
           </div>
@@ -123,7 +155,9 @@
           <div class="flex-grow-1">
             {{ apiMessage.text }}
           </div>
-          <button type="button" class="message-close" @click="apiMessage.text = ''">×</button>
+          <button type="button" class="message-close" @click="apiMessage.text = ''">
+            ×
+          </button>
         </div>
       </transition>
       <button type="button" class="pay-button" :disabled="isLoading" @click="handleAddMoney">
@@ -166,7 +200,9 @@
             <i class="bi bi-receipt"></i>
           </div>
           <strong>No pending payments</strong>
-          <span> Your pending add-money requests will appear here. </span>
+          <span>
+            Your pending add-money requests will appear here.
+          </span>
         </div>
         <!-- TABLE / LIST -->
         <div v-else class="pending-list">
@@ -176,7 +212,9 @@
                 <i class="bi bi-arrow-down-left"></i>
               </div>
               <div>
-                <strong> ₹{{ formatCurrency(payment.amount) }} </strong>
+                <strong>
+                  ₹{{ formatCurrency(payment.amount) }}
+                </strong>
                 <small>
                   {{ formatPaymentDate(payment.created_at) }}
                 </small>
@@ -187,23 +225,24 @@
                 <span class="status-dot"></span>
                 {{ formatStatus(payment.status) }}
               </span>
-              <small v-if="payment.utr"> UTR: {{ payment.utr }} </small>
-              <button v-if="
-                payment.payment_method === 'gateway' &&
-                payment.gateway_payment_url &&
-                ['pending', 'processing'].includes(String(payment.status).toLowerCase())
-              " type="button" class="resume-payment-btn" @click="resumeGatewayPayment(payment)">
+              <small v-if="payment.utr">
+                UTR: {{ payment.utr }}
+              </small>
+              <button
+                v-if="payment.payment_method === 'gateway' && payment.gateway_payment_url && ['pending', 'processing'].includes(String(payment.status).toLowerCase())"
+                type="button" class="resume-payment-btn" @click="resumeGatewayPayment(payment)">
                 Resume payment
               </button>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </main>
+
 
     <transition name="modal">
       <div v-if="showGatewayModal" class="modal-backdrop-custom gateway-payment-backdrop"
-        @click.self="closeGatewayPayment" @keydown.esc="closeGatewayPayment">
+        @click.self="closeGatewayPayment" @keydown.esc.window="closeGatewayPayment">
         <div class="manual-modal gateway-payment-modal">
           <div class="modal-header-custom">
             <div class="modal-title-wrap">
@@ -223,9 +262,10 @@
               <strong>{{ formatStatus(gatewayPaymentStatus) }}</strong>
             </div>
             <p class="gateway-payment-help">
-              Complete the payment in the secure UPIGateway screen below. Keep this screen open
-              while the server verifies your payment. Closing this screen does not cancel the
-              transaction.
+              Complete the payment in the secure UPIGateway screen below. Keep this screen open while the server
+              verifies
+              your payment.
+              Closing this screen does not cancel the transaction.
             </p>
             <iframe v-if="gatewayPaymentUrl" :src="gatewayPaymentUrl" title="UPIGateway UPI payment"
               class="gateway-payment-frame" referrerpolicy="no-referrer" allow="payment *"></iframe>
@@ -235,9 +275,7 @@
               <span v-if="gatewayStatusChecking" class="spinner-border spinner-border-sm me-2"></span>
               Check payment status
             </button>
-            <button type="button" class="gateway-back-btn" @click="closeGatewayPayment">
-              Back to Add Money
-            </button>
+            <button type="button" class="gateway-back-btn" @click="closeGatewayPayment">Back to Add Money</button>
           </div>
         </div>
       </div>
@@ -253,7 +291,9 @@
               </div>
               <div>
                 <h5>Pay via UPI</h5>
-                <small> ₹{{ formatCurrency(form.amount) }} </small>
+                <small>
+                  ₹{{ formatCurrency(form.amount) }}
+                </small>
               </div>
             </div>
             <button type="button" class="modal-close" @click="closeManualModal">
@@ -272,12 +312,16 @@
               <div class="flex-grow-1">
                 {{ apiMessage.text }}
               </div>
-              <button type="button" class="message-close" @click="apiMessage.text = ''">×</button>
+              <button type="button" class="message-close" @click="apiMessage.text = ''">
+                ×
+              </button>
             </div>
           </transition>
           <div class="modal-body-custom">
             <div class="qr-container">
-              <div class="qr-label">Scan & Pay</div>
+              <div class="qr-label">
+                Scan & Pay
+              </div>
               <img v-if="paymentInfo.qr_url" :src="paymentInfo.qr_url" class="manual-qr" alt="UPI QR Code" />
               <div v-else class="qr-placeholder">
                 <i class="bi bi-qr-code"></i>
@@ -298,14 +342,19 @@
               </span>
             </div>
             <div class="form-field">
-              <label> UTR / Transaction ID </label>
+              <label>
+                UTR / Transaction ID
+              </label>
               <div class="field-with-icon">
                 <i class="bi bi-receipt"></i>
-                <input v-model="manualForm.utr" type="text" autocomplete="off" placeholder="Enter 12 digit UTR" />
+                <input v-model="manualForm.utr" type="text" autocomplete="off" style="font-size: 16px;"
+                  placeholder="Enter 12 digit UTR" />
               </div>
             </div>
             <div class="form-field">
-              <label> Payment Screenshot </label>
+              <label>
+                Payment Screenshot
+              </label>
               <label class="upload-box">
                 <input type="file" accept="image/png,image/jpeg,image/webp" @change="handleScreenshot" />
                 <template v-if="!screenshotPreview">
@@ -313,11 +362,15 @@
                     <i class="bi bi-cloud-arrow-up"></i>
                   </div>
                   <strong>Upload screenshot</strong>
-                  <small> JPG, PNG or WEBP • Max 15 MB </small>
+                  <small>
+                    JPG, PNG or WEBP • Max 15 MB
+                  </small>
                 </template>
                 <template v-else>
                   <img :src="screenshotPreview" class="screenshot-preview" alt="Payment screenshot preview" />
-                  <span class="change-image"> Tap to change </span>
+                  <span class="change-image">
+                    Tap to change
+                  </span>
                 </template>
               </label>
             </div>
@@ -331,775 +384,21 @@
           </div>
         </div>
       </div>
+
     </transition>
-  </main>
+
+  </div>
 </template>
-<style scoped>
-.premium-add-page {
-  max-width: 780px;
-}
 
-.premium-add-page .container-fluid {
-  max-width: 740px;
-}
-
-.premium-payment-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0 0 18px;
-}
-
-.premium-payment-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #0d9c78;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-}
-
-.premium-payment-heading h1 {
-  margin: 7px 0 4px;
-  color: #033c07;
-  font-size: 30px;
-  font-weight: 850;
-  letter-spacing: -0.05em;
-}
-
-.premium-payment-heading p {
-  margin: 0;
-  color: #8490a3;
-  font-size: 11px;
-}
-
-.premium-back-wallet {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 11px;
-  border: 1px solid #e1e7f0;
-  border-radius: 12px;
-  background: #fff;
-  color: #4e5b76;
-  font-size: 9px;
-  font-weight: 850;
-  white-space: nowrap;
-}
-
-.premium-back-wallet>i:first-child {
-  color: #0e9d78;
-}
-
-.premium-add-page .amount-card,
-.premium-add-page .payment-card,
-.premium-add-page .pending-section {
-  padding: 18px;
-  border: 1px solid #e2e8f1;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 5px 18px rgba(23, 27, 53, 0.04);
-}
-
-.premium-add-page .section-label {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin-bottom: 16px;
-}
-
-.premium-add-page .section-label strong {
-  color: #202642;
-  font-size: 14px;
-}
-
-.premium-add-page .section-label small {
-  display: block;
-  margin-top: 3px;
-  color: #8994a6;
-  font-size: 10px;
-}
-
-.premium-add-page .section-icon {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 13px;
-  background: #e4faf2;
-  color: #0b9b75;
-}
-
-.premium-add-page .amount-input-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 60px;
-  padding: 0 14px;
-  border: 1px solid #dce4ef;
-  border-radius: 15px;
-  background: #f9fafc;
-}
-
-.premium-add-page .rupee-symbol {
-  color: #0d9d78;
-  font-size: 27px;
-  font-weight: 900;
-}
-
-.premium-add-page .amount-input-box input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #202642;
-  font-size: 27px;
-  font-weight: 850;
-}
-
-.premium-add-page .amount-suffix {
-  color: #8e99aa;
-  font-size: 9px;
-  font-weight: 900;
-}
-
-.premium-add-page .quick-amounts {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 11px;
-}
-
-.premium-add-page .quick-amounts button {
-  min-height: 39px;
-  border: 1px solid #e1e7f0;
-  border-radius: 11px;
-  background: #fff;
-  color: #66728a;
-  font-size: 10px;
-  font-weight: 850;
-}
-
-.premium-add-page .quick-amounts button.selected {
-  border-color: #17b890;
-  background: #e4faf2;
-  color: #0b926d;
-}
-
-.premium-add-page .payment-card {
-  margin-top: 13px;
-}
-
-.premium-add-page .section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.premium-add-page .section-heading h6 {
-  margin: 0;
-  color: #202642;
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.premium-add-page .section-heading span {
-  display: block;
-  margin-top: 4px;
-  color: #8994a6;
-  font-size: 10px;
-}
-
-.premium-add-page .secured-pill {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 8px;
-  border-radius: 8px;
-  background: #e4faf2;
-  color: #0b926d;
-  font-size: 8px;
-  font-weight: 900;
-}
-
-.premium-add-page .gateway-option,
-.premium-add-page .manual-option {
-  margin-top: 9px;
-  padding: 14px;
-  border: 1px solid #e1e7f0;
-  border-radius: 15px;
-  background: #fff;
-  cursor: pointer;
-}
-
-.premium-add-page .gateway-option.selected,
-.premium-add-page .manual-option.selected {
-  border-color: #17b890;
-  background: #f4fdf9;
-  box-shadow: 0 0 0 2px rgba(23, 184, 144, 0.08);
-}
-
-.premium-add-page .gateway-top,
-.premium-add-page .manual-option-inner {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-
-.premium-add-page .gateway-radio {
-  display: grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 50%;
-}
-
-.premium-add-page .selected .gateway-radio {
-  border-color: #17b890;
-}
-
-.premium-add-page .selected .gateway-radio span {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #17b890;
-}
-
-.premium-add-page .gateway-main,
-.premium-add-page .manual-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.premium-add-page .gateway-title-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.premium-add-page .gateway-title-row strong,
-.premium-add-page .manual-content strong {
-  color: #202642;
-  font-size: 12px;
-}
-
-.premium-add-page .gateway-main small,
-.premium-add-page .manual-content small {
-  display: block;
-  margin-top: 4px;
-  color: #8994a6;
-  font-size: 9px;
-}
-
-.premium-add-page .recommended-badge {
-  padding: 4px 6px;
-  border-radius: 6px;
-  background: #e4faf2;
-  color: #0b926d;
-  font-size: 8px;
-  font-weight: 900;
-}
-
-.premium-add-page .gateway-lightning,
-.premium-add-page .manual-icon {
-  display: grid;
-  place-items: center;
-  width: 35px;
-  height: 35px;
-  border-radius: 11px;
-  background: #edf2ff;
-  color: #353d68;
-  font-size: 16px;
-}
-
-.premium-add-page .upi-apps {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  margin-top: 14px;
-  padding-top: 13px;
-  border-top: 1px solid #edf0f5;
-}
-
-.premium-add-page .upi-app {
-  display: grid;
-  justify-items: center;
-  gap: 5px;
-  color: #788498;
-}
-
-.premium-add-page .upi-app small {
-  font-size: 8px;
-}
-
-.premium-add-page .upi-icon {
-  display: grid;
-  place-items: center;
-  width: 33px;
-  height: 33px;
-  border: 1px solid #e7ebf2;
-  border-radius: 10px;
-  background: #fff;
-  overflow: hidden;
-}
-
-.premium-add-page .upi-icon img {
-  max-width: 24px;
-  max-height: 24px;
-  object-fit: contain;
-}
-
-.premium-add-page .gateway-note {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
-  color: #8792a4;
-  font-size: 9px;
-}
-
-.premium-add-page .gateway-note i {
-  color: #0d9d78;
-}
-
-.premium-add-page .api-message {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 13px;
-  padding: 12px;
-  border-radius: 13px;
-  font-size: 11px;
-  font-weight: 750;
-}
-
-.premium-add-page .message-success {
-  border: 1px solid #c9f1e3;
-  background: #edfcf6;
-  color: #087655;
-}
-
-.premium-add-page .message-error {
-  border: 1px solid #f4cbd2;
-  background: #fff2f4;
-  color: #b53043;
-}
-
-.premium-add-page .message-close {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font-size: 18px;
-}
-
-.premium-add-page .pay-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  min-height: 54px;
-  margin-top: 14px;
-  padding: 0 16px;
-  border: 0;
-  border-radius: 15px;
-  background: linear-gradient(130deg, #033c07, #2a3154);
-  color: #fff;
-  box-shadow: 0 9px 20px rgba(23, 27, 53, 0.15);
-}
-
-.premium-add-page .pay-button-left {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
-  font-weight: 850;
-}
-
-.premium-add-page .pay-button-amount {
-  font-size: 15px;
-  font-weight: 900;
-  color: #f5c65d;
-}
-
-.premium-add-page .secure-footer {
-  margin: 9px 0 20px;
-  color: #99a3b1;
-  text-align: center;
-  font-size: 9px;
-}
-
-.premium-add-page .secure-footer i {
-  color: #0d9d78;
-}
-
-.premium-add-page .pending-section {
-  margin-top: 18px;
-}
-
-.premium-add-page .pending-heading {
-  margin-bottom: 12px;
-}
-
-.premium-add-page .pending-heading h6 {
-  margin: 0;
-  color: #202642;
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.premium-add-page .refresh-btn {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #e2e8f1;
-  border-radius: 10px;
-  background: #fff;
-  color: #6c7890;
-}
-
-.premium-add-page .pending-list {
-  display: grid;
-  gap: 8px;
-}
-
-.premium-add-page .pending-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px;
-  border: 1px solid #edf0f5;
-  border-radius: 13px;
-  background: #fafbfd;
-}
-
-.premium-add-page .pending-item-left {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.premium-add-page .pending-payment-icon {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: #e4faf2;
-  color: #0b926d;
-}
-
-.premium-add-page .pending-item strong {
-  color: #252c49;
-  font-size: 11px;
-}
-
-.premium-add-page .pending-item small {
-  display: block;
-  margin-top: 3px;
-  color: #8b96a7;
-  font-size: 8px;
-}
-
-.premium-add-page .pending-item-right {
-  display: grid;
-  justify-items: end;
-  gap: 5px;
-}
-
-.premium-add-page .resume-payment-btn {
-  padding: 5px 8px;
-  border: 1px solid #d5f3e7;
-  border-radius: 8px;
-  background: #edfcf6;
-  color: #0b926d;
-  font-size: 8px;
-  font-weight: 850;
-}
-
-.premium-add-page .empty-pending,
-.premium-add-page .pending-loading {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  padding: 28px 12px;
-  color: #8b96a7;
-  text-align: center;
-  font-size: 10px;
-}
-
-.premium-add-page .empty-icon {
-  font-size: 25px;
-  color: #aab5c4;
-}
-
-.premium-add-page .modal-backdrop-custom {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  display: grid;
-  place-items: center;
-  overflow-y: auto;
-  padding: 16px;
-  background: rgba(13, 19, 39, 0.62);
-  backdrop-filter: blur(6px);
-}
-
-.premium-add-page .manual-modal {
-  width: min(100%, 470px);
-  max-height: calc(100dvh - 32px);
-  overflow: auto;
-  border: 1px solid #e2e8f1;
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 25px 80px rgba(13, 19, 39, 0.28);
-}
-
-.premium-add-page .modal-header-custom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 17px;
-  border-bottom: 1px solid #edf0f5;
-}
-
-.premium-add-page .modal-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.premium-add-page .modal-upi-icon {
-  display: grid;
-  place-items: center;
-  width: 39px;
-  height: 39px;
-  border-radius: 12px;
-  background: #e4faf2;
-  color: #0b926d;
-}
-
-.premium-add-page .modal-header-custom h5 {
-  margin: 0;
-  color: #202642;
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.premium-add-page .modal-header-custom small {
-  display: block;
-  margin-top: 3px;
-  color: #8994a6;
-  font-size: 10px;
-}
-
-.premium-add-page .modal-close {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #e2e8f1;
-  border-radius: 10px;
-  background: #fff;
-  color: #6b768a;
-}
-
-.premium-add-page .modal-body-custom {
-  padding: 17px;
-}
-
-.premium-add-page .gateway-payment-status {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 11px;
-  border-radius: 10px;
-  background: #f3f6fa;
-  color: #6e7a8f;
-  font-size: 10px;
-}
-
-.premium-add-page .gateway-payment-help,
-.premium-add-page .gateway-payment-status-message {
-  color: #7e899b;
-  font-size: 10px;
-  line-height: 1.6;
-}
-
-.premium-add-page .gateway-payment-frame {
-  width: 100%;
-  min-height: 340px;
-  border: 1px solid #e2e8f1;
-  border-radius: 13px;
-  background: #f9fafc;
-}
-
-.premium-add-page .manual-submit-btn,
-.premium-add-page .gateway-back-btn {
-  width: 100%;
-  min-height: 44px;
-  margin-top: 10px;
-  border: 0;
-  border-radius: 12px;
-  background: #033c07;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 850;
-}
-
-.premium-add-page .gateway-back-btn {
-  border: 1px solid #e2e8f1;
-  background: #fff;
-  color: #58647b;
-}
-
-.premium-add-page .qr-container {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  padding: 14px;
-  border: 1px solid #e5eaf2;
-  border-radius: 15px;
-  background: #fafbfd;
-}
-
-.premium-add-page .manual-qr {
-  max-width: 190px;
-  max-height: 190px;
-  object-fit: contain;
-}
-
-.premium-add-page .qr-label {
-  color: #8994a6;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.premium-add-page .qr-container strong {
-  color: #202642;
-  font-size: 12px;
-}
-
-.premium-add-page .upi-copy {
-  border: 0;
-  background: transparent;
-  color: #0d9d78;
-  font-size: 10px;
-  font-weight: 850;
-}
-
-.premium-add-page .manual-instruction {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0;
-  color: #8a6a1e;
-  font-size: 10px;
-}
-
-.premium-add-page .field-with-icon {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 11px;
-  border: 1px solid #dfe6ef;
-  border-radius: 11px;
-  background: #fafbfd;
-}
-
-.premium-add-page .field-with-icon input {
-  width: 100%;
-  height: 44px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #202642;
-  font-size: 13px;
-}
-
-.premium-add-page .upload-box {
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  padding: 18px;
-  border: 1px dashed #ccd7e6;
-  border-radius: 13px;
-  background: #fafbfd;
-  color: #788498;
-  text-align: center;
-}
-
-.premium-add-page .upload-box input {
-  max-width: 100%;
-  font-size: 10px;
-}
-
-.premium-add-page .screenshot-preview {
-  max-width: 100%;
-  max-height: 180px;
-  object-fit: contain;
-}
-
-.premium-add-page .change-image {
-  color: #0d9d78;
-  font-size: 9px;
-  font-weight: 850;
-}
-
-@media (min-width: 700px) {
-  .premium-add-page .container-fluid {
-    padding-inline: 10px;
-  }
-
-  .premium-add-page .payment-card,
-  .premium-add-page .amount-card {
-    padding: 22px;
-  }
-}
-
-@media (max-width: 390px) {
-  .premium-add-page {
-    padding-inline: 10px;
-  }
-
-  .premium-payment-heading {
-    align-items: flex-start;
-  }
-
-  .premium-back-wallet span {
-    display: none;
-  }
-
-  .premium-add-page .amount-card,
-  .premium-add-page .payment-card,
-  .premium-add-page .pending-section {
-    padding: 14px;
-  }
-
-  .premium-add-page .quick-amounts {
-    gap: 5px;
-  }
-
-  .premium-add-page .quick-amounts button {
-    font-size: 9px;
-  }
-}
-</style>
 
 <script setup>
-defineOptions({ name: 'WalletAddView' })
-import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import {
+  reactive,
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue'
 
 import { useSettings } from '@/composables/useSettings'
 import { useRouter, useRoute } from 'vue-router'
@@ -1108,12 +407,16 @@ import { useAuthStore } from '@/utils/auth'
 import api from '@/plugins/axios'
 import { playNotificationSound } from '@/services/notificationAudio'
 import { isTrustedGatewayPaymentUrl } from '@/utils/paymentUrl'
+import { getPaymentErrorMessage } from '@/utils/paymentErrors'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-const { loadSettings, getSetting } = useSettings()
+const {
+  loadSettings,
+  getSetting,
+} = useSettings()
 
 const minAddMoney = computed(() => {
   return Number(getSetting('min_deposit', 1)) || 1
@@ -1121,8 +424,11 @@ const minAddMoney = computed(() => {
 
 const maxAddMoney = computed(() => {
   const configuredMaximum = Number(getSetting('max_deposit', 0)) || 0
-  return configuredMaximum > 0 ? Math.min(configuredMaximum, 1000000) : 1000000
+  return configuredMaximum > 0
+    ? Math.min(configuredMaximum, 1000000)
+    : 1000000
 })
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1145,12 +451,19 @@ const gatewayPaymentStatus = ref('processing')
 const gatewayStatusMessage = ref('Payment is waiting for provider confirmation.')
 const gatewayStatusChecking = ref(false)
 
-const quickAmounts = [100, 500, 1000, 2000]
+const quickAmounts = [
+  100,
+  500,
+  1000,
+  2000,
+]
+
 
 const form = reactive({
   amount: 500,
   paymentMethod: 'gateway',
 })
+
 
 const paymentInfo = reactive({
   upi_id: '',
@@ -1158,17 +471,21 @@ const paymentInfo = reactive({
   qr_url: '',
 })
 
+
 const manualForm = reactive({
   utr: '',
   screenshot: null,
 })
 
+
 const screenshotPreview = ref(null)
+
 
 const apiMessage = reactive({
   text: '',
   type: 'error',
 })
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1179,9 +496,11 @@ const apiMessage = reactive({
 |--------------------------------------------------------------------------
 */
 
-const PENDING_PAYMENT_ENDPOINT = '/wallet/get-money-request'
+const PENDING_PAYMENT_ENDPOINT =
+  '/wallet/get-money-request'
 
 const pendingPayments = ref([])
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1234,6 +553,12 @@ const demoActivities = [
 
 const activityIndex = ref(0)
 
+const currentActivity = computed(() => {
+  return demoActivities[
+    activityIndex.value
+  ]
+})
+
 let activityTimer = null
 let pendingTimer = null
 let gatewayStatusTimer = null
@@ -1243,6 +568,7 @@ let gatewayStatusInFlight = false
 const handledGatewayTerminalRequests = new Set()
 const gatewaySuccessStatuses = new Set(['approved', 'success', 'completed', 'paid'])
 const gatewayFailureStatuses = new Set(['failed', 'rejected', 'cancelled', 'canceled', 'expired'])
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1256,6 +582,7 @@ const formatCurrency = (value) => {
     maximumFractionDigits: 2,
   }).format(Number(value || 0))
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1281,6 +608,7 @@ const formatPaymentDate = (value) => {
     minute: '2-digit',
   })
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1308,10 +636,15 @@ const formatStatus = (status) => {
   return map[value] || 'Pending'
 }
 
+
 const getStatusClass = (status) => {
   const value = String(status || '').toLowerCase()
 
-  if (value === 'approved' || value === 'success' || value === 'completed') {
+  if (
+    value === 'approved' ||
+    value === 'success' ||
+    value === 'completed'
+  ) {
     return 'status-success'
   }
 
@@ -1328,6 +661,7 @@ const getStatusClass = (status) => {
   return 'status-pending'
 }
 
+
 /*
 |--------------------------------------------------------------------------
 | Load payment methods
@@ -1336,25 +670,38 @@ const getStatusClass = (status) => {
 
 const loadPaymentMethods = async () => {
   try {
-    const response = await api.get('/wallet/payment-methods')
+
+    const response = await api.get(
+      '/wallet/payment-methods'
+    )
 
     if (!response.data?.success) {
       return
     }
 
-    const data = response.data.data || {}
+    const data =
+      response.data.data || {}
 
-    const manualUpi = data.manual_upi || {}
+    const manualUpi =
+      data.manual_upi || {}
 
-    const gateway = data.gateway || {}
+    const gateway =
+      data.gateway || {}
 
-    paymentInfo.upi_id = manualUpi.upi_id || ''
 
-    paymentInfo.name = manualUpi.name || ''
+    paymentInfo.upi_id =
+      manualUpi.upi_id || ''
 
-    paymentInfo.qr_url = manualUpi.qr_url || ''
+    paymentInfo.name =
+      manualUpi.name || ''
 
-    gatewayEnabled.value = Boolean(gateway.enabled)
+    paymentInfo.qr_url =
+      manualUpi.qr_url || ''
+
+
+    gatewayEnabled.value =
+      Boolean(gateway.enabled)
+
 
     /*
      * Prefer automatic gateway when available.
@@ -1364,8 +711,13 @@ const loadPaymentMethods = async () => {
     } else {
       form.paymentMethod = 'manual_upi'
     }
+
   } catch (error) {
-    console.error('Payment methods error:', error)
+
+    console.error(
+      'Payment methods error:',
+      error
+    )
 
     /*
      * Don't break the page if payment-method
@@ -1374,6 +726,7 @@ const loadPaymentMethods = async () => {
   }
 }
 
+
 /*
 |--------------------------------------------------------------------------
 | Add money
@@ -1381,34 +734,55 @@ const loadPaymentMethods = async () => {
 */
 
 const handleAddMoney = async () => {
+
   apiMessage.text = ''
 
-  const amount = Number(form.amount)
 
-  if (!amount || Number.isNaN(amount) || amount < minAddMoney.value) {
+  const amount =
+    Number(form.amount)
+
+
+  if (
+    !amount ||
+    Number.isNaN(amount) ||
+    amount < minAddMoney.value
+  ) {
+
     apiMessage.type = 'error'
 
-    apiMessage.text = `Minimum add money amount is ₹${formatCurrency(minAddMoney.value)}.`
+    apiMessage.text =
+      `Minimum add money amount is ₹${formatCurrency(minAddMoney.value)}.`
 
     return
   }
 
-  if (maxAddMoney.value > 0 && amount > maxAddMoney.value) {
+  if (
+    maxAddMoney.value > 0 &&
+    amount > maxAddMoney.value
+  ) {
+
     apiMessage.type = 'error'
 
-    apiMessage.text = `Maximum add money amount is ₹${formatCurrency(maxAddMoney.value)}.`
+    apiMessage.text =
+      `Maximum add money amount is ₹${formatCurrency(maxAddMoney.value)}.`
 
     return
   }
 
-  if (form.paymentMethod === 'manual_upi') {
+
+  if (
+    form.paymentMethod === 'manual_upi'
+  ) {
+
     showManualModal.value = true
 
     return
   }
 
+
   await createGatewayOrder()
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1433,9 +807,7 @@ const createGatewayOrder = async () => {
     const paymentUrl = String(paymentData.payment_url || '')
     const requestId = paymentData.request_id
     if (!isTrustedGatewayPaymentUrl(paymentUrl) || !requestId) {
-      throw new Error(
-        'The provider returned an unsupported payment URL. Please contact support; no wallet credit was made.',
-      )
+      throw new Error('The provider returned an unsupported payment URL. Please contact support; no wallet credit was made.')
     }
 
     pendingGatewayRequestId.value = String(requestId)
@@ -1447,9 +819,9 @@ const createGatewayOrder = async () => {
     startGatewayStatusPolling()
     await refreshGatewayPaymentStatus()
   } catch (error) {
-    console.error('Gateway payment error:', error)
+    console.warn('Gateway payment request failed.', { status: error.response?.status || null })
     apiMessage.type = 'error'
-    apiMessage.text = error.response?.data?.message || error.message || 'Unable to start payment.'
+    apiMessage.text = getPaymentErrorMessage(error)
   } finally {
     isLoading.value = false
   }
@@ -1462,36 +834,63 @@ const createGatewayOrder = async () => {
 */
 
 const handleScreenshot = (event) => {
-  const file = event.target.files?.[0]
+
+  const file =
+    event.target.files?.[0]
+
 
   if (!file) {
     return
   }
 
-  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+
+  if (
+    ![
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+    ].includes(file.type)
+  ) {
+
     apiMessage.type = 'error'
 
-    apiMessage.text = 'Please upload JPG, PNG or WEBP.'
+    apiMessage.text =
+      'Please upload JPG, PNG or WEBP.'
 
     return
   }
 
-  if (file.size > 15 * 1024 * 1024) {
+
+  if (
+    file.size >
+    15 * 1024 * 1024
+  ) {
+
     apiMessage.type = 'error'
 
-    apiMessage.text = 'Screenshot must not exceed 15 MB.'
+    apiMessage.text =
+      'Screenshot must not exceed 15 MB.'
 
     return
   }
 
-  manualForm.screenshot = file
+
+  manualForm.screenshot =
+    file
+
 
   if (screenshotPreview.value) {
-    URL.revokeObjectURL(screenshotPreview.value)
+
+    URL.revokeObjectURL(
+      screenshotPreview.value
+    )
   }
 
-  screenshotPreview.value = URL.createObjectURL(file)
+
+  screenshotPreview.value =
+    URL.createObjectURL(file)
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1500,70 +899,128 @@ const handleScreenshot = (event) => {
 */
 
 const submitManualRequest = async () => {
+
   apiMessage.text = ''
 
-  if (!manualForm.utr.trim()) {
+
+  if (
+    !manualForm.utr.trim()
+  ) {
+
     apiMessage.type = 'error'
 
-    apiMessage.text = 'Please enter UTR / transaction number.'
+    apiMessage.text =
+      'Please enter UTR / transaction number.'
 
     return
   }
 
-  if (!manualForm.screenshot) {
+
+  if (
+    !manualForm.screenshot
+  ) {
+
     apiMessage.type = 'error'
 
-    apiMessage.text = 'Please upload payment screenshot.'
+    apiMessage.text =
+      'Please upload payment screenshot.'
 
     return
   }
+
 
   manualLoading.value = true
 
+
   try {
-    const formData = new FormData()
 
-    formData.append('amount', Number(form.amount))
+    const formData =
+      new FormData()
 
-    formData.append('utr', manualForm.utr.trim())
 
-    formData.append('screenshot', manualForm.screenshot)
+    formData.append(
+      'amount',
+      Number(form.amount)
+    )
 
-    const response = await api.post('/wallet/add-money-request', formData)
+    formData.append(
+      'utr',
+      manualForm.utr.trim()
+    )
+
+    formData.append(
+      'screenshot',
+      manualForm.screenshot
+    )
+
+
+    const response =
+      await api.post(
+        '/wallet/add-money-request',
+        formData
+      )
+
 
     if (!response.data?.success) {
-      throw new Error(response.data?.message || 'Unable to submit payment request.')
+      throw new Error(
+        response.data?.message ||
+        'Unable to submit payment request.'
+      )
     }
+
 
     void playNotificationSound('add_money', `manual-${response.data?.data?.id || Date.now()}`)
 
-    showManualModal.value = false
+    showManualModal.value =
+      false
 
-    apiMessage.type = 'success'
 
-    apiMessage.text = response.data.message || 'Payment submitted successfully.'
+    apiMessage.type =
+      'success'
+
+
+    apiMessage.text =
+      response.data.message ||
+      'Payment submitted successfully.'
+
 
     resetManualForm()
+
 
     /*
      * Immediately refresh pending list.
      */
     await loadPendingPayments()
 
+
     setTimeout(() => {
       router.push('/wallet')
-    }, 1800)
-  } catch (error) {
-    console.error('Manual payment error:', error)
 
-    apiMessage.type = 'error'
+    }, 1800)
+
+  } catch (error) {
+
+    console.error(
+      'Manual payment error:',
+      error
+    )
+
+    apiMessage.type =
+      'error'
+
 
     apiMessage.text =
-      error.response?.data?.message || error.message || 'Unable to submit payment request.'
+      error.response?.data?.message ||
+      error.message ||
+      'Unable to submit payment request.'
+
   } finally {
-    manualLoading.value = false
+
+    manualLoading.value =
+      false
   }
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1572,15 +1029,22 @@ const submitManualRequest = async () => {
 */
 
 const loadPendingPayments = async () => {
+
   pendingLoading.value = true
 
   try {
-    const response = await api.get(PENDING_PAYMENT_ENDPOINT, {
-      params: {
-        statuses: ['pending', 'processing'],
-        type: 'credit',
-      },
-    })
+
+    const response =
+      await api.get(
+        PENDING_PAYMENT_ENDPOINT,
+        {
+          params: {
+            statuses: ['pending', 'processing'],
+            type: 'credit',
+          },
+        }
+      )
+
 
     /*
      * Supports:
@@ -1596,27 +1060,48 @@ const loadPendingPayments = async () => {
      * { success: true, data: { data: [] } }
      */
 
-    const responseData = response.data
+    const responseData =
+      response.data
 
-    let list = responseData?.data
 
-    if (list && !Array.isArray(list) && Array.isArray(list.data)) {
+    let list =
+      responseData?.data
+
+
+    if (
+      list &&
+      !Array.isArray(list) &&
+      Array.isArray(list.data)
+    ) {
       list = list.data
     }
 
-    pendingPayments.value = Array.isArray(list) ? list : []
+
+    pendingPayments.value =
+      Array.isArray(list)
+        ? list
+        : []
+
   } catch (error) {
-    console.error('Pending payments error:', error)
+
+    console.error(
+      'Pending payments error:',
+      error
+    )
 
     /*
      * Don't show an error banner here.
      * The payment page should remain usable even
      * if pending-history API is temporarily unavailable.
      */
+
   } finally {
-    pendingLoading.value = false
+
+    pendingLoading.value =
+      false
   }
 }
+
 
 const refreshGatewayPaymentStatus = async () => {
   const requestId = pendingGatewayRequestId.value
@@ -1658,12 +1143,11 @@ const refreshGatewayPaymentStatus = async () => {
       stopGatewayStatusPolling()
       showGatewayModal.value = false
       apiMessage.type = 'error'
-      apiMessage.text =
-        status === 'cancelled' || status === 'canceled'
-          ? 'The payment provider confirmed that this payment was cancelled. No wallet credit was applied.'
-          : status === 'expired'
-            ? 'This payment session expired. You can safely start a new payment.'
-            : 'The provider confirmed that this payment failed. You can safely start a new payment.'
+      apiMessage.text = status === 'cancelled' || status === 'canceled'
+        ? 'The payment provider confirmed that this payment was cancelled. No wallet credit was applied.'
+        : status === 'expired'
+          ? 'This payment session expired. You can safely start a new payment.'
+          : 'The provider confirmed that this payment failed. You can safely start a new payment.'
       gatewayPaymentUrl.value = ''
       pendingGatewayRequestId.value = null
       await loadPendingPayments()
@@ -1671,8 +1155,7 @@ const refreshGatewayPaymentStatus = async () => {
   } catch (error) {
     // A timeout or unreachable API is not evidence of payment failure.
     if (pendingGatewayRequestId.value === requestId) {
-      gatewayStatusMessage.value =
-        'Status could not be refreshed. Your payment remains unconfirmed; try again shortly.'
+      gatewayStatusMessage.value = 'Status could not be refreshed. Your payment remains unconfirmed; try again shortly.'
     }
     console.warn('Unable to refresh gateway payment status:', error)
   } finally {
@@ -1684,14 +1167,10 @@ const refreshGatewayPaymentStatus = async () => {
 const startGatewayStatusPolling = () => {
   stopGatewayStatusPolling()
   gatewayStatusTimer = setInterval(() => {
-    if (
-      showGatewayModal.value &&
-      !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) &&
-      !gatewayFailureStatuses.has(gatewayPaymentStatus.value)
-    ) {
+    if (showGatewayModal.value && !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) && !gatewayFailureStatuses.has(gatewayPaymentStatus.value)) {
       void refreshGatewayPaymentStatus()
     }
-  }, 5000)
+  }, 10000)
 }
 
 const stopGatewayStatusPolling = () => {
@@ -1704,14 +1183,9 @@ const stopGatewayStatusPolling = () => {
 const closeGatewayPayment = () => {
   showGatewayModal.value = false
   stopGatewayStatusPolling()
-  if (
-    pendingGatewayRequestId.value &&
-    !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) &&
-    !gatewayFailureStatuses.has(gatewayPaymentStatus.value)
-  ) {
+  if (pendingGatewayRequestId.value && !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) && !gatewayFailureStatuses.has(gatewayPaymentStatus.value)) {
     apiMessage.type = 'error'
-    apiMessage.text =
-      'Payment status is still pending verification. You can resume it from Pending payments; closing this screen does not cancel the transaction.'
+    apiMessage.text = 'Payment status is still pending verification. You can resume it from Pending payments; closing this screen does not cancel the transaction.'
   }
 }
 
@@ -1735,16 +1209,24 @@ const resumeGatewayPayment = (payment) => {
 */
 
 const resetManualForm = () => {
+
   manualForm.utr = ''
 
   manualForm.screenshot = null
 
+
   if (screenshotPreview.value) {
-    URL.revokeObjectURL(screenshotPreview.value)
+
+    URL.revokeObjectURL(
+      screenshotPreview.value
+    )
   }
 
-  screenshotPreview.value = null
+
+  screenshotPreview.value =
+    null
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1753,12 +1235,15 @@ const resetManualForm = () => {
 */
 
 const closeManualModal = () => {
+
   if (manualLoading.value) {
     return
   }
 
-  showManualModal.value = false
+  showManualModal.value =
+    false
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1767,20 +1252,33 @@ const closeManualModal = () => {
 */
 
 const copyUpiId = async () => {
+
   if (!paymentInfo.upi_id) {
     return
   }
 
   try {
-    await navigator.clipboard.writeText(paymentInfo.upi_id)
 
-    apiMessage.type = 'success'
+    await navigator.clipboard.writeText(
+      paymentInfo.upi_id
+    )
 
-    apiMessage.text = 'UPI ID copied.'
+
+    apiMessage.type =
+      'success'
+
+    apiMessage.text =
+      'UPI ID copied.'
+
   } catch (error) {
-    console.error('Copy UPI error:', error)
+
+    console.error(
+      'Copy UPI error:',
+      error
+    )
   }
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1789,18 +1287,26 @@ const copyUpiId = async () => {
 */
 
 const startActivityRotation = () => {
+
   if (activityTimer) {
     clearInterval(activityTimer)
   }
+
 
   /*
    * 4.5 seconds keeps it noticeable
    * without becoming annoying.
    */
-  activityTimer = setInterval(() => {
-    activityIndex.value = (activityIndex.value + 1) % demoActivities.length
-  }, 4500)
+  activityTimer =
+    setInterval(() => {
+      activityIndex.value =
+        (
+          activityIndex.value + 1
+        ) % demoActivities.length
+
+    }, 4500)
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1809,14 +1315,18 @@ const startActivityRotation = () => {
 */
 
 const startPendingRefresh = () => {
+
   if (pendingTimer) {
     clearInterval(pendingTimer)
   }
 
-  pendingTimer = setInterval(() => {
-    loadPendingPayments()
-  }, 30000)
+
+  pendingTimer =
+    setInterval(() => {
+      if (document.visibilityState === 'visible') void loadPendingPayments()
+    }, 60000)
 }
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1842,7 +1352,11 @@ onMounted(async () => {
     console.warn('Unable to register app resume listener:', error)
   }
 
-  await Promise.all([loadSettings(['min_deposit']), loadPaymentMethods(), loadPendingPayments()])
+  await Promise.all([
+    loadSettings(['min_deposit']),
+    loadPaymentMethods(),
+    loadPendingPayments(),
+  ])
 
   if (String(route.query.gateway_return || '') === '1') {
     pendingGatewayRequestId.value = String(route.query.request_id || '')
@@ -1851,8 +1365,7 @@ onMounted(async () => {
     } else {
       // A return URL is only a navigation signal, never proof of payment.
       apiMessage.type = 'error'
-      apiMessage.text =
-        'Payment returned to the app, but the transaction could not be identified. Check Pending payments for its verified status.'
+      apiMessage.text = 'Payment returned to the app, but the transaction could not be identified. Check Pending payments for its verified status.'
       await loadPendingPayments()
     }
 
@@ -1867,6 +1380,8 @@ onMounted(async () => {
   startPendingRefresh()
 })
 
+
+
 onBeforeUnmount(async () => {
   stopGatewayStatusPolling()
   if (appStateListener) {
@@ -1879,22 +1394,34 @@ onBeforeUnmount(async () => {
   }
 
   if (activityTimer) {
-    clearInterval(activityTimer)
+
+    clearInterval(
+      activityTimer
+    )
 
     activityTimer = null
   }
 
+
   if (pendingTimer) {
-    clearInterval(pendingTimer)
+
+    clearInterval(
+      pendingTimer
+    )
 
     pendingTimer = null
   }
 
+
   if (screenshotPreview.value) {
-    URL.revokeObjectURL(screenshotPreview.value)
+
+    URL.revokeObjectURL(
+      screenshotPreview.value
+    )
   }
 })
 </script>
+
 
 <style scoped>
 /* =========================================================
@@ -1903,10 +1430,15 @@ onBeforeUnmount(async () => {
 
 .add-money-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f7faf9 0%, #f5f7f8 42%, #f8f9fa 100%);
+  background:
+    linear-gradient(180deg,
+      #f7faf9 0%,
+      #f5f7f8 42%,
+      #f8f9fa 100%);
   color: #172033;
   overflow-x: hidden;
 }
+
 
 /* =========================================================
    HEADER
@@ -1916,7 +1448,7 @@ onBeforeUnmount(async () => {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, .94);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid #edf0f1;
 }
@@ -1925,7 +1457,8 @@ onBeforeUnmount(async () => {
   width: 100%;
   max-width: 760px;
   margin: auto;
-  padding: 12px 14px;
+  padding:
+    12px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1943,12 +1476,12 @@ onBeforeUnmount(async () => {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  box-shadow: 0 4px 14px rgba(20, 35, 45, 0.06);
-  transition: 0.2s ease;
+  box-shadow: 0 4px 14px rgba(20, 35, 45, .06);
+  transition: .2s ease;
 }
 
 .back-btn:active {
-  transform: scale(0.93);
+  transform: scale(.93);
 }
 
 .header-title {
@@ -1981,6 +1514,7 @@ onBeforeUnmount(async () => {
   justify-content: center;
 }
 
+
 /* =========================================================
    CONTAINER
 ========================================================= */
@@ -1990,6 +1524,7 @@ onBeforeUnmount(async () => {
   max-width: 760px;
   margin: auto;
 }
+
 
 /* =========================================================
    API MESSAGE
@@ -2004,7 +1539,7 @@ onBeforeUnmount(async () => {
   gap: 9px;
   font-size: 12px;
   font-weight: 700;
-  box-shadow: 0 5px 18px rgba(20, 35, 45, 0.06);
+  box-shadow: 0 5px 18px rgba(20, 35, 45, .06);
 }
 
 .message-success {
@@ -2028,8 +1563,9 @@ onBeforeUnmount(async () => {
   background: transparent;
   font-size: 20px;
   color: inherit;
-  opacity: 0.6;
+  opacity: .6;
 }
+
 
 /* =========================================================
    COMMON SECTION
@@ -2043,8 +1579,10 @@ onBeforeUnmount(async () => {
   border-radius: 22px;
   background: #fff;
   border: 1px solid #e9eeee;
-  box-shadow: 0 8px 25px rgba(24, 40, 52, 0.055);
+  box-shadow:
+    0 8px 25px rgba(24, 40, 52, .055);
 }
+
 
 /* =========================================================
    AMOUNT
@@ -2096,13 +1634,13 @@ onBeforeUnmount(async () => {
   border: 1px solid #e8eeee;
   display: flex;
   align-items: center;
-  transition: 0.2s ease;
+  transition: .2s ease;
 }
 
 .amount-input-box:focus-within {
   background: #fff;
   border-color: #00a878;
-  box-shadow: 0 0 0 4px rgba(0, 168, 120, 0.07);
+  box-shadow: 0 0 0 4px rgba(0, 168, 120, .07);
 }
 
 .rupee-symbol {
@@ -2156,11 +1694,11 @@ onBeforeUnmount(async () => {
   color: #536071;
   font-size: 11px;
   font-weight: 800;
-  transition: 0.2s ease;
+  transition: .2s ease;
 }
 
 .quick-amounts button:active {
-  transform: scale(0.95);
+  transform: scale(.95);
 }
 
 .quick-amounts button.selected {
@@ -2177,6 +1715,7 @@ onBeforeUnmount(async () => {
   gap: 5px;
   align-items: center;
 }
+
 
 /* =========================================================
    PAYMENT
@@ -2219,6 +1758,7 @@ onBeforeUnmount(async () => {
   font-weight: 800;
 }
 
+
 /* Gateway */
 
 .gateway-option {
@@ -2228,13 +1768,17 @@ onBeforeUnmount(async () => {
   border-radius: 18px;
   background: #fff;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: .25s ease;
 }
 
 .gateway-option.selected {
   border-color: #00a878;
-  background: linear-gradient(145deg, #f5fffb, #fff);
-  box-shadow: 0 7px 22px rgba(0, 168, 120, 0.09);
+  background:
+    linear-gradient(145deg,
+      #f5fffb,
+      #fff);
+  box-shadow:
+    0 7px 22px rgba(0, 168, 120, .09);
 }
 
 .gateway-top {
@@ -2308,8 +1852,9 @@ onBeforeUnmount(async () => {
   justify-content: center;
   color: #fff;
   background: linear-gradient(135deg, #00a878, #00ca96);
-  box-shadow: 0 5px 12px rgba(0, 168, 120, 0.2);
+  box-shadow: 0 5px 12px rgba(0, 168, 120, .2);
 }
+
 
 /* UPI apps */
 
@@ -2338,7 +1883,7 @@ onBeforeUnmount(async () => {
   color: #fff;
   font-weight: 900;
   font-size: 14px;
-  box-shadow: 0 4px 9px rgba(20, 35, 45, 0.1);
+  box-shadow: 0 4px 9px rgba(20, 35, 45, .1);
 }
 
 .upi-app small {
@@ -2364,6 +1909,7 @@ onBeforeUnmount(async () => {
   font-size: 9px;
 }
 
+
 /* Manual */
 
 .manual-option {
@@ -2372,7 +1918,7 @@ onBeforeUnmount(async () => {
   border: 1px solid #e5eaea;
   border-radius: 16px;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: .2s ease;
 }
 
 .manual-option.selected {
@@ -2419,6 +1965,7 @@ onBeforeUnmount(async () => {
   color: #a3abb3;
 }
 
+
 /* =========================================================
    PAY BUTTON
 ========================================================= */
@@ -2431,22 +1978,27 @@ onBeforeUnmount(async () => {
   border: 0;
   border-radius: 17px;
   color: #fff;
-  background: linear-gradient(135deg, #008e67, #00a878, #00c592);
-  box-shadow: 0 10px 24px rgba(0, 157, 112, 0.24);
+  background:
+    linear-gradient(135deg,
+      #008e67,
+      #00a878,
+      #00c592);
+  box-shadow:
+    0 10px 24px rgba(0, 157, 112, .24);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   font-weight: 900;
-  transition: 0.2s ease;
+  transition: .2s ease;
 }
 
 .pay-button:active {
-  transform: scale(0.98);
+  transform: scale(.98);
 }
 
 .pay-button:disabled {
-  opacity: 0.7;
+  opacity: .7;
 }
 
 .pay-button-left {
@@ -2474,6 +2026,7 @@ onBeforeUnmount(async () => {
   color: #00a878;
 }
 
+
 /* =========================================================
    PENDING
 ========================================================= */
@@ -2497,7 +2050,7 @@ onBeforeUnmount(async () => {
 
 .refresh-btn.spinning i {
   display: inline-block;
-  animation: spin 0.7s linear infinite;
+  animation: spin .7s linear infinite;
 }
 
 .pending-loading {
@@ -2647,13 +2200,17 @@ onBeforeUnmount(async () => {
   background: #dc3545;
 }
 
+
 /* =========================================================
    ACTIVITY
 ========================================================= */
 
 .activity-section {
   padding: 13px;
-  background: linear-gradient(145deg, #ffffff, #f9fffc);
+  background:
+    linear-gradient(145deg,
+      #ffffff,
+      #f9fffc);
 }
 
 .activity-header {
@@ -2669,8 +2226,8 @@ onBeforeUnmount(async () => {
   border-radius: 50%;
   background: #00b67d;
   box-shadow:
-    0 0 0 4px rgba(0, 182, 125, 0.1),
-    0 0 8px rgba(0, 182, 125, 0.5);
+    0 0 0 4px rgba(0, 182, 125, .1),
+    0 0 8px rgba(0, 182, 125, .5);
   animation: pulse 1.3s infinite;
 }
 
@@ -2704,7 +2261,10 @@ onBeforeUnmount(async () => {
   flex: 0 0 35px;
   border-radius: 11px;
   color: #fff;
-  background: linear-gradient(135deg, #008f69, #00c594);
+  background:
+    linear-gradient(135deg,
+      #008f69,
+      #00c594);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2741,6 +2301,7 @@ onBeforeUnmount(async () => {
   font-weight: 900;
 }
 
+
 /* =========================================================
    MODAL
 ========================================================= */
@@ -2750,7 +2311,7 @@ onBeforeUnmount(async () => {
   inset: 0;
   z-index: 9999;
   padding: 12px;
-  background: rgba(12, 20, 28, 0.72);
+  background: rgba(12, 20, 28, .72);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: flex-end;
@@ -2837,7 +2398,7 @@ onBeforeUnmount(async () => {
   overflow-y: auto;
   border-radius: 25px 25px 18px 18px;
   background: #fff;
-  box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 -10px 60px rgba(0, 0, 0, .28);
 }
 
 .modal-header-custom {
@@ -2900,7 +2461,7 @@ onBeforeUnmount(async () => {
   font-size: 9px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: .4px;
 }
 
 .manual-qr,
@@ -2984,6 +2545,7 @@ onBeforeUnmount(async () => {
 }
 
 .manual-instruction {
+
   padding: 9px;
   border-radius: 11px;
   color: #735f5f;
@@ -3100,11 +2662,15 @@ onBeforeUnmount(async () => {
   border: 0;
   border-radius: 14px;
   color: #fff;
-  background: linear-gradient(135deg, #008e67, #00b987);
-  box-shadow: 0 8px 18px rgba(0, 157, 112, 0.2);
+  background:
+    linear-gradient(135deg,
+      #008e67,
+      #00b987);
+  box-shadow: 0 8px 18px rgba(0, 157, 112, .2);
   font-size: 12px;
   font-weight: 900;
 }
+
 
 /* =========================================================
    ANIMATIONS
@@ -3130,7 +2696,7 @@ onBeforeUnmount(async () => {
 
 .slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: 0.25s ease;
+  transition: .25s ease;
 }
 
 .slide-fade-enter-from,
@@ -3141,7 +2707,7 @@ onBeforeUnmount(async () => {
 
 .activity-slide-enter-active,
 .activity-slide-leave-active {
-  transition: all 0.35s ease;
+  transition: all .35s ease;
 }
 
 .activity-slide-enter-from {
@@ -3156,7 +2722,7 @@ onBeforeUnmount(async () => {
 
 .modal-enter-active,
 .modal-leave-active {
-  transition: 0.25s ease;
+  transition: .25s ease;
 }
 
 .modal-enter-from,
@@ -3168,6 +2734,7 @@ onBeforeUnmount(async () => {
 .modal-leave-to .manual-modal {
   transform: translateY(30px);
 }
+
 
 /* =========================================================
    MOBILE
@@ -3207,11 +2774,13 @@ onBeforeUnmount(async () => {
   }
 }
 
+
 /* =========================================================
    TABLET / DESKTOP
 ========================================================= */
 
 @media (min-width: 768px) {
+
   .app-header {
     border-radius: 0;
   }
@@ -3223,7 +2792,9 @@ onBeforeUnmount(async () => {
   .manual-modal {
     border-radius: 25px;
   }
+
 }
+
 
 /* =========================================================
    REDUCED MOTION
@@ -3234,9 +2805,10 @@ onBeforeUnmount(async () => {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: .01ms !important;
   }
+
 }
 </style>

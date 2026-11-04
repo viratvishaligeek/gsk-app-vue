@@ -1,12 +1,12 @@
 <template>
   <div class="overlay" id="overlay"></div>
 
-  <main class="auth-container auth-container--premium">
+  <div class="auth-container">
     <div class="text-center mb-4">
-      <div class="mb-3">
-        <img src="../../assets/img/logo.png" class="auth-brand-logo" alt="" />
+      <div class=" mb-3">
+        <img src="../../assets/img/logo.png" style="height: 120px; width: auto;" alt="">
       </div>
-      <h4 class="fw-bold text-primary-color">Gali Satta Kings</h4>
+      <h4 class="fw-bold text-primary-color">gali satta kings</h4>
       <p class="text-muted">Sign up & Win with Online Khaiwal</p>
     </div>
 
@@ -33,10 +33,7 @@
       <div class="mb-3">
         <label for="phone" class="form-label">Phone Number</label>
         <div class="input-group">
-          <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-telephone text-danger"></i>
-          </span>
-          <span class="input-group-text bg-transparent border-end-0">+91</span>
+          <span class="input-group-text bg-transparent border-end-0 ">+91</span>
           <input type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10"
             class="form-control border-start-0" :class="{ 'is-invalid': errors.phone }" id="phone" :value="form.phone"
             placeholder="Enter mobile number" @input="handlePhoneInput" />
@@ -82,8 +79,8 @@
             <i class="bi bi-gift text-warning"></i>
           </span>
           <input type="text" class="form-control border-start-0" :class="{ 'is-invalid': errors.referralCode }"
-            id="referralCode" v-model.trim="form.referralCode" placeholder="            Enter referral code" @input="form.referralCode = form.referralCode.toUpperCase(), clearFieldError('referralCode')
-              " />
+            id="referralCode" v-model.trim="form.referralCode" placeholder="Enter referral code"
+            @input="form.referralCode = form.referralCode.toUpperCase(); clearFieldError('referralCode')" />
         </div>
         <div v-if="errors.referralCode" class="invalid-feedback d-block small mt-1">
           {{ errors.referralCode }}
@@ -105,7 +102,7 @@
         </p>
       </div>
     </form>
-  </main>
+  </div>
 </template>
 
 <script setup>
@@ -138,8 +135,8 @@ const errors = reactive({
 })
 
 const clearFieldError = (field) => {
-  errors[field] = '',
-    errors.api = ''
+  errors[field] = ''
+  errors.api = ''
 }
 
 // Client Validation
@@ -244,14 +241,23 @@ const handleSignUp = async () => {
 
     const responseData = response.data
 
-    if (responseData?.success && responseData?.data?.token) {
+    if (
+      responseData?.success &&
+      responseData?.data?.token
+    ) {
       const userData = responseData.data.user || {}
-      authStore.setAuth(responseData.data.token, userData, false)
+      authStore.setAuth(
+        responseData.data.token,
+        userData,
+        false
+      )
       await router.push({ name: 'dashboard' })
       return
     }
 
-    errors.api = responseData?.message || 'Account creation failed. Please try again.'
+    errors.api =
+      responseData?.message ||
+      'Account creation failed. Please try again.'
   } catch (error) {
     if (error.response) {
       const { status, data } = error.response
@@ -262,15 +268,21 @@ const handleSignUp = async () => {
         errors.password = data.errors.password?.[0] || ''
         errors.referralCode = data.errors.referral_code?.[0] || ''
 
-        errors.api = data.message || 'Validation failed. Please review the highlighted fields.'
+        errors.api =
+          data.message ||
+          'Validation failed. Please review the highlighted fields.'
       } else {
-        errors.api = data?.message || 'Account creation failed. Please try again.'
+        errors.api =
+          data?.message ||
+          'Account creation failed. Please try again.'
       }
     } else {
-      errors.api = 'Network error. Please check your internet connection.'
+      errors.api =
+        'Network error. Please check your internet connection.'
     }
   } finally {
     isLoading.value = false
   }
 }
+
 </script>

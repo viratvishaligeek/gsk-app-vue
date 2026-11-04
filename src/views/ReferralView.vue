@@ -1,5 +1,5 @@
 <template>
-  <main class="content-area premium-page premium-referral-page referral-page">
+  <div class="container py-3 referral-page">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
         <h4 class="fw-bold mb-1">Refer & Earn</h4>
@@ -103,7 +103,7 @@
         </div>
       </section>
     </template>
-  </main>
+  </div>
 </template>
 
 <script setup>
@@ -201,5 +201,4 @@ onMounted(loadData)
 .referral-code { min-width: 0; padding: 12px 14px; border: 1px dashed #08a477; border-radius: 12px; background: #f3fcf8; color: #087c58; font-size: 21px; font-weight: 800; letter-spacing: 2px; overflow-wrap: anywhere; text-align: center; }
 .referral-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid #edf0ef; }
 .referral-row:last-child { border-bottom: 0; }
-.premium-referral-page{padding-top:22px;padding-bottom:110px;max-width:900px}.premium-referral-page h4{color:#202642;font-size:24px;font-weight:850}.premium-referral-page .text-muted{color:#8792a4!important}.premium-referral-page .card{border:1px solid #e2e8f1!important;border-radius:19px!important;background:#fff!important;box-shadow:0 5px 18px rgba(23,27,53,.045)!important}.premium-referral-page .card-body{padding:20px!important}.premium-referral-page .referral-code{padding:13px;border:1px dashed #cbd7e7;border-radius:12px;background:#f7f9fc;color:#202642;font-size:16px;font-weight:900;letter-spacing:.1em}.premium-referral-page .btn{border-radius:11px;font-size:11px;font-weight:850}.premium-referral-page .referral-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:#fff4d8;font-size:21px}@media(min-width:700px){.premium-referral-page{padding-inline:24px}}
 </style>

@@ -1,197 +1,283 @@
 <template>
-  <main class="content-area premium-page premium-play-page">
+  <div class="content-area  position-relative play-game-page">
     <LoadingState v-if="isLoading" variant="play-game" />
-    <section v-else-if="errorMessage" class="play-state-card">
-      <span class="play-state-icon">
-        <i class="bi bi-exclamation-triangle">
-        </i>
-      </span>
-      <h2>Game unavailable</h2>
-      <p>{{ errorMessage }}</p>
-      <router-link to="/market-games" class="btn btn-primary">Back to markets</router-link>
-    </section>
-    <template v-else-if="game">
-      <section class="play-market-hero">
-        <div class="play-hero-meta">
-          <h1 class="m-0">{{ game.name }}</h1>
-          <span>
-            <i class="bi bi-clock me-1">
-            </i>{{ formatTime(game.play_start) }} – {{
-              formatTime(game.play_end) }}</span>
-        </div>
-      </section>
-      <div v-if="!game.is_playable" class="play-closed-banner">
-        <i class="bi bi-clock-history">
 
-        </i>
-        <span>{{
-          game.play_status_message || ('Betting time for ' + game.name + ' is currently closed.') }}</span>
+    <div v-else-if="errorMessage" class="alert alert-danger m-2">
+      {{ errorMessage }}
+      <div class="mt-2">
+        <router-link to="/" class="btn btn-sm btn-danger"> Back Home </router-link>
       </div>
+    </div>
+    <template v-else-if="game">
+      <div
+        class="d-flex align-items-center justify-content-between p-2 mb-2 rounded-3 shadow-sm border play-game-header">
+        <h5 class="m-0 text-dark fw-bold d-flex align-items-center gap-2">
+          {{ game.name }}
+        </h5>
+
+        <div class="text-end">
+          <small class="d-block text-muted"> Play Time </small>
+          <small class="fw-bold">
+            {{ formatTime(game.play_start) }}
+            -
+            {{ formatTime(game.play_end) }}
+          </small>
+        </div>
+      </div>
+
+      <div v-if="!game.is_playable" class="alert alert-warning mx-1">
+        <i class="bi bi-clock me-1"></i>
+
+        {{ game.play_status_message || ('Betting time for ' + game.name + ' is currently closed.') }}
+      </div>
+
       <template v-else>
-        <section class="play-type-panel">
-          <div class="play-type-tabs" role="tablist" aria-label="Bet type">
-            <button type="button" role="tab" :aria-selected="activeTab === 'single'"
-              :class="{ active: activeTab === 'single' }" @click="changeMode('single')">
-              <strong>Jodi</strong>
-              <small>00–99</small>
-            </button>
-            <button type="button" role="tab" :aria-selected="activeTab === 'harup'"
-              :class="{ active: activeTab === 'harup' }" @click="changeMode('harup')">
-              <strong>Harup</strong>
-              <small>Ander /
-                Bahar</small>
-            </button>
-            <button type="button" role="tab" :aria-selected="activeTab === 'crossing'"
-              :class="{ active: activeTab === 'crossing' }" @click="changeMode('crossing')">
-              <strong>Crossing</strong>
-              <small>Combinations</small>
-            </button>
-          </div>
-        </section>
-        <section class="play-stake-panel">
-          <div class="play-section-heading">
-            <div>
-              <h2>Amount value</h2>
-            </div>
-            <span class="play-step">02 / 03</span>
-          </div>
-          <div class="play-chip-row">
-            <button v-for="chip in chipOptions" :key="chip" type="button"
-              :class="{ selected: (activeTab === 'single' ? selectedChip : activeTab === 'harup' ? harupAmount : crossingAmount) === chip }"
-              @click="activeTab === 'single' ? selectedChip = chip : activeTab === 'harup' ? harupAmount = chip : crossingAmount = chip">₹{{
-                chip }}</button>
-          </div>
-          <label class="play-custom-stake">
-            <span>Custom amount</span>
-            <span class="play-stake-input">
-              <b>₹</b>
-              <input v-if="activeTab === 'single'" v-model.number="selectedChip" type="number" min="1" step="1"
-                inputmode="numeric" aria-label="Jodi stake amount" />
-              <input v-else-if="activeTab === 'harup'" v-model.number="harupAmount" type="number" min="1" step="1"
-                inputmode="numeric" aria-label="Harup stake amount" />
-              <input v-else v-model.number="crossingAmount" type="number" min="1" step="1" inputmode="numeric"
-                aria-label="Crossing stake amount" />
-              <small>INR</small>
-            </span>
-          </label>
-        </section>
-        <section v-if="activeTab === 'single'" class="play-number-panel">
-          <div class="play-section-heading">
-            <div>
-              <h2>अपनी जोड़ी चुनें</h2>
-              <p>Tap any number to add it to your slip.</p>
-            </div>
-            <span class="btn btn-sm btn-outline-danger">{{ Object.keys(singleBets).length }} selected</span>
-          </div>
-          <div class="play-number-grid">
-            <button v-for="num in singleNumbers" :key="num" type="button"
-              :class="{ selected: singleBets[num] !== undefined }" :aria-pressed="singleBets[num] !== undefined"
-              @click="toggleSingleBet(num)">
-              <strong>{{ num }}</strong>
-              <small v-if="singleBets[num] !== undefined">₹{{
-                singleBets[num] }}</small>
-            </button>
-          </div>
-        </section>
-        <template v-else-if="activeTab === 'harup'">
-          <section v-for="type in ['ander', 'bahar']" :key="type" class="play-number-panel">
-            <div class="play-section-heading">
-              <div>
-                <span class="play-eyebrow">HARUP</span>
-                <h2>{{ type === 'ander' ? 'Ander' : 'Bahar' }}</h2>
-                <p>Select digits from 0 to 9.</p>
-              </div>
-              <span class="play-selected-count">{{ Object.keys(harupBets[type]).length }} selected</span>
-            </div>
-            <div class="play-digit-grid">
-              <button v-for="digit in 10" :key="type + digit" type="button"
-                :class="{ selected: harupBets[type][digit - 1] !== undefined }"
-                :aria-pressed="harupBets[type][digit - 1] !== undefined" @click="toggleHarupBet(type, digit - 1)">
-                <strong>{{
-                  digit - 1 }}</strong>
-                <small v-if="harupBets[type][digit - 1] !== undefined">₹{{ harupBets[type][digit
-                  -
-                  1]
-                  }}</small>
+        <div class="px-1 mb-3">
+          <ul class="nav nav-pills nav-fill p-1 rounded-4 border shadow-xs play-game-tabs">
+            <li class="nav-item">
+              <button class="nav-link fw-bold rounded-3 py-2" :class="{
+                'active bg-warning text-dark shadow-sm': activeTab === 'single',
+              }" @click="changeMode('single')">
+                🎯 Jodi
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link fw-bold rounded-3 py-2" :class="{
+                'active bg-warning text-dark shadow-sm': activeTab === 'harup',
+              }" @click="changeMode('harup')">
+                🎲 Harup
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link fw-bold rounded-3 py-2" :class="{
+                'active bg-warning text-dark shadow-sm': activeTab === 'crossing',
+              }" @click="changeMode('crossing')">
+                🔀 Crossing
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="activeTab === 'single'" class="px-1">
+          <div class="card p-2 mb-3 shadow-xs border-0 bg-white rounded-3">
+            <small class="fw-bold text-muted mb-2 d-block fs-7">
+              नीचे दिए गए रकम में से चुने, या अपनी रकम खुद डाले:
+            </small>
+            <div class="d-flex gap-2 flex-wrap">
+              <button v-for="chip in chipOptions" :key="chip" type="button" class="btn btn-sm rounded-pill fw-bold "
+                :class="selectedChip === chip
+                  ? 'btn-warning text-dark shadow-sm'
+                  : 'btn-outline-secondary'
+                  " @click="selectedChip = chip">
+                ₹{{ chip }}
               </button>
             </div>
-          </section>
-        </template>
-        <template v-else>
-          <section class="play-number-panel">
-            <div class="play-section-heading">
-              <div>
-                <span class="play-eyebrow">CROSSING</span>
-                <h2>Select digits</h2>
-                <p>Choose at least two digits to generate Jodi combinations.</p>
-              </div>
-              <span class="play-selected-count">{{ selectedCrossingDigits.length }} selected</span>
-            </div>
-            <div class="play-digit-grid">
-              <button v-for="digit in 10" :key="'cross-' + digit" type="button"
-                :class="{ selected: selectedCrossingDigits.includes(digit - 1) }"
-                :aria-pressed="selectedCrossingDigits.includes(digit - 1)" @click="toggleCrossingDigit(digit - 1)">
-                <strong>{{ digit - 1 }}</strong>
-              </button>
-            </div>
-            <label class="play-jora-toggle">
-              <input v-model="includeJora" class="form-check-input" type="checkbox" />
-              <span>
-                <strong>Include Jora</strong>
-                <small>Allow the same digit twice in a
-                  combination.</small>
+            <div class="input-group input-group-sm mt-2">
+              <span class="input-group-text bg-light fw-bold text-danger">
+                ₹
               </span>
-            </label>
-            <div v-if="generatedCrossingJodis.length" class="play-combination-summary">
-              <div class="play-section-heading">
-                <div>
-                  <h2>Generated Jodis</h2>
-                  <p>{{ generatedCrossingJodis.length }} combinations · ₹{{ crossingAmount }} each</p>
+              <input v-model.number="selectedChip" type="number" min="1" step="1"
+                class="form-control text-center fw-bold text-danger" placeholder="Enter custom amount" />
+            </div>
+          </div>
+          <div class="row g-2">
+            <div v-for="num in singleNumbers" :key="num" class="col-2 col-sm-2 col-md-1">
+              <button type="button"
+                class="btn w-100 p-2 position-relative d-flex flex-column align-items-center justify-content-center rounded-3 border"
+                :class="singleBets[num]
+                  ? 'btn-success text-white border-success shadow-sm'
+                  : 'btn-white bg-white text-dark shadow-xs'
+                  " @click="toggleSingleBet(num)">
+                <span class="fw-bold fs-6">
+                  {{ num }}
+                </span>
+                <span v-if="singleBets[num]" class="badge bg-warning text-dark p-1 mt-1 rounded-2 w-100">
+                  ₹{{ singleBets[num] }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div v-if="activeTab === 'harup'" class="px-1">
+          <div class="card p-2 mb-3 shadow-xs border-0 bg-white rounded-3">
+            <small class="fw-bold text-muted mb-2 d-block fs-7">
+              नीचे दिए गए रकम में से चुने, या अपनी रकम खुद डाले:
+            </small>
+            <div class="d-flex gap-2 flex-wrap mb-2">
+              <button v-for="chip in chipOptions" :key="chip" type="button" class="btn btn-sm rounded-pill fw-bold"
+                :class="harupAmount === chip ? 'btn-warning text-dark shadow-sm' : 'btn-outline-secondary'
+                  " @click="harupAmount = chip">
+                ₹{{ chip }}
+              </button>
+            </div>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light fw-bold text-danger"> ₹ </span>
+              <input v-model.number="harupAmount" type="number" min="1" step="1"
+                class="form-control text-center fw-bold text-danger" placeholder="Custom amount" />
+            </div>
+          </div>
+          <div class="card p-2 mb-3 shadow-xs border-0 bg-white rounded-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="fw-bold"> Ander </small>
+              <span class="badge bg-light text-dark border">
+                {{ Object.keys(harupBets.ander).length }} Selected
+              </span>
+            </div>
+            <div class="row g-2">
+              <div v-for="digit in 10" :key="'ander-' + digit" class="col-2 col-sm-2 col-md-1">
+                <button type="button"
+                  class="btn w-100 p-2 position-relative d-flex flex-column align-items-center justify-content-center rounded-3 border"
+                  :class="harupBets.ander[digit - 1]
+                    ? 'btn-success text-white border-success shadow-sm'
+                    : 'btn-white bg-white text-dark shadow-xs'
+                    " @click="toggleHarupBet('ander', digit - 1)">
+                  <span class="fw-bold fs-6">
+                    {{ digit - 1 }}
+                  </span>
+                  <span v-if="harupBets.ander[digit - 1]" class="badge bg-warning text-dark p-1 mt-1 rounded-2 w-100">
+                    ₹{{ harupBets.ander[digit - 1] }}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card p-2 mb-3 shadow-xs border-0 bg-white rounded-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="fw-bold"> Bahar </small>
+              <span class="badge bg-light text-dark border">
+                {{ Object.keys(harupBets.bahar).length }} Selected
+              </span>
+            </div>
+            <div class="row g-2">
+              <div v-for="digit in 10" :key="'bahar-' + digit" class="col-2 col-sm-2 col-md-1">
+                <button type="button"
+                  class="btn w-100 p-2 position-relative d-flex flex-column align-items-center justify-content-center rounded-3 border"
+                  :class="harupBets.bahar[digit - 1]
+                    ? 'btn-success text-white border-success shadow-sm'
+                    : 'btn-white bg-white text-dark shadow-xs'
+                    " @click="toggleHarupBet('bahar', digit - 1)">
+                  <span class="fw-bold fs-6">
+                    {{ digit - 1 }}
+                  </span>
+                  <span v-if="harupBets.bahar[digit - 1]" class="badge bg-warning text-dark p-1 mt-1 rounded-2 w-100">
+                    ₹{{ harupBets.bahar[digit - 1] }}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="activeTab === 'crossing'" class="px-1">
+          <div class="card p-2 mb-3 shadow-xs border-0 bg-white rounded-3">
+            <small class="fw-bold text-muted mb-2 d-block fs-7">
+              नीचे दिए गए रकम में से चुने, या अपनी रकम खुद डाले:
+            </small>
+            <div class="d-flex gap-2 flex-wrap mb-2">
+              <button v-for="chip in chipOptions" :key="chip" type="button" class="btn btn-sm rounded-pill fw-bold"
+                :class="crossingAmount === chip
+                  ? 'btn-warning text-dark shadow-sm'
+                  : 'btn-outline-secondary'
+                  " @click="crossingAmount = chip">
+                ₹{{ chip }}
+              </button>
+            </div>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light fw-bold text-danger"> ₹ </span>
+              <input v-model.number="crossingAmount" type="number" min="1" step="1"
+                class="form-control text-center fw-bold text-danger" placeholder="Custom amount" />
+            </div>
+          </div>
+          <div class="card p-2 mb-3 shadow-xs border-0 bg-white rounded-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="fw-bold"> Select Digits </small>
+              <span class="badge bg-light text-dark border">
+                {{ selectedCrossingDigits.length }} Selected
+              </span>
+            </div>
+            <div class="row g-2">
+              <div v-for="digit in 10" :key="'cross-' + digit" class="col-2 col-sm-2 col-md-1">
+                <button type="button" class="btn w-100 p-2 rounded-3 border fw-bold" :class="selectedCrossingDigits.includes(digit - 1)
+                  ? 'btn-success text-white border-success shadow-sm'
+                  : 'btn-white bg-white text-dark shadow-xs'
+                  " @click="toggleCrossingDigit(digit - 1)">
+                  {{ digit - 1 }}
+                </button>
+              </div>
+            </div>
+            <div class="form-check form-switch mt-3 mb-1">
+              <input id="joraSwitch" v-model="includeJora" class="form-check-input" type="checkbox" />
+              <label class="form-check-label fw-bold text-dark fs-7" for="joraSwitch">
+                Include Jora
+              </label>
+            </div>
+          </div>
+          <div v-if="generatedCrossingJodis.length" class="card p-2 shadow-xs border-0 bg-white rounded-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted fw-bold fs-7"> Generated Jodis </small>
+              <span class="badge bg-light text-dark border">
+                {{ generatedCrossingJodis.length }}
+              </span>
+            </div>
+            <div class="row g-2">
+              <div v-for="jodi in generatedCrossingJodis" :key="jodi" class="col-2 col-sm-2 col-md-1">
+                <div
+                  class="btn w-100 p-2 position-relative d-flex flex-column align-items-center justify-content-center rounded-3 border btn-success text-white border-success shadow-sm">
+                  <span class="fw-bold fs-6">
+                    {{ jodi }}
+                  </span>
+                  <span class="badge bg-warning text-dark p-1 mt-1 rounded-2 w-100">
+                    ₹{{ crossingAmount }}
+                  </span>
                 </div>
               </div>
-              <div class="play-combination-list">
-                <span v-for="jodi in generatedCrossingJodis" :key="jodi">{{ jodi }}
-                  <small>₹{{ crossingAmount }}</small>
-                </span>
+            </div>
+          </div>
+          <div v-else class="text-center text-muted py-4">
+            <i class="bi bi-grid-3x3-gap fs-3 d-block mb-2"></i>
+            <small> Select at least two digits to generate combinations. </small>
+          </div>
+        </div>
+
+        <div class="sticky-bottom-bar position-fixed bottom-custom start-0 end-0 p-3 z-3">
+          <div class="container p-0">
+            <div
+              class="card bg-dark text-white rounded-4 shadow-lg border-0 p-3 mx-auto max-w-600 border-top border-warning border-3">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <small class="text-uppercase fw-semibold fs-8 d-block">
+                    Selected
+                  </small>
+                  <div class="d-flex align-items-baseline gap-2">
+                    <span class="fs-4 fw-bold text-warning"> ₹{{ grandTotalAmount }} </span>
+                    <span class="badge bg-secondary rounded-pill fs-8">
+                      {{ totalBetsCount }} Bets
+                    </span>
+                  </div>
+                </div>
+                <button class="btn btn-warning btn-lg px-4 rounded-pill fw-bold text-dark shadow-sm" :disabled="totalBetsCount === 0 ||
+                  grandTotalAmount <= 0 ||
+                  isSubmitting ||
+                  !game?.is_playable
+                  " @click="submitBetsAPI">
+                  <span v-if="isSubmitting" class="spinner-border spinner-border-sm"></span>
+                  <span v-else>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Place Bet
+                  </span>
+                </button>
               </div>
             </div>
-            <div v-else class="play-crossing-hint">
-              <i class="bi bi-shuffle">
-
-              </i> Select two or more digits to see
-              combinations.
-            </div>
-          </section>
-        </template>
-        <section class="play-slip-card">
-          <div>
-            <h2>Your bet slip</h2>
-            <p>{{ totalBetsCount }} {{ totalBetsCount === 1 ? 'selection' : 'selections' }} added</p>
           </div>
-          <div class="play-slip-total">₹{{ Number(grandTotalAmount || 0).toLocaleString('en-IN') }}</div>
-          <button type="button" class="btn btn-primary play-submit-button"
-            :disabled="totalBetsCount === 0 || grandTotalAmount <= 0 || isSubmitting || !game?.is_playable"
-            @click="submitBetsAPI">
-            <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-2">
-
-            </span>
-            <i v-else class="bi bi-shield-check me-2">
-            </i>{{ isSubmitting ? 'Placing bet…' : 'Review & place bet' }} <i v-if="!isSubmitting"
-              class="bi bi-arrow-right ms-auto">
-            </i>
-          </button>
-          <button v-if="totalBetsCount" type="button" class="play-clear-button" @click="clearSelections">सभी हटाएं
-          </button>
-          <small class="play-responsible-note">
-            <i class="bi bi-info-circle me-1">
-
-            </i>Check your selections and stake
-            carefully before confirming.</small>
-        </section>
+        </div>
       </template>
     </template>
-  </main>
+  </div>
 </template>
+
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import LoadingState from '@/components/LoadingState.vue'
@@ -498,8 +584,7 @@ const submitBetsAPI = async () => {
       </div>
 
       <div class="bet-confirm-warning">
-        <i class="bi bi-wallet2">
-          </i>
+        <i class="bi bi-wallet2"></i>
         This amount will be deducted from your wallet.
       </div>
     </div>
@@ -515,7 +600,7 @@ const submitBetsAPI = async () => {
       popup: 'mobile-bet-swal',
       title: 'mobile-bet-swal-title',
       htmlContainer: 'mobile-bet-swal-content',
-      confirmButton: 'btn btn-success fw-bold rounded-pill px-4',
+      confirmButton: 'btn btn-warning fw-bold rounded-pill px-4',
       cancelButton: 'btn btn-light border fw-bold rounded-pill px-4 me-2',
     },
   })
@@ -661,588 +746,597 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.premium-play-page {
-  padding-top: 16px;
-  /* padding-bottom: 145px; */
-  max-width: 900px
+.content-area {
+  width: 100%;
+  overflow-x: hidden;
+  padding-bottom: 130px !important;
 }
 
-.play-back-link {
+.play-game-page {
+  min-height: min-content;
+  padding: 10px 8px 30px !important;
+  background: radial-gradient(circle at 100% 0%, rgba(187, 134, 252, .12), transparent 28%), linear-gradient(180deg, #f6f7fb 0%, #eef2f8 100%);
+  color: #20263a;
+}
+
+.play-game-header {
+  min-height: 74px;
+  padding: 13px 15px !important;
+  color: #fff;
+  background: linear-gradient(135deg, #250f42 0%, #4c2477 62%, #6a3b99 100%);
+  border: 0 !important;
+  box-shadow: 0 10px 24px rgba(37, 15, 66, .18) !important;
+}
+
+.play-game-header h5 {
+  min-width: 0;
+  color: #fff !important;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.play-game-header .text-end {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .09);
+}
+
+.play-game-header .text-end small {
+  color: rgba(255, 255, 255, .72) !important;
+  font-size: .68rem;
+}
+
+.play-game-header .text-end .fw-bold {
+  color: #fff !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.play-game-tabs {
+  gap: 5px;
+  padding: 5px !important;
+  background: rgba(255, 255, 255, .88);
+  border: 1px solid #e4e8f1 !important;
+  box-shadow: 0 6px 18px rgba(26, 35, 55, .06) !important;
+  backdrop-filter: blur(10px);
+}
+
+.play-game-tabs .nav-item {
+  min-width: 0;
+}
+
+.play-game-tabs .nav-link {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 6px !important;
+  border: 1px solid transparent;
+  border-radius: 11px !important;
+  color: #5d6475;
+  background: transparent;
+  font-size: .76rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: normal;
+  transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.play-game-tabs .nav-link.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, #250f42, #60338b) !important;
+  border-color: rgba(37, 15, 66, .12);
+  box-shadow: 0 5px 13px rgba(37, 15, 66, .22) !important;
+}
+
+.play-game-tabs .nav-link:active {
+  transform: scale(.97);
+}
+
+.play-game-page .card {
+  border: 1px solid #e7eaf2 !important;
+  background: rgba(255, 255, 255, .96) !important;
+  box-shadow: 0 5px 18px rgba(30, 40, 60, .055) !important;
+}
+
+.play-game-page .card>small,
+.play-game-page .card small.fw-bold {
+  color: #343b50 !important;
+}
+
+.play-game-page .btn-warning {
+  color: #2a1a06 !important;
+  background: linear-gradient(135deg, #ffd45c, #ffb900) !important;
+  border-color: #f2b300 !important;
+  box-shadow: 0 4px 12px rgba(255, 185, 0, .18);
+}
+
+.play-game-page .btn-outline-secondary {
+  color: #555d70;
+  border-color: #dce1eb;
+  background: #fff;
+}
+
+.play-game-page .btn-success {
+  background: linear-gradient(135deg, #198754, #20b982) !important;
+  border-color: #198754 !important;
+  box-shadow: 0 4px 12px rgba(25, 135, 84, .18) !important;
+}
+
+.play-game-page .btn-white {
+  border-color: #e2e6ef !important;
+  box-shadow: 0 2px 6px rgba(30, 40, 60, .035);
+}
+
+.play-game-page .form-control,
+.play-game-page .input-group-text {
+  border-color: #dfe4ee;
+  border-radius: 10px;
+}
+
+.play-game-page .form-control:focus {
+  border-color: #8e6db5;
+  box-shadow: 0 0 0 .2rem rgba(96, 51, 139, .12);
+}
+
+.play-game-page .sticky-bottom-bar {
+  background: linear-gradient(to top, rgba(238, 242, 248, .98), rgba(238, 242, 248, .88), transparent);
+}
+
+.play-game-page .sticky-bottom-bar .card {
+  background: linear-gradient(135deg, #211034, #35204d) !important;
+  border-top-color: #ffc107 !important;
+  box-shadow: 0 12px 28px rgba(25, 14, 40, .28) !important;
+}
+
+.play-game-page .alert-warning {
+  border: 1px solid #ffe49a;
+  border-radius: 13px;
+  background: #fff9e7;
+}
+
+@media (max-width:360px) {
+  .play-game-page {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+
+  .play-game-header {
+    padding: 10px !important;
+    gap: 8px;
+  }
+
+  .play-game-header .text-end {
+    padding: 5px 6px;
+  }
+
+  .play-game-header .text-end small {
+    font-size: .6rem;
+  }
+
+  .play-game-tabs {
+    gap: 3px;
+  }
+
+  .play-game-tabs .nav-link {
+    font-size: .65rem;
+    padding: 8px 3px !important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+
+  .play-game-tabs .nav-link,
+  .play-game-page .btn {
+    transition: none !important;
+  }
+}
+
+
+
+.game-header {
+  min-height: 56px;
+}
+
+
+
+.nav-pills {
+  gap: 4px;
+}
+
+.nav-pills .nav-link {
+  min-height: 42px;
+  font-size: 16px;
+  white-space: nowrap;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.nav-pills .nav-link:active {
+  transform: scale(0.97);
+}
+
+
+
+.row.g-2 {
+  --bs-gutter-x: 0.45rem;
+  --bs-gutter-y: 0.45rem;
+}
+
+.col-2 {
+  width: 20%;
+  flex: 0 0 20%;
+  max-width: 20%;
+}
+
+
+
+.btn.w-100.position-relative,
+.btn.w-100.p-2.rounded-3 {
+  min-height: 54px;
+  width: 100%;
+  padding: 6px !important;
+  border-radius: 12px !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn.w-100.position-relative:active,
+.btn.w-100.p-2.rounded-3:active {
+  transform: scale(0.94);
+}
+
+
+
+.btn.w-100.position-relative>.fw-bold.fs-6 {
+  font-size: 0.95rem !important;
+  line-height: 1;
+}
+
+
+
+.btn.w-100.position-relative .badge {
+  width: 100%;
+  min-height: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.58rem;
+  font-weight: 800;
+
+  margin-top: 4px !important;
+  padding: 3px 2px !important;
+
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
+
+.single-jodi-grid {
+  width: 100%;
+}
+
+
+
+.harup-section-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: #212529;
+}
+
+.harup-section-title.ander-title {
+  color: #0d6efd;
+}
+
+.harup-section-title.bahar-title {
+  color: #dc3545;
+}
+
+.harup-title-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 14px;
-  color: #6f7c91;
-  font-size: 11px;
-  font-weight: 850
+  justify-content: center;
+
+  font-size: 1rem;
 }
 
-.play-market-hero {
-  padding: 20px;
-  border-radius: 23px;
-  background: radial-gradient(circle at 100% 0, rgba(23, 184, 144, .25), transparent 42%), linear-gradient(130deg, #033c07, #292f52);
-  color: #fff;
-  box-shadow: 0 14px 32px rgba(23, 27, 53, .15)
+.ander-title .harup-title-icon {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
 }
 
-.play-hero-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px
+.bahar-title .harup-title-icon {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
 }
 
-.play-market-icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border: 1px solid rgba(255, 255, 255, .14);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, .1);
-  color: #f5c55b;
-  font-size: 20px
-}
 
-.play-live-status {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 9px;
-  border-radius: 9px;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: .08em
-}
 
-.play-live-status>span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%
-}
-
-.play-open {
-  background: rgba(23, 184, 144, .16);
-  color: #81e9cc
-}
-
-.play-open>span {
-  background: #29d6a8
-}
-
-.play-closed {
-  background: rgba(255, 255, 255, .1);
-  color: #c1cad9
-}
-
-.play-closed>span {
-  background: #9ba7ba
-}
-
-.play-market-hero h1 {
-  margin: 17px 0 5px;
-  color: #fff;
-  font-size: clamp(25px, 6vw, 34px);
-  font-weight: 850;
-  letter-spacing: -.05em
-}
-
-.play-market-hero p {
-  max-width: 540px;
-  margin: 0;
-  color: #c0c9d9;
-  font-size: 11px;
-  line-height: 1.6
-}
-
-.play-hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px 16px;
-  color: #c5cede;
-  font-size: 10px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.play-closed-banner {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin: 14px 0;
-  padding: 14px;
-  border: 1px solid #f2dfad;
-  border-radius: 14px;
-  background: #fff8e6;
-  color: #87641a;
-  font-size: 11px;
-  font-weight: 750
-}
-
-.play-closed-banner i {
-  font-size: 18px
-}
-
-.play-type-panel,
-.play-stake-panel,
-.play-number-panel,
-.play-slip-card {
-  margin-top: 15px;
-  padding: 10px;
-  border: 1px solid #e3e9f2;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 5px 17px rgba(23, 27, 53, .035)
-}
-
-.play-section-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px
-}
-
-.play-eyebrow {
-  display: block;
-  color: #0d9d78;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: .13em
-}
-
-.play-section-heading h2 {
-  margin: 4px 0 2px;
-  color: #202642;
-  font-size: 17px;
-  font-weight: 850;
-  letter-spacing: -.035em
-}
-
-.play-section-heading p {
-  margin: 0;
-  color: #8b96a8;
-  font-size: 10px
-}
-
-.play-step {
-  color: #9aa4b4;
-  font-size: 9px;
-  font-weight: 900
-}
-
-.play-type-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px
-}
-
-.play-type-tabs button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  padding: 5px 5px;
-  border: 1px solid #e3e8f1;
-  border-radius: 14px;
-  background: #f9fafc;
-  color: #7b8799
-}
-
-.play-type-tabs button>i {
-  font-size: 19px
-}
-
-.play-type-tabs button strong {
-  color: #323b57;
-  font-size: 11px
-}
-
-.play-type-tabs button small {
-  color: #98a2b1;
-  font-size: 8px
-}
-
-.play-type-tabs button.active {
-  border-color: #033c07;
-  background: #033c07;
-  color: #f5c65d;
-  box-shadow: 0 7px 17px rgba(23, 27, 53, .15)
-}
-
-.play-type-tabs button.active strong {
-  color: #fff
-}
-
-.play-type-tabs button.active small {
-  color: #aebbd1
-}
-
-.play-chip-row {
-  display: flex;
-  gap: 7px;
-  overflow-x: auto;
-  padding: 1px 1px 8px;
-  scrollbar-width: none
-}
-
-.play-chip-row button {
-  flex: 0 0 auto;
-  min-width: 52px;
-  min-height: 37px;
-  padding: 7px 11px;
-  border: 1px solid #e1e7f0;
-  border-radius: 11px;
-  background: #fff;
-  color: #637087;
-  font-size: 11px;
-  font-weight: 850
-}
-
-.play-chip-row button.selected {
-  border-color: #17b890;
-  background: #e5faf2;
-  color: #0b926d
-}
-
-.play-custom-stake {
-  display: block;
-  margin-top: 8px;
-  color: #657188;
-  font-size: 10px;
-  font-weight: 800
-}
-
-.play-stake-input {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  height: 45px;
-  margin-top: 7px;
-  padding: 0 12px;
-  border: 1px solid #dce4ef;
-  border-radius: 12px;
-  background: #f9fafc
-}
-
-.play-stake-input>b {
-  color: #0d9d78;
-  font-size: 17px
-}
-
-.play-stake-input input {
+.crossing-jodi {
+  min-height: 54px;
   width: 100%;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #202642;
-  font-size: 15px;
-  font-weight: 850
-}
+  padding: 6px !important;
 
-.play-stake-input small {
-  color: #9aa4b4;
-  font-size: 9px;
-  font-weight: 900
-}
-
-.play-selected-count {
-  flex: 0 0 auto;
-  padding: 6px 8px;
-  border-radius: 9px;
-  background: #edf2ff;
-  color: #424d79;
-  font-size: 9px;
-  font-weight: 850
-}
-
-.play-number-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 7px
-}
-
-.play-number-grid button,
-.play-digit-grid button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-width: 0;
-  min-height: 51px;
-  padding: 5px 2px;
-  border: 1px solid #e2e8f1;
-  border-radius: 12px;
-  background: #f9fafc;
-  color: #252b4c;
-  transition: transform .12s ease, border-color .12s ease, background .12s ease
+
+  border-radius: 12px !important;
 }
 
-.play-number-grid button strong,
-.play-digit-grid button strong {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 15px;
-  font-weight: 800
+.crossing-jodi>.fw-bold {
+  font-size: 0.92rem;
+  line-height: 1;
 }
 
-.play-number-grid button small,
-.play-digit-grid button small {
-  padding: 3px 5px;
-  border-radius: 5px;
-  background: #f7d575;
-  color: #453610;
-  font-size: 10px;
-  font-weight: 900
+.crossing-jodi .badge {
+  width: 100%;
+  font-size: 0.58rem;
+  padding: 3px 2px !important;
+  margin-top: 4px !important;
 }
 
-.play-number-grid button.selected,
-.play-digit-grid button.selected {
-  border-color: #17b890;
-  background: #e4faf2;
-  color: #087d60;
-  box-shadow: inset 0 0 0 1px rgba(23, 184, 144, .12)
+
+
+.btn-success {
+  box-shadow:
+    0 4px 12px rgba(25, 135, 84, 0.22) !important;
 }
 
-.play-number-grid button:active,
-.play-digit-grid button:active {
-  transform: scale(.96)
+.btn-success:active {
+  transform: scale(0.94);
 }
 
-.play-digit-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px
+
+
+.card {
+  border-radius: 16px !important;
 }
 
-.play-digit-grid button {
-  min-height: 58px
+.card.shadow-xs {
+  box-shadow:
+    0 3px 12px rgba(20, 35, 70, 0.055) !important;
 }
 
-.play-jora-toggle {
+
+
+.btn.rounded-pill {
+  min-height: 36px;
+}
+
+.input-group {
+  min-height: 40px;
+}
+
+.input-group .form-control {
+  min-height: 40px;
+}
+
+
+
+.harup-card {
+  border: 1px solid rgba(0, 0, 0, 0.045) !important;
+}
+
+
+.sticky-bottom-bar {
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  padding:
+    8px 8px calc(8px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top,
+      rgba(248, 249, 250, 0.98),
+      rgba(248, 249, 250, 0.88),
+      transparent);
+
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+
+  z-index: 1030;
+}
+
+.sticky-bottom-bar .card {
+  width: 100%;
+  border-radius: 18px !important;
+  padding: 11px !important;
+
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.25) !important;
+}
+
+.sticky-bottom-bar .btn-warning {
+  min-height: 44px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.sticky-bottom-bar .fs-4 {
+  font-size: 1.1rem !important;
+}
+
+.sticky-bottom-bar .badge {
+  font-size: 0.58rem;
+}
+
+
+
+:global(.mobile-bet-swal) {
+  width: calc(100% - 32px) !important;
+  max-width: 330px !important;
+  border-radius: 18px !important;
+  padding: 16px 14px !important;
+}
+
+:global(.mobile-bet-swal-title) {
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+}
+
+:global(.mobile-bet-swal-content) {
+  margin-top: 5px !important;
+}
+
+:global(.mobile-bet-swal .bet-confirm-box) {
+  padding-top: 2px;
+}
+
+:global(.mobile-bet-swal .bet-confirm-amount) {
+  font-size: 1.65rem;
+  line-height: 1;
+  font-weight: 900;
+  color: #f0ad00;
+  margin-bottom: 8px;
+}
+
+:global(.mobile-bet-swal .bet-confirm-text) {
+  color: #6c757d;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+:global(.mobile-bet-swal .bet-confirm-warning) {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 15px;
-  padding: 12px;
-  border: 1px solid #e5eaf2;
-  border-radius: 13px;
-  background: #f9fafc
+  justify-content: center;
+  gap: 6px;
+
+  margin-top: 13px;
+  padding: 9px 10px;
+
+  border-radius: 10px;
+
+  color: #856404;
+  background: #fff3cd;
+
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
-.play-jora-toggle input {
-  margin: 0
+:global(.swal2-actions) {
+  width: 100%;
+  gap: 7px;
 }
 
-.play-jora-toggle span {
-  display: grid;
-  gap: 2px
+:global(.swal2-actions .btn) {
+  min-height: 36px;
+  flex: 1;
+  padding: 7px 10px !important;
+  font-size: 0.72rem;
 }
 
-.play-jora-toggle strong {
-  color: #2c3450;
-  font-size: 11px
+
+
+.Vue-Toastification__toast {
+  border-radius: 14px !important;
+  min-height: 48px !important;
+  padding: 10px 13px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600;
 }
 
-.play-jora-toggle small {
-  color: #8d98a8;
-  font-size: 9px
+.Vue-Toastification__toast--success {
+  background: #198754 !important;
 }
 
-.play-combination-summary {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid #edf0f5
+.Vue-Toastification__toast--error {
+  background: #dc3545 !important;
 }
 
-.play-combination-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px
+.Vue-Toastification__toast--warning {
+  background: #ffc107 !important;
+  color: #212529 !important;
 }
 
-.play-combination-list>span {
-  padding: 7px 9px;
-  border: 1px solid #d5f3e7;
-  border-radius: 9px;
-  background: #edfcf6;
-  color: #0a8968;
-  font-size: 10px;
-  font-weight: 900
-}
 
-.play-combination-list small {
-  margin-left: 3px;
-  color: #8a9d98;
-  font-size: 8px
-}
 
-.play-crossing-hint {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-  padding: 14px;
-  border-radius: 13px;
-  background: #f7f9fc;
-  color: #8b96a8;
-  font-size: 10px
-}
+@media (max-width: 360px) {
 
-.play-crossing-hint i {
-  font-size: 17px
-}
-
-.play-slip-card {
-  position: sticky;
-  bottom: 0;
-  z-index: 4;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 10px;
-  border-color: #dfe6f0;
-  box-shadow: 0 12px 32px rgba(23, 27, 53, .12)
-}
-
-.play-slip-card h2 {
-  margin: 4px 0 2px;
-  color: #202642;
-  font-size: 17px;
-  font-weight: 850
-}
-
-.play-slip-card p {
-  margin: 0;
-  color: #8994a6;
-  font-size: 10px
-}
-
-.play-slip-total {
-  color: #0b9d78;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 25px;
-  font-weight: 800
-}
-
-.play-submit-button {
-  grid-column: 1/-1;
-  display: flex;
-  align-items: center;
-  min-height: 48px;
-  border-radius: 13px;
-  font-size: 12px
-}
-
-.play-clear-button {
-  grid-column: 1/-1;
-  justify-self: center;
-  border: 0;
-  background: transparent;
-  color: #000;
-  font-size: 12px;
-  font-weight: bold
-}
-
-.play-responsible-note {
-  grid-column: 1/-1;
-  color: #9aa4b3;
-  text-align: center;
-  font-size: 9px
-}
-
-.play-state-card {
-  display: grid;
-  justify-items: center;
-  padding: 60px 18px;
-  text-align: center
-}
-
-.play-state-icon {
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  border-radius: 18px;
-  background: #fff1f2;
-  color: #d9485b;
-  font-size: 23px
-}
-
-.play-state-card h2 {
-  margin: 15px 0 4px;
-  font-size: 19px
-}
-
-.play-state-card p {
-  color: #8390a3;
-  font-size: 11px
-}
-
-@media(min-width:600px) {
-  .premium-play-page {
-    padding-inline: 22px
+  .nav-pills .nav-link {
+    font-size: 16px;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
   }
 
-  .play-number-grid {
-    grid-template-columns: repeat(10, minmax(0, 1fr))
+  .btn.w-100.position-relative,
+  .btn.w-100.p-2.rounded-3,
+  .crossing-jodi {
+    min-height: 50px;
+    border-radius: 10px !important;
   }
 
-  .play-digit-grid {
-    grid-template-columns: repeat(10, minmax(0, 1fr))
+  .btn.w-100.position-relative>.fw-bold.fs-6 {
+    font-size: 0.85rem !important;
   }
 
-  .play-slip-card {
-    grid-template-columns: 1fr auto
+  .btn.w-100.position-relative .badge,
+  .crossing-jodi .badge {
+    font-size: 0.52rem;
   }
 
-  .play-submit-button {
-    grid-column: auto;
-    min-width: 220px
+  .sticky-bottom-bar .card {
+    padding: 9px !important;
   }
 
-  .play-clear-button,
-  .play-responsible-note {
-    grid-column: 1/-1
+  .sticky-bottom-bar .btn-warning {
+    padding-left: 13px !important;
+    padding-right: 13px !important;
   }
 }
 
-@media(max-width:380px) {
-  .premium-play-page {
-    padding-inline: 10px
+
+
+@media (min-width: 576px) {
+
+  .col-2 {
+    width: 10%;
+    flex: 0 0 10%;
+    max-width: 10%;
   }
 
-  .play-market-hero {
-    padding: 16px
+  .btn.w-100.position-relative,
+  .btn.w-100.p-2.rounded-3,
+  .crossing-jodi {
+    min-height: 58px;
   }
+}
 
-  .play-type-panel,
-  .play-stake-panel,
-  .play-number-panel,
-  .play-slip-card {
-    padding: 13px
-  }
+.card>.d-flex>small.fw-bold.text-muted {
+  font-size: 1.05rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.03em;
+  color: #212529 !important;
+}
 
-  .play-number-grid {
-    gap: 5px
-  }
-
-  .play-number-grid button {
-    min-height: 46px
-  }
-
-  .play-number-grid button strong {
-    font-size: 13px
-  }
-
-  .play-type-tabs {
-    gap: 5px
-  }
-
-  .play-type-tabs button {
-    padding-inline: 2px
-  }
+.card>.d-flex>small.fw-bold.text-muted::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  background: #0d6efd;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.08);
 }
 </style>

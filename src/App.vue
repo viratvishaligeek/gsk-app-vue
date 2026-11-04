@@ -1,15 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import appLogo from '@/assets/img/logo.png'
 import { isGlobalLoading } from '@/utils/requestLoader'
 import { App } from '@capacitor/app'
 import { StatusBar, Style } from '@capacitor/status-bar'
 import router from '@/router'
-import {
-  initNativePushNotifications,
-  restorePushSubscription,
-  syncPushSubscription,
-} from '@/services/pushNotifications'
+import { initNativePushNotifications, restorePushSubscription, syncPushSubscription } from '@/services/pushNotifications'
+import { disconnectActivePresence } from '@/composables/usePresence'
 
 const showSplash = ref(true)
 const pushPermissionNotice = ref('')
@@ -17,24 +13,20 @@ const pushPermissionNotice = ref('')
 onMounted(async () => {
   try {
     await StatusBar.setStyle({ style: Style.Dark })
-    await StatusBar.setBackgroundColor({ color: '#033c07' })
+    await StatusBar.setBackgroundColor({ color: '#212529' })
     await StatusBar.setOverlaysWebView({ overlay: false })
   } catch (err) {
     console.log('Not on mobile native app:', err)
   }
 
-  window.setTimeout(() => {
-    showSplash.value = false
-  }, 1150)
+  window.setTimeout(() => { showSplash.value = false }, 1150)
   void initNativePushNotifications().then((result) => {
     if (!result?.ok && result?.message && result.message !== 'Not running as a native app.') {
       pushPermissionNotice.value = result.message
     }
   })
   void restorePushSubscription()
-  router.afterEach(() => {
-    void syncPushSubscription()
-  })
+  router.afterEach(() => { void syncPushSubscription() })
 
   // Handle verified HTTPS App Links when the payment provider returns to the app.
   // Only accept the production wallet return URL; never navigate to arbitrary incoming URLs.
@@ -43,7 +35,7 @@ onMounted(async () => {
 
     try {
       const incoming = new URL(url)
-      if (incoming.protocol !== 'https:' || incoming.hostname !== 'galisattakings.com') return
+      if (incoming.protocol !== 'https:' || incoming.hostname !== 'playonlinekhaiwal.com') return
       if (incoming.pathname !== '/wallet/add') return
 
       await router.replace({
@@ -57,22 +49,21 @@ onMounted(async () => {
 
   void App.addListener('appUrlOpen', ({ url }) => handlePaymentReturnLink(url))
   // Also check the launch URL for the cold-start case (app was not already running).
-  void App.getLaunchUrl()
-    .then((launch) => {
-      if (launch?.url) return handlePaymentReturnLink(launch.url)
-    })
-    .catch((error) => {
-      console.warn('Unable to read native app launch URL:', error)
-    })
+  void App.getLaunchUrl().then((launch) => {
+    if (launch?.url) return handlePaymentReturnLink(launch.url)
+  }).catch((error) => {
+    console.warn('Unable to read native app launch URL:', error)
+  })
 
   let backButtonPressedOnce = false
 
-  App.addListener('backButton', ({ canGoBack }) => {
+  App.addListener('backButton', async ({ canGoBack }) => {
     if (canGoBack) {
       window.history.back()
     } else {
       if (backButtonPressedOnce) {
-        App.exitApp()
+        await disconnectActivePresence()
+        await App.exitApp()
       } else {
         backButtonPressedOnce = true
         alert('Press back again to exit')
@@ -94,20 +85,21 @@ onMounted(async () => {
     <router-view />
     <div v-if="pushPermissionNotice" class="push-permission-notice" role="alert">
       <span>{{ pushPermissionNotice }}</span>
-      <button type="button" aria-label="Dismiss notification permission message" @click="pushPermissionNotice = ''">
-        Dismiss
-      </button>
+      <button type="button" aria-label="Dismiss notification permission message"
+        @click="pushPermissionNotice = ''">Dismiss</button>
     </div>
     <Transition name="launch-splash">
-      <div v-if="showSplash" class="launch-splash" role="status" aria-label="Loading Gali Satta Kings">
+      <div v-if="showSplash" class="launch-splash" role="status" aria-label="Loading gali satta kings">
+        <div class="launch-splash__glow launch-splash__glow--one"></div>
+        <div class="launch-splash__glow launch-splash__glow--two"></div>
         <div class="launch-splash__content">
-          <div class="launch-splash__logo"><img :src="appLogo" alt="Gali Satta Kings logo" /></div>
-          <p class="launch-splash__eyebrow">WELCOME TO</p>
-          <h1>Gali Satta Kings</h1>
-          <p class="launch-splash__tagline">Fast results. Smooth play.</p>
-          <div class="launch-splash__loader" aria-hidden="true">
-            <span></span><span></span><span></span>
+          <div class="launch-splash__logo">
+            <img src="../assets/icon.png" style="height: 200px;" alt="">
           </div>
+          <p class="launch-splash__eyebrow">WELCOME TO</p>
+          <h1>gali satta kings</h1>
+          <p class="launch-splash__tagline">Fast results. Smooth play.</p>
+          <div class="launch-splash__loader" aria-hidden="true"><span></span><span></span><span></span></div>
           <p class="launch-splash__status">Preparing your experience…</p>
         </div>
       </div>
@@ -130,7 +122,7 @@ onMounted(async () => {
   border-radius: 10px;
   background: #fff3cd;
   color: #664d03;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .18);
   font-size: 14px;
 }
 
@@ -148,7 +140,6 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
 .launch-splash {
   position: fixed;
   inset: 0;
@@ -157,28 +148,7 @@ body {
   place-items: center;
   overflow: hidden;
   color: #fff;
-  background: radial-gradient(ellipse at 50% 30%, #a11a02 0%, #ae2205 42%, #d94100 100%);
-}
-
-.launch-splash__glow {
-  position: absolute;
-  width: 60vw;
-  height: 60vw;
-  border-radius: 50%;
-  filter: blur(55px);
-  opacity: .25;
-}
-
-.launch-splash__glow--one {
-  top: -18%;
-  left: -15%;
-  background: var(--mint);
-}
-
-.launch-splash__glow--two {
-  right: -15%;
-  bottom: -20%;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
 }
 
 .launch-splash__content {
@@ -190,23 +160,22 @@ body {
 }
 
 .launch-splash__logo {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   display: grid;
   place-items: center;
-  margin: 0 auto 22px;
+  margin: 0 auto 14px;
   border: 1px solid rgba(255, 255, 255, .35);
-  border-radius: 25px;
-  background: #fff;
+  border-radius: 28px;
+  background: white;
   box-shadow: 0 14px 40px rgba(20, 201, 151, .25), inset 0 1px rgba(255, 255, 255, .45);
   /* transform: rotate(-5deg); */
 }
 
 .launch-splash__logo span {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 900;
-  letter-spacing: -2px;
+  letter-spacing: -3px;
   transform: rotate(5deg);
 }
 
@@ -214,22 +183,22 @@ body {
   margin: 0 0 7px;
   color: #9fe8d6;
   font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .3em;
+  font-weight: 800;
+  letter-spacing: .34em;
 }
 
 .launch-splash h1 {
   margin: 0;
-  color: #fff;
   font-size: clamp(21px, 6vw, 30px);
   font-weight: 900;
-  letter-spacing: .025em;
+  letter-spacing: .035em;
 }
 
 .launch-splash__tagline {
   margin: 9px 0 28px;
-  color: #c4ccdc;
+  color: #c1cbd2;
   font-size: 13px;
+  letter-spacing: .06em;
 }
 
 .launch-splash__loader {
@@ -244,56 +213,61 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--mint);
-  animation: dot-pulse 1s ease-in-out infinite;
+  background: #22c997;
+  animation: splash-dot .8s ease-in-out infinite alternate;
 }
 
 .launch-splash__loader span:nth-child(2) {
-  animation-delay: .15s;
-  background: var(--accent);
+  animation-delay: .16s;
 }
 
 .launch-splash__loader span:nth-child(3) {
-  animation-delay: .3s;
+  animation-delay: .32s;
 }
 
 .launch-splash__status {
-  margin-top: 11px;
-  color: #8996b1;
+  margin: 9px 0 0;
+  color: #84959f;
   font-size: 11px;
 }
 
+.launch-splash__glow {
+  position: absolute;
+  width: 58vw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(55px);
+  opacity: .17;
+  animation: splash-float 5s ease-in-out infinite alternate;
+}
+
+.launch-splash__glow--one {
+  top: -20%;
+  left: -20%;
+  background: #a50be7;
+}
+
+.launch-splash__glow--two {
+  right: -24%;
+  bottom: -28%;
+  background: #4175ff;
+  animation-delay: -2s;
+}
+
+.launch-splash-enter-active,
+.launch-splash-leave-active {
+  transition: opacity .35s ease, transform .35s ease;
+}
+
+.launch-splash-leave-to {
+  opacity: 0;
+  transform: scale(1.02);
+}
+
 @keyframes splash-rise {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(.98);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes dot-pulse {
-
-  0%,
-  80%,
-  100% {
-    opacity: .35;
-    transform: scale(.8);
-  }
-
-  40% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-
-@keyframes splash-rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: translateY(12px) scale(.98);
   }
 
   to {
@@ -304,8 +278,8 @@ body {
 
 @keyframes splash-dot {
   from {
-    opacity: 0.35;
-    transform: translateY(0) scale(0.8);
+    opacity: .35;
+    transform: translateY(0) scale(.8);
   }
 
   to {
@@ -327,7 +301,7 @@ body {
   overflow: hidden;
   z-index: 2000;
   pointer-events: none;
-  background: rgba(37, 15, 66, 0.08);
+  background: rgba(37, 15, 66, .08);
 }
 
 .global-loading-indicator__bar {
@@ -336,14 +310,14 @@ body {
   height: 100%;
   border-radius: 0 4px 4px 0;
   background: linear-gradient(90deg, #20c997, #ffc107, #bb86fc);
-  box-shadow: 0 0 12px rgba(32, 201, 151, 0.35);
+  box-shadow: 0 0 12px rgba(32, 201, 151, .35);
   animation: global-loading-progress 1.1s ease-in-out infinite;
   transform-origin: left center;
 }
 
 @keyframes global-loading-progress {
   0% {
-    transform: translateX(-110%) scaleX(0.55);
+    transform: translateX(-110%) scaleX(.55);
   }
 
   50% {
@@ -351,7 +325,7 @@ body {
   }
 
   100% {
-    transform: translateX(300%) scaleX(0.65);
+    transform: translateX(300%) scaleX(.65);
   }
 }
 

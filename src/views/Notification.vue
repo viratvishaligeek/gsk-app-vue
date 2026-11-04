@@ -1,53 +1,42 @@
 <template>
-  <div class="content-area premium-page premium-notification-page">
+  <div class="content-area">
     <div class="page-content">
       <div class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between gap-3 mb-3">
         <div>
           <div class="fw-bold text-dark"><i class="bi bi-bell-fill me-2"></i>Notification</div>
           <div v-if="pushStatus" class="small mt-1" role="status">{{ pushStatus }}</div>
-          <div v-if="permissionMessage" class="small mt-1 text-muted" role="status">
-            {{ permissionMessage }}
-          </div>
-          <div v-if="preferenceMessage" class="small mt-1" role="status">
-            {{ preferenceMessage }}
-          </div>
+          <div v-if="permissionMessage" class="small mt-1 text-muted" role="status">{{ permissionMessage }}</div>
+          <div v-if="preferenceMessage" class="small mt-1" role="status">{{ preferenceMessage }}</div>
         </div>
-        <button type="button" class="btn btn-sm flex-shrink-0" :class="notificationsEnabled && pushPermissionState === 'granted'
-          ? 'btn-outline-danger'
-          : 'btn-primary'
-          " :disabled="pushLoading || preferenceLoading || pushPermissionState === 'checking'"
+        <button type="button" class="btn btn-sm flex-shrink-0"
+          :class="notificationsEnabled && pushPermissionState === 'granted' ? 'btn-outline-danger' : 'btn-primary'"
+          :disabled="pushLoading || preferenceLoading || pushPermissionState === 'checking'"
           @click="togglePushNotifications">
           <span v-if="pushLoading || preferenceLoading" class="spinner-border spinner-border-sm me-1"></span>
-          {{
-            pushLoading || preferenceLoading
-              ? 'Please wait…'
-              : notificationsEnabled && pushPermissionState === 'granted'
-                ? 'नोटिफिकेशन बंद करें'
-                : 'नोटिफिकेशन चालू करें'
-          }}
+          {{ pushLoading || preferenceLoading ? 'Please wait…' : (notificationsEnabled && pushPermissionState ===
+            'granted' ? 'नोटिफिकेशन बंद करें' : 'नोटिफिकेशन चालू करें') }}
         </button>
       </div>
       <div v-if="appUpdate.latest_url"
         class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between gap-3 mb-3"
-        style="background: linear-gradient(135deg, #9fbf3c8c, #ff450066)">
+        style="background: linear-gradient(135deg, #9fbf3c8c, #ff450066);">
         <div>
-          <div class="fw-bold text-danger btn btn-sm border">
-            <i class="bi bi-arrow-down-circle me-2"></i>Update App
+          <div class="fw-bold text-danger btn btn-sm border"><i class="bi bi-arrow-down-circle me-2"></i>Update App
           </div>
           <div v-if="appUpdate.latest_url" class="text-dark">
             <span v-if="appUpdate.latest_version">Version {{ appUpdate.latest_version }} · </span>Published {{
-              formatAppUpdateDate(appUpdate.update_date) }}. Downloading the APK opens
-            the normal Android installation flow; it will not install silently.
+              formatAppUpdateDate(appUpdate.update_date) }}. Downloading the APK opens the normal Android installation
+            flow; it will not install silently.
           </div>
         </div>
         <button v-if="appUpdate.latest_url" type="button" class="btn btn-md btn-success flex-shrink-0"
-          @click="openLatestApp">
-          Download APK
-        </button>
+          @click="openLatestApp">Download APK</button>
       </div>
       <div v-if="isInitialLoading" class="text-center py-5">
         <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
-        <div class="text-muted mt-2">Loading notifications...</div>
+        <div class="text-muted mt-2">
+          Loading notifications...
+        </div>
       </div>
       <div v-else-if="errorMessage" class="alert alert-danger rounded-3">
         {{ errorMessage }}
@@ -83,8 +72,12 @@
           <div class="empty-icon mb-2">
             <i class="bi bi-bell-slash"></i>
           </div>
-          <h6 class="fw-bold text-dark">No Notifications</h6>
-          <p class="text-muted mb-0">You don't have any notifications yet.</p>
+          <h6 class="fw-bold text-dark">
+            No Notifications
+          </h6>
+          <p class="text-muted mb-0">
+            You don't have any notifications yet.
+          </p>
         </div>
         <div v-if="notifications.length > 0" class="text-center mt-4 mb-4">
           <button v-if="hasMore" type="button" class="btn action-btn secondary-action-btn" :disabled="isLoading"
@@ -92,15 +85,17 @@
             <span v-if="isLoading" class="spinner-border spinner-border-sm me-1"></span>
             {{ isLoading ? 'Loading...' : 'Load More' }}
           </button>
-          <div v-else class="text-muted fs-8">No more notifications</div>
+          <div v-else class="text-muted fs-8">
+            No more notifications
+          </div>
         </div>
       </template>
+
     </div>
   </div>
 </template>
 
 <script setup>
-defineOptions({ name: 'NotificationsView' })
 import api from '@/plugins/axios'
 import { Capacitor } from '@capacitor/core'
 import { Browser } from '@capacitor/browser'
@@ -134,11 +129,7 @@ const loadNotificationPreference = async () => {
 }
 
 const saveNotificationPreference = async (enabled) => {
-  const { data } = await api.put(
-    '/notifications/preference',
-    { enabled },
-    { showGlobalLoader: false },
-  )
+  const { data } = await api.put('/notifications/preference', { enabled }, { showGlobalLoader: false })
   notificationsEnabled.value = data?.notifications_enabled === true
   return data
 }
@@ -158,8 +149,7 @@ const togglePushNotifications = async () => {
       preferenceMessage.value = result.ok ? 'Push alerts are disabled.' : result.message
       await refreshPushPermission()
     } catch (error) {
-      preferenceMessage.value =
-        error?.response?.data?.message || 'Unable to save your notification preference.'
+      preferenceMessage.value = error?.response?.data?.message || 'Unable to save your notification preference.'
     } finally {
       preferenceLoading.value = false
     }
@@ -201,13 +191,7 @@ const fetchAppUpdate = async () => {
     const updateDate = /^\d{4}-\d{2}-\d{2}$/.test(String(data?.update_date || ''))
       ? data.update_date
       : '2026-08-12'
-    appUpdate.value = {
-      latest_url: latestUrl,
-      latest_version: String(data?.latest_version || '')
-        .trim()
-        .slice(0, 50),
-      update_date: updateDate,
-    }
+    appUpdate.value = { latest_url: latestUrl, latest_version: String(data?.latest_version || '').trim().slice(0, 50), update_date: updateDate }
   } catch {
     // App updates remain optional when the API or URL has not been configured.
   }
@@ -215,9 +199,7 @@ const fetchAppUpdate = async () => {
 
 const formatAppUpdateDate = (value) => {
   const date = new Date(`${value}T00:00:00`)
-  return Number.isNaN(date.getTime())
-    ? value
-    : date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 const openLatestApp = async () => {
@@ -240,9 +222,7 @@ const refreshPushPermission = async () => {
         permissionMessage.value = 'Device notification permission is enabled.'
       } else if (receive === 'denied') {
         pushPermissionState.value = 'denied'
-        permissionMessage.value = isAndroidApp
-          ? 'Notifications are blocked. Open Android Settings → Apps → Gali Satta Kings → Notifications to enable them.'
-          : 'Notifications are blocked by device settings. Open this app’s notification settings and allow notifications.'
+        permissionMessage.value = isAndroidApp ? 'Notifications are blocked. Open Android Settings → Apps → gali satta kings → Notifications to enable them.' : 'Notifications are blocked by device settings. Open this app’s notification settings and allow notifications.'
       } else {
         pushPermissionState.value = 'prompt'
         permissionMessage.value = 'Permission will be requested only after you tap Enable.'
@@ -276,6 +256,17 @@ const refreshPushPermission = async () => {
   }
 }
 
+const enablePush = async () => {
+  pushLoading.value = true
+  pushStatus.value = ''
+  try {
+    const result = await subscribeToPush()
+    pushStatus.value = result.message
+    await refreshPushPermission()
+  } finally {
+    pushLoading.value = false
+  }
+}
 const isLoading = ref(false)
 const errorMessage = ref('')
 
@@ -285,27 +276,53 @@ const hasMore = ref(false)
 
 const notificationTypes = [
   {
-    keywords: ['wallet', 'credit', 'credited', 'debit', 'debited', 'payment', 'transaction'],
+    keywords: [
+      'wallet',
+      'credit',
+      'credited',
+      'debit',
+      'debited',
+      'payment',
+      'transaction',
+    ],
     icon: 'bi bi-credit-card',
     className: 'secondary',
   },
   {
-    keywords: ['booking', 'bet', 'game', 'play', 'result'],
+    keywords: [
+      'booking',
+      'bet',
+      'game',
+      'play',
+      'result',
+    ],
     icon: 'bi bi-ticket-perforated',
     className: 'primary',
   },
   {
-    keywords: ['offer', 'bonus', 'discount', 'promotion', 'promo'],
+    keywords: [
+      'offer',
+      'bonus',
+      'discount',
+      'promotion',
+      'promo',
+    ],
     icon: 'bi bi-gift',
     className: 'accent',
   },
   {
-    keywords: ['welcome'],
+    keywords: [
+      'welcome',
+    ],
     icon: 'bi bi-person-plus',
     className: 'primary',
   },
   {
-    keywords: ['security', 'password', 'login'],
+    keywords: [
+      'security',
+      'password',
+      'login',
+    ],
     icon: 'bi bi-shield-check',
     className: 'warning',
   },
@@ -357,7 +374,9 @@ const groupedNotifications = computed(() => {
     group.items.push(notification)
   })
 
-  return Object.values(groups).filter((group) => group.items.length > 0)
+  return Object.values(groups).filter(
+    group => group.items.length > 0
+  )
 })
 
 const fetchNotifications = async (page = 1) => {
@@ -377,30 +396,36 @@ const fetchNotifications = async (page = 1) => {
     })
 
     if (!data?.success) {
-      throw new Error(data?.message || 'Unable to load notifications.')
+      throw new Error(
+        data?.message || 'Unable to load notifications.'
+      )
     }
 
-    const newNotifications = Array.isArray(data.data) ? data.data : []
+    const newNotifications = Array.isArray(data.data)
+      ? data.data
+      : []
 
     if (hasLoadedOnce.value && page === 1) {
-      const previousIds = new Set(notifications.value.map((item) => item.id))
-      newNotifications
-        .filter((item) => !previousIds.has(item.id))
-        .forEach((item) => {
-          void playNotificationSound(
-            notificationEventFromText([item.subject, item.message].filter(Boolean).join(' ')),
-            item.id,
-          )
-        })
+      const previousIds = new Set(notifications.value.map(item => item.id))
+      newNotifications.filter(item => !previousIds.has(item.id)).forEach(item => {
+        void playNotificationSound(notificationEventFromText([item.subject, item.message].filter(Boolean).join(' ')), item.id)
+      })
     }
-    notifications.value =
-      page === 1 ? newNotifications : [...notifications.value, ...newNotifications]
+    notifications.value = page === 1
+      ? newNotifications
+      : [
+        ...notifications.value,
+        ...newNotifications,
+      ]
 
     currentPage.value = data.meta?.current_page ?? page
     lastPage.value = data.meta?.last_page ?? page
 
-    hasMore.value = data.meta?.has_more === true || currentPage.value < lastPage.value
+    hasMore.value =
+      data.meta?.has_more === true ||
+      currentPage.value < lastPage.value
     hasLoadedOnce.value = true
+
   } catch (error) {
     console.error('Notification API Error:', error)
 
@@ -424,10 +449,11 @@ const loadMore = () => {
 const getNotificationType = (subject) => {
   const value = String(subject || '').toLowerCase()
 
-  return (
-    notificationTypes.find((type) => type.keywords.some((keyword) => value.includes(keyword))) ||
-    defaultNotification
-  )
+  return notificationTypes.find(type =>
+    type.keywords.some(keyword =>
+      value.includes(keyword)
+    )
+  ) || defaultNotification
 }
 
 const getNotificationIcon = (subject) => {
@@ -451,7 +477,9 @@ const isToday = (date) => {
 const isYesterday = (date) => {
   const yesterday = new Date()
 
-  yesterday.setDate(yesterday.getDate() - 1)
+  yesterday.setDate(
+    yesterday.getDate() - 1
+  )
 
   return (
     date.getDate() === yesterday.getDate() &&
@@ -504,9 +532,11 @@ onMounted(() => {
   void loadNotificationPreference()
   void fetchAppUpdate()
   fetchNotifications()
+  // Push delivery handles immediate alerts; this is a low-frequency
+  // recovery sync for missed notifications while the page stays visible.
   notificationRefreshTimer = setInterval(() => {
     if (document.visibilityState === 'visible') fetchNotifications(1)
-  }, 20000)
+  }, 60000)
 })
 
 onUnmounted(() => {
@@ -522,7 +552,7 @@ onUnmounted(() => {
 }
 
 .page-content {
-  padding: 8px;
+  padding: 12px;
 }
 
 .scrollbar-osahan {
@@ -575,23 +605,23 @@ onUnmounted(() => {
 
 .notification-item {
   background: #ffffff;
-  border-radius: 11px;
-  padding: 10px;
-  margin-bottom: 7px;
-  border: 1px solid #eadfd9;
-  box-shadow: 0 2px 7px rgba(64, 32, 20, 0.035);
+  border-radius: 12px;
+  padding: 13px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 .notification-icon {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 9px;
-  font-size: 14px;
+  margin-right: 12px;
+  font-size: 17px;
 }
 
 .notification-icon.primary {
@@ -621,15 +651,14 @@ onUnmounted(() => {
 
 .notification-title {
   color: #212529;
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-weight: 800;
-  margin-bottom: 2px;
-  line-height: 1.35;
+  margin-bottom: 3px;
 }
 
 .notification-message {
   color: #6c757d;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   line-height: 1.45;
   word-break: break-word;
 }
@@ -663,54 +692,6 @@ onUnmounted(() => {
 
   .notification-item {
     padding: 15px;
-  }
-}
-
-.premium-notification-page .page-content {
-  display: grid;
-  gap: 8px;
-}
-.premium-notification-page .alert-light { padding: 11px; border-radius: 12px !important; }
-.premium-notification-page .section-header { margin-top: 10px; margin-bottom: 6px; }
-.premium-notification-page .notification-item .d-flex { min-width: 0; }
-.premium-notification-page .notification-content { overflow-wrap:anywhere; }
-@media(max-width:380px) { .premium-notification-page .alert-light { gap:8px !important; } .premium-notification-page .notification-item { padding:9px; } }
-
-.premium-notification-page .alert-light {
-  padding: 16px;
-  border: 1px solid #e2e8f1 !important;
-  border-radius: 17px !important;
-  background: #fff !important;
-  box-shadow: 0 5px 16px rgba(23, 27, 53, 0.04);
-}
-
-.premium-notification-page .fw-bold.text-dark {
-  color: #202642 !important;
-  font-size: 14px;
-}
-
-.premium-notification-page .card,
-.premium-notification-page .notification-card {
-  border: 1px solid #e2e8f1 !important;
-  border-radius: 17px !important;
-  background: #fff !important;
-  box-shadow: 0 5px 16px rgba(23, 27, 53, 0.04);
-}
-
-.premium-notification-page .btn {
-  border-radius: 11px;
-  font-size: 10px;
-  font-weight: 850;
-}
-
-.premium-notification-page .list-group-item {
-  border-color: #edf0f5 !important;
-  background: #fff !important;
-}
-
-@media (min-width: 700px) {
-  .premium-notification-page {
-    padding-inline: 24px;
   }
 }
 </style>

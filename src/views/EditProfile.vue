@@ -1,7 +1,7 @@
 <template>
-  <main class="content-area premium-page premium-profile-page profile-page">
+  <main class="profile-page">
     <div class="profile-layout">
-      <section class="profile-section">
+      <section class="profile-section" style="  background: linear-gradient(135deg, #272451, #000);">
         <div class="section-heading">
           <div class="section-heading__icon">
             <i class="bi bi-person-lines-fill"></i>
@@ -1104,129 +1104,6 @@ const handleChangePassword = async () => {
   .line-input::after,
   .save-button {
     transition: none;
-  }
-}
-
-.premium-profile-page {
-  padding-top: 24px;
-  padding-bottom: 110px;
-  max-width: 900px
-}
-
-.premium-profile-page .profile-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px
-}
-
-.premium-profile-page .profile-section {
-  padding: 20px !important;
-  border: 1px solid #e2e8f1 !important;
-  border-radius: 21px !important;
-  background: #fff !important;
-  box-shadow: 0 5px 18px rgba(23, 27, 53, .04)
-}
-
-.premium-profile-page .section-heading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px
-}
-
-.premium-profile-page .section-heading__icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  background: #e4faf2;
-  color: #0b9b75
-}
-
-.premium-profile-page .section-heading h2 {
-  margin: 0;
-  color: #202642;
-  font-size: 17px;
-  font-weight: 850
-}
-
-.premium-profile-page .section-heading p {
-  margin: 4px 0 0;
-  color: #8792a4;
-  font-size: 11px
-}
-
-.premium-profile-page .edit-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px
-}
-
-.premium-profile-page .edit-field label {
-  display: block;
-  margin-bottom: 6px;
-  color: #5c6980;
-  font-size: 10px;
-  font-weight: 850
-}
-
-.premium-profile-page .line-input {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-height: 46px;
-  padding: 0 12px;
-  border: 1px solid #dfe6ef;
-  border-radius: 12px;
-  background: #fafbfd
-}
-
-.premium-profile-page .line-input:focus-within {
-  border-color: #17b890;
-  box-shadow: 0 0 0 3px rgba(23, 184, 144, .09)
-}
-
-.premium-profile-page .line-input input,
-.premium-profile-page .line-input select {
-  width: 100%;
-  min-width: 0;
-  min-height: 42px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #202642;
-  font-size: 12px
-}
-
-.premium-profile-page .line-input i {
-  color: #8995a8
-}
-
-.premium-profile-page button[type=submit] {
-  min-height: 46px;
-  border: 0;
-  border-radius: 12px;
-  background: #033c07;
-  color: #fff;
-  font-weight: 850
-}
-
-.premium-profile-page .input-error {
-  border-color: #dc465a !important
-}
-
-@media(min-width:760px) {
-  .premium-profile-page .profile-layout {
-    grid-template-columns: 1fr 1fr
-  }
-
-  .premium-profile-page .profile-section:first-child {
-    grid-column: 1/-1
-  }
-
-  .premium-profile-page .edit-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr))
   }
 }
 </style>

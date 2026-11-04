@@ -1,27 +1,19 @@
 <template>
-  <div
-    class="loading-state"
-    :class="`loading-state--${variant}`"
-    role="status"
-    aria-label="Loading content"
-  >
+  <div class="loading-state" :class="`loading-state--${variant}`" role="status" aria-label="Loading content">
     <template v-if="variant === 'play-game'">
       <div class="skeleton-block skeleton-game-heading"></div>
       <div class="skeleton-block skeleton-game-tabs"></div>
       <div class="skeleton-block skeleton-game-card"></div>
-      <div class="skeleton-number-grid">
-        <span v-for="item in 20" :key="item" class="skeleton-block skeleton-number"></span>
-      </div>
+      <div class="skeleton-number-grid"><span v-for="item in 20" :key="item"
+          class="skeleton-block skeleton-number"></span></div>
       <div class="skeleton-block skeleton-game-card"></div>
       <span class="visually-hidden">Loading game screen…</span>
     </template>
     <template v-else-if="variant === 'market-list'">
       <div v-for="item in count" :key="item" class="skeleton-market-card">
         <div class="d-flex align-items-center justify-content-between gap-3">
-          <div class="skeleton-copy">
-            <span class="skeleton-block skeleton-heading"></span
-            ><span class="skeleton-block skeleton-line"></span>
-          </div>
+          <div class="skeleton-copy"><span class="skeleton-block skeleton-heading"></span><span
+              class="skeleton-block skeleton-line"></span></div>
           <span class="skeleton-block skeleton-market-result"></span>
         </div>
         <span class="skeleton-block skeleton-market-footer"></span>
@@ -30,9 +22,8 @@
     </template>
     <template v-else-if="variant === 'featured'">
       <div class="skeleton-market-card skeleton-featured-card">
-        <span class="skeleton-block skeleton-heading"></span
-        ><span class="skeleton-block skeleton-line"></span
-        ><span class="skeleton-block skeleton-market-result"></span>
+        <span class="skeleton-block skeleton-heading"></span><span class="skeleton-block skeleton-line"></span><span
+          class="skeleton-block skeleton-market-result"></span>
       </div>
       <span class="visually-hidden">Loading result…</span>
     </template>
@@ -65,7 +56,7 @@ defineProps({ variant: { type: String, default: 'lines' }, count: { type: Number
   border: 1px solid #e9edf3;
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 4px 14px rgba(24, 35, 56, 0.045);
+  box-shadow: 0 4px 14px rgba(24, 35, 56, .045);
 }
 
 .skeleton-copy {

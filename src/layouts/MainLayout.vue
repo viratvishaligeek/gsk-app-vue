@@ -1,108 +1,188 @@
 <template>
-  <div class="app-layout premium-shell">
-    <div v-if="isSidebarOpen" class="overlay active" @click="closeSidebar" aria-hidden="true"></div>
-    <aside ref="sidebarElement" id="sidebar" class="sidebar premium-sidebar" :class="{ active: isSidebarOpen }"
-      aria-label="Main navigation" :aria-hidden="!isSidebarOpen">
-      <div class="sidebar-header premium-sidebar-header">
-        <div class="premium-profile-panel">
-          <div class="user-avatar premium-avatar"><i class="bi bi-person-fill"></i></div>
-          <div class="premium-profile-copy">
-            <small>WELCOME BACK</small><strong>{{ authStore.name || 'Player' }}</strong><router-link to="/profile"
-              @click="closeSidebar">Manage profile <i class="bi bi-arrow-up-right"></i></router-link>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <div ref="sidebarElement" class="sidebar" :class="{ active: isSidebarOpen }" id="sidebar">
+      <div class="sidebar-header">
+        <div class="d-flex align-items-center mb-3">
+          <div class="user-avatar me-3">
+            <i class="bi bi-person"></i>
           </div>
-          <router-link to="/wallet" class="sidebar-wallet-card premium-sidebar-wallet" @click="closeSidebar">
-            <span class="sidebar-wallet-symbol"><i class="bi bi-wallet2"></i></span>
-            <strong class="sidebar-wallet-amount">₹ {{
-              formatWalletAmount }}</strong>
+          <div>
+            <h6 class="mb-1">{{ authStore.name }}</h6>
+          </div>
+        </div>
+        <div class="sidebar-header-actions">
+          <div class="sidebar-wallet-card" aria-label="Wallet balance">
+            <span class="sidebar-wallet-symbol bg-success">
+              <i class="bi bi-wallet2"></i>
+            </span>
+            <div class="sidebar-wallet-copy">
+              <small>Wallet balance</small>
+              <strong class="sidebar-wallet-amount">₹ {{ formatWalletAmount }}</strong>
+            </div>
+          </div>
+          <router-link to="/profile" class="btn btn-sm profile-edit-btn sidebar-profile-btn rounded-3"
+            @click="closeSidebar">
+            <span class="icon-3d">🛠️</span><span>Edit Profile</span>
           </router-link>
         </div>
       </div>
-      <nav class="sidebar-menu premium-sidebar-menu" aria-label="App sections">
-        <router-link to="/dashboard" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-house-door"></i></span><span>Home</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link :to="{ name: 'market-games' }" class="sidebar-menu-item" @click="closeSidebar"><span
-            class="icon-3d"><i class="bi bi-grid-1x2"></i></span><span>Market Games</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link to="/play-history" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-controller"></i></span><span>My Plays & History</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link to="/monthly-chart" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-bar-chart-line"></i></span><span>Result Charts</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <p class="premium-menu-caption mt-3">YOUR ACCOUNT</p>
-        <router-link to="/profile" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-person-gear"></i></span><span>Profile & Settings</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link to="/notifications" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-bell"></i></span><span>Notifications</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link to="/referrals" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-gift"></i></span><span>Refer & Earn</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link :to="{ path: '/live-support', query: { chat: '1' } }" class="sidebar-menu-item"
-          @click="closeSidebar"><span class="icon-3d"><i class="bi bi-headset"></i></span><span>Live Support</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <a v-if="whatsappUrl" :href="whatsappUrl" class="sidebar-menu-item" target="_blank" rel="noopener noreferrer"
-          @click="closeSidebar"><span class="icon-3d"><i class="bi bi-whatsapp"></i></span><span>WhatsApp
-            Support</span><i class="bi bi-box-arrow-up-right ms-auto"></i></a>
-        <router-link to="/page/how-to-play" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-book"></i></span><span>How to Play</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link to="/page/game-rates" class="sidebar-menu-item" @click="closeSidebar"><span class="icon-3d"><i
-              class="bi bi-percent"></i></span><span>Game Rates</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-        <router-link to="/page/terms-conditions" class="sidebar-menu-item" @click="closeSidebar"><span
-            class="icon-3d"><i class="bi bi-file-earmark-text"></i></span><span>Terms & Conditions</span><i
-            class="bi bi-chevron-right ms-auto"></i></router-link>
-      </nav>
-      <div class="premium-sidebar-footer">
-        <button :disabled="isLoggingOut" @click="handleLogout" class="btn btn-outline-danger w-100">
-          <span v-if="isLoggingOut" class="spinner-border spinner-border-sm me-2"></span><i v-else
-            class="bi bi-box-arrow-right me-2"></i>{{ isLoggingOut ? 'Signing out…' : 'Sign out' }}
-        </button>
-        <small>Play responsibly · 18+ only</small>
-      </div>
-    </aside>
 
-    <header class="app-header premium-app-header">
-      <div class="premium-header-inner">
-        <div class="d-flex align-items-center gap-2 min-width-0">
-          <button id="menuBtn" ref="menuButtonElement" type="button" class="header-menu-btn premium-menu-trigger"
+      <div class="sidebar-menu">
+        <router-link to="/dashboard" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">🏠</span>
+          <span>Home</span>
+        </router-link>
+
+        <router-link to="/wallet" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">💳</span>
+          <span>Wallet Transactions</span>
+        </router-link>
+
+        <router-link to="/play-history" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">🎮</span>
+          <span>Played History</span>
+        </router-link>
+
+        <router-link to="/monthly-chart" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">📊</span>
+          <span>Monthly Charts</span>
+        </router-link>
+
+        <router-link to="/wallet/withdraw" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">💸</span>
+          <span>Money Withdraw</span>
+        </router-link>
+
+        <router-link to="/page/terms-conditions" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">📄</span>
+          <span>Terms & Conditions</span>
+        </router-link>
+        <router-link to="/page/how-to-play" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">🎯</span>
+          <span>How to Play</span>
+        </router-link>
+        <router-link to="/page/game-rates" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">📈</span>
+          <span>Game Rates</span>
+        </router-link>
+
+        <router-link to="/live-support" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">🎧</span>
+          <span>Live Support</span>
+        </router-link>
+
+        <router-link to="/notifications" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">🔔</span>
+          <span>Notification</span>
+        </router-link>
+
+        <router-link to="/referrals" class="sidebar-menu-item" @click="closeSidebar">
+          <span class="icon-3d">🎁</span>
+          <span>Referral Code</span>
+        </router-link>
+      </div>
+
+      <div class="p-3 text-center">
+        <button :disabled="isLoggingOut" @click="handleLogout" class="btn btn-outline-danger w-100 rounded-3">
+          <span v-if="isLoggingOut" class="spinner-border spinner-border-sm me-2"></span>
+          <i v-else class="bi bi-box-arrow-right me-2"></i>
+          {{ isLoggingOut ? 'Logging out...' : 'Sign Out' }}
+        </button>
+      </div>
+    </div>
+    <!-- Overlay -->
+    <div class="overlay" :class="{ active: isSidebarOpen }" id="overlay" @click="closeSidebar"></div>
+
+    <div class="app-header sticky-top bg-white border-bottom shadow-sm px-2 py-2">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center min-width-0">
+          <button id="menuBtn" ref="menuButtonElement" type="button"
+            class="btn btn-light rounded-circle header-menu-btn d-flex align-items-center justify-content-center p-0"
             @click="toggleSidebar" :aria-label="isSidebarOpen ? 'Close menu' : 'Open menu'"
             :aria-expanded="isSidebarOpen" aria-controls="sidebar">
-            <i class="bi bi-list"></i>
+            <i class="bi bi-list fs-4"></i>
           </button>
-          <router-link to="/dashboard" class="premium-header-brand">
-            <span class="premium-brand-mark"><i class="bi bi-controller"></i></span>
-            <span><strong>Gali Satta Kings</strong><small>Official Application</small></span>
+          <router-link to="/dashboard" class="d-flex align-items-center ms-2 min-width-0">
+            <div class=" me-2">
+              <img src="../assets/img/logo.png" style="height: 35px; width: auto;" alt="">
+            </div>
+            <div class="lh-sm min-width-0">
+              <div class="fw-bold text-dark text-truncate brand-title">
+                Online Khaiwal
+              </div>
+              <small class="text-muted d-flex align-items-center gap-1">
+                <span class="brand-live-dot"></span>
+                Official App
+              </small>
+            </div>
           </router-link>
         </div>
-        <div class="premium-header-actions">
-          <router-link to="/notifications" class="premium-notification" aria-label="Notifications"><i
-              class="bi bi-bell"></i></router-link>
-          <router-link to="/wallet" class="premium-header-wallet"
-            :aria-label="'Wallet balance ₹ ' + formatWalletAmount">
-            <i class="bi bi-wallet2" aria-hidden="true"></i><span>₹ {{ formatWalletAmount }}</span>
+        <div class="d-flex align-items-center gap-2">
+          <router-link to="/wallet" class="wallet-pill d-flex align-items-center gap-2 px-2 px-sm-3 py-1">
+            <div class="wallet-icon">
+              <i class="bi bi-wallet2"></i>
+            </div>
+            <div class="wallet-info lh-1">
+              <small class="wallet-label d-block">
+                WALLET
+              </small>
+              <span class="fw-bold text-success wallet-amount">
+                ₹ {{ formatWalletAmount }}
+              </span>
+            </div>
+          </router-link>
+          <router-link to="/notifications" class="notification-btn position-relative text-decoration-none"
+            aria-label="Notifications">
+            <i class="bi bi-bell-fill"></i>
+            <span class="notification-dot"></span>
           </router-link>
         </div>
+
       </div>
-    </header>
+    </div>
 
-    <main class="main-body-content"><router-view /></main>
+    <main class="main-body-content">
+      <router-view />
+    </main>
 
-    <footer v-if="!hideBottomNav" class="bottom-nav premium-bottom-nav" aria-label="Primary navigation">
-      <router-link to="/dashboard" class="nav-item" active-class="active"><span class="nav-icon"><i
-            class="bi bi-house-door-fill"></i></span><span class="nav-label">Home</span></router-link>
-      <router-link :to="{ name: 'market-games' }" class="nav-item" active-class="active"><span class="nav-icon"><i
-            class="bi bi-dice-6"></i></span><span class="nav-label">Games</span></router-link>
-      <router-link to="/play-history" class="nav-item" active-class="active"><span class="nav-icon"><i
-            class="bi bi-hourglass-split"></i></span><span class="nav-label">History</span></router-link>
-      <router-link to="/wallet" class="nav-item" active-class="active"><span class="nav-icon"><i
-            class="bi bi-wallet2"></i></span><span class="nav-label">Wallet</span></router-link>
-      <router-link to="/page/offers" class="nav-item" active-class="active"><span class="nav-icon"><i
-            class="bi bi-percent"></i></span><span class="nav-label">Offers</span></router-link>
-    </footer>
+    <div v-if="!hideBottomNav" class="bottom-nav">
+
+      <router-link to="/dashboard" class="nav-item" active-class="active">
+        <span class="nav-icon">
+          <i class="bi bi-house-door-fill"></i>
+        </span>
+        <span class="nav-label">Home</span>
+      </router-link>
+
+      <router-link to="/wallet" class="nav-item" active-class="active">
+        <span class="nav-icon">
+          <i class="bi bi-wallet"></i>
+        </span>
+        <span class="nav-label">Wallet</span>
+      </router-link>
+
+      <router-link to="/monthly-chart" class="nav-item" active-class="active">
+        <span class="nav-icon">
+          <i class="bi bi-calendar"></i>
+        </span>
+        <span class="nav-label">Chart</span>
+      </router-link>
+
+      <router-link to="/page/offers" class="nav-item" active-class="active">
+        <span class="nav-icon">
+          <i class="bi bi-gift"></i>
+        </span>
+        <span class="nav-label">Offers</span>
+      </router-link>
+      <a v-if="whatsappUrl" :href="whatsappUrl" class="nav-item whatsapp-item" target="_blank"
+        rel="noopener noreferrer">
+        <span class="nav-icon">
+          <i class="bi bi-whatsapp"></i>
+        </span>
+        <span class="nav-label">WhatsApp</span>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -111,6 +191,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/utils/auth'
 import { useSettings } from '@/composables/useSettings'
+import { usePresence } from '@/composables/usePresence'
 
 const router = useRouter()
 const route = useRoute()
@@ -124,18 +205,25 @@ const whatsappUrl = computed(() => {
     return ''
   }
 })
-const hideBottomNav = computed(() => route.path.startsWith('/play-game/'))
+const hideBottomNav = computed(() => {
+  const path = route.path
+  return path === '/wallet/add'
+    || path === '/wallet/withdraw'
+    || path === '/monthly-chart'
+    || path === '/live-support'
+    || path.startsWith('/play-game/')
+})
 const authStore = useAuthStore()
+const { disconnect: disconnectPresence } = usePresence()
 
 const isSidebarOpen = ref(false)
+const shareMenuOpen = ref(false)
 const isLoggingOut = ref(false)
 const sidebarElement = ref(null)
 const menuButtonElement = ref(null)
-const formatWalletAmount = computed(() =>
-  new Intl.NumberFormat('en-IN', {
-    maximumFractionDigits: 2,
-  }).format(Number(authStore.amount) || 0),
-)
+const formatWalletAmount = computed(() => new Intl.NumberFormat('en-IN', {
+  maximumFractionDigits: 2,
+}).format(Number(authStore.amount) || 0))
 
 const setSidebarOpen = (open) => {
   isSidebarOpen.value = open
@@ -172,6 +260,8 @@ onUnmounted(() => {
 const handleLogout = async () => {
   isLoggingOut.value = true
   try {
+    // End this device's server-side presence lease before auth storage is cleared.
+    await disconnectPresence()
     await authStore.performLogout()
     closeSidebar()
     await router.replace({ name: 'login' })
@@ -183,811 +273,855 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
-.premium-shell {
-  min-height: 100vh;
-  background: #ededed;
-  color: #033c07;
+/* Keep the sign-out action visible while the menu list scrolls. */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
 }
 
-.premium-bottom-nav {
-  min-height: calc(76px + env(safe-area-inset-bottom));
-  padding: 9px 5px calc(10px + env(safe-area-inset-bottom));
-  border-radius: 25px 25px 0 0;
-  background: #033c07;
-  box-shadow: 0 -8px 25px rgba(125, 35, 13, 0.18);
+.sidebar-header {
+  flex: 0 0 auto;
 }
 
-.premium-bottom-nav .nav-item {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  align-content: center;
-  gap: 3px;
-  min-width: 0;
-  flex: 1;
-  color: rgba(255, 255, 255, 0.8);
-  transition:
-    transform 0.22s ease,
-    color 0.22s ease;
+.sidebar-menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
-.premium-bottom-nav .nav-icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  font-size: 21px;
-  transition:
-    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-    background 0.25s ease,
-    box-shadow 0.25s ease;
+.sidebar>.p-3.text-center {
+  flex: 0 0 auto;
+  padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+  background: var(--surface, #fff);
+  border-top: 1px solid #f0f0f0;
 }
 
-.premium-bottom-nav .nav-label {
-  font-size: 9px;
-  font-weight: 800;
+.share-submenu {
+  margin-left: 12px;
+  border-left: 2px solid #e7f5ee;
 }
 
-.premium-bottom-nav .nav-item.active {
-  color: #fff;
-  transform: translateY(-9px);
+.share-submenu .sidebar-menu-item {
+  padding-left: 12px;
 }
 
-.premium-bottom-nav .nav-item.active .nav-icon {
-  width: 54px;
-  height: 54px;
-  margin-top: -13px;
-  border: 4px solid #ededed;
-  background: #29432a;
-  color: #fff;
-  box-shadow: 0 5px 14px #0002;
-  animation: nav-pop 0.28s ease-out;
+.sidebar-menu-item .icon-3d {
+  font-size: 1.2rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  transition: transform 0.2s ease;
 }
 
-.premium-bottom-nav .nav-item.active .nav-label {
-  color: #fff;
+.sidebar-menu-item:hover .icon-3d {
+  transform: scale(1.15);
 }
 
-@keyframes nav-pop {
-  from {
-    transform: scale(0.78);
+/* ---------------------------- */
+.shimmer-card {
+  background: linear-gradient(110deg,
+      rgb(98, 2, 235) 20%,
+      rgba(255, 255, 255, 0.9) 45%,
+      rgba(255, 255, 255, 0.9) 55%,
+      rgb(98, 2, 235) 80%);
+  background-size: 200% 100%;
+  animation: pauseFlash 2s infinite ease-in-out;
+}
+
+@keyframes pauseFlash {
+  0% {
+    background-position: 150%;
   }
 
-  to {
-    transform: scale(1);
+  50% {
+    background-position: 75%;
+  }
+
+  100% {
+    background-position: 0%;
   }
 }
 
-.premium-sidebar {
-  background: #fff;
-  border: 0;
-  border-radius: 0 26px 26px 0;
-  box-shadow: 24px 0 60px rgba(13, 20, 42, 0.2);
-}
-
-.premium-sidebar-header {
-  background: #fff7e8 !important;
-}
-
-.premium-brand,
-.premium-header-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  color: inherit;
-}
-
-.premium-brand-mark {
-  display: grid;
-  place-items: center;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: linear-gradient(140deg, #20c997, #0e9e7a);
-  color: #fff;
-  font-size: 21px;
-  box-shadow: 0 7px 18px rgba(23, 184, 144, 0.25);
-}
-
-.premium-brand strong,
-.premium-header-brand strong {
-  display: block;
-  font-size: 14px;
-  letter-spacing: 0.12em;
-  color: inherit;
-}
-
-.premium-brand small,
-.premium-header-brand small {
-  display: block;
-  margin-top: 2px;
-  color: #aebbd1;
-  font-size: 8px;
-  letter-spacing: 0.08em;
-}
-
-.premium-close-menu {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
-}
-
-.premium-profile-panel {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin: 1px 0 15px;
-}
-
-.premium-avatar {
-  width: 46px;
-  height: 46px;
-  flex: 0 0 46px;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #9debd7;
-  font-size: 21px;
-}
-
-.premium-profile-copy {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-}
-
-.premium-profile-copy small {
-  color: #98a7c1;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-}
-
-.premium-profile-copy strong {
-  overflow: hidden;
-  color: #fff;
-  font-size: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.premium-profile-copy a {
-  color: #79dfc3;
-  font-size: 10px;
-  font-weight: 750;
-}
-
-.premium-sidebar-wallet {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
-}
-
-.premium-sidebar-wallet .sidebar-wallet-symbol {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 12px;
-  background: rgba(23, 184, 144, 0.2);
-  color: #74e7c8;
-}
-
-.premium-sidebar-wallet .sidebar-wallet-copy {
-  display: grid;
-  gap: 2px;
-}
-
-.premium-sidebar-wallet .sidebar-wallet-copy small {
-  color: #b7c2d5;
-  font-size: 10px;
-}
-
-.premium-sidebar-wallet .sidebar-wallet-amount {
-  color: #fff;
-  font-size: 15px;
-}
-
-.premium-sidebar-wallet>i {
-  color: #aebbd1;
-}
-
-.premium-sidebar-menu {
-  padding: 14px 12px;
-}
-
-.premium-menu-caption {
-  margin: 9px 12px 5px;
-  color: #9aa5b7;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.premium-sidebar-menu .sidebar-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  min-height: 46px;
-  margin: 3px 0;
-  padding: 10px 12px;
-  border-radius: 13px;
-  color: #596579;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.premium-sidebar-menu .sidebar-menu-item .icon-3d {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  margin: 0;
-  border-radius: 10px;
-  background: #f1f4f9;
-  color: #63728a;
-  font-size: 15px;
-  filter: none;
-}
-
-.premium-sidebar-menu .sidebar-menu-item>i {
-  font-size: 10px;
-  color: #a7b0bf;
-}
-
-.premium-sidebar-menu .sidebar-menu-item.router-link-active {
-  background: #eafaf5;
-  color: #107e64;
-  box-shadow: inset 3px 0 #17b890;
-}
-
-.premium-sidebar-menu .sidebar-menu-item.router-link-active .icon-3d {
-  background: #d5f7ec;
-  color: #0d9c78;
-}
-
-.premium-sidebar-footer {
-  padding: 13px 16px 16px;
-  border-top: 1px solid #edf0f5;
-  background: #fff;
-}
-
-.premium-sidebar-footer small {
-  display: block;
-  margin-top: 10px;
-  color: #9aa4b3;
-  text-align: center;
-  font-size: 9px;
-}
-
-.premium-app-header {
+/* -------------------------------------- */
+.app-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  min-height: 70px;
-  padding: 10px 15px !important;
-  border: 0 !important;
-  border-bottom: 1px solid #d32b0b !important;
-  background: #033c07 !important;
-  box-shadow: 0 4px 12px rgba(83, 25, 8, 0.16) !important;
+  min-height: 58px;
+  padding: 7px 10px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #eeeeee !important;
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.06);
 }
 
-.premium-app-header .premium-header-brand,
-.premium-app-header .premium-header-brand strong,
-.premium-app-header .premium-header-brand small {
-  color: #fff !important;
+.min-width-0 {
+  min-width: 0;
 }
 
-.premium-app-header .premium-brand-mark {
-  display: none;
-}
-
-.premium-menu-trigger {
-  border: 0 !important;
-  background: transparent !important;
-  color: #fff !important;
-}
-
-
-.premium-notification {
-  color: #fff !important;
-}
-
-.premium-header-inner {
+/* =========================================
+   MENU
+========================================= */
+.header-menu-btn {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  max-width: 1160px;
-  margin: 0 auto;
+  justify-content: center;
+  color: #343a40;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
 }
 
-.premium-header-brand {
-  color: #033c07;
+.header-menu-btn:active {
+  transform: scale(0.90);
+  background: #e9f8f0;
+  color: #198754;
 }
 
-.premium-header-brand .premium-brand-mark {
-  width: 38px;
-  height: 38px;
-  flex-basis: 38px;
-  border-radius: 13px;
-  font-size: 19px;
-}
-
-.premium-header-brand strong {
-  font-size: 12px;
-}
-
-.premium-header-brand small {
-  color: #8995a8;
-  font-size: 8px;
-}
-
-.premium-menu-trigger {
-  /* width: 39px;
-  height: 39px; */
-  border: 1px solid #e4e9f1;
-  background: #f7f9fc;
-  color: #252b4c;
-  box-shadow: none;
-  font-size: 40px;
-}
-
-.premium-notification {
-  width: 39px;
-  height: 39px;
-  border: 1px solid #e5eaf2;
-  background: #fff;
-  color: #252b4c;
-  box-shadow: none;
-}
-
-.premium-notification .notification-dot {
-  border-color: #fff;
-}
-
-.premium-bottom-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transform: none;
-  width: 100%;
-  max-width: none;
-  height: auto;
-  min-height: 76px;
-  padding: 9px 5px calc(10px + env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+/* =========================================
+   BRAND
+========================================= */
+.brand-crown {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  display: flex;
   align-items: center;
-  border: 0;
-  border-radius: 25px 25px 0 0;
-  background: #033c07;
-  box-shadow: 0 -8px 25px rgba(125, 35, 13, 0.18);
-  backdrop-filter: none;
+  justify-content: center;
+  border-radius: 11px;
+  background-color: #250f42;
+  box-shadow:
+    0 3px 8px rgba(255, 193, 7, 0.16);
+  font-size: 18px;
+  animation: crownFloat 3s ease-in-out infinite;
+  border-radius: 50%;
 }
 
-.premium-bottom-nav:before,
-.premium-bottom-nav:after {
-  display: none;
+@keyframes crownFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
-.premium-bottom-nav .nav-item {
+.brand-title {
+  max-width: 125px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 17px;
+}
+
+.brand-live-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  display: inline-block;
+  border-radius: 50%;
+  background: #198754;
+  box-shadow:
+    0 0 0 3px rgba(25, 135, 84, 0.10);
+  animation: livePulse 1.6s infinite;
+}
+
+@keyframes livePulse {
+
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* =========================================
+   WALLET
+========================================= */
+.wallet-pill {
+  min-height: 40px;
+  flex-shrink: 0;
+  border-radius: 50px;
+  background:
+    linear-gradient(135deg,
+      #f0fff6,
+      #e5f9ed);
+  border: 1px solid rgba(25, 135, 84, 0.18);
+  box-shadow:
+    0 3px 10px rgba(25, 135, 84, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.wallet-pill:active {
+  transform: scale(0.95);
+}
+
+.wallet-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  background:
+    linear-gradient(135deg,
+      #198754,
+      #20c997);
+  box-shadow:
+    0 3px 7px rgba(25, 135, 84, 0.25);
+  font-size: 14px;
+}
+
+.wallet-label {
+  font-size: 8px;
+  font-weight: 800;
+  color: #6c757d;
+  letter-spacing: 0.4px;
+}
+
+.wallet-amount {
+  font-size: 14px;
+  line-height: 15px;
+}
+
+/* =========================================
+   NOTIFICATION
+========================================= */
+.notification-btn {
   position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #495057;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.05);
+  font-size: 17px;
+  transition: all 0.2s ease;
+}
+
+.notification-btn:active {
+  transform: scale(0.90);
+  color: #dc3545;
+  background: #fff5f5;
+}
+
+/* Notification indicator */
+.notification-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #dc3545;
+  border: 2px solid #fff;
+  animation: notificationPulse 1.7s infinite;
+}
+
+@keyframes notificationPulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(220, 53, 69, 0.45);
+  }
+
+  70% {
+    box-shadow:
+      0 0 0 5px rgba(220, 53, 69, 0);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+/* =========================================
+   SMALL MOBILE SCREEN
+========================================= */
+@media (max-width: 360px) {
+  .app-header {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
+
+  .header-menu-btn {
+    width: 39px;
+    height: 39px;
+  }
+
+  .brand-crown {
+    width: 33px;
+    height: 33px;
+    font-size: 16px;
+  }
+
+  .brand-title {
+    max-width: 95px;
+    font-size: 13px;
+  }
+
+  .wallet-pill {
+    min-height: 38px;
+    padding-left: 6px !important;
+    padding-right: 7px !important;
+  }
+
+  .wallet-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .notification-btn {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* ----------------------------- */
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+
+  width: calc(100% - 18px);
+  max-width: 560px;
+
+  height: 68px;
+  padding: 7px 7px;
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+
+  z-index: 1050;
+
+  background:
+    linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.28),
+    0 5px 15px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  isolation: isolate;
+}
+
+/* Top shine */
+
+.bottom-nav::before {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 0;
+
+  height: 1px;
+
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 193, 7, 0.7),
+      transparent);
+
+  opacity: 0.7;
+}
+
+/* Moving glow */
+
+.bottom-nav::after {
+  content: '';
+  position: absolute;
+
+  width: 90px;
+  height: 90px;
+
+  top: -55px;
+  left: 10%;
+
+  border-radius: 50%;
+
+  background: rgba(13, 110, 253, 0.22);
+
+  filter: blur(30px);
+
+  pointer-events: none;
+
+  animation: navGlowMove 7s ease-in-out infinite alternate;
+}
+
+@keyframes navGlowMove {
+  0% {
+    left: 5%;
+    opacity: 0.35;
+  }
+
+  50% {
+    left: 45%;
+    opacity: 0.6;
+  }
+
+  100% {
+    left: 82%;
+    opacity: 0.35;
+  }
+}
+
+
+/* =========================================================
+   NAV ITEM
+========================================================= */
+
+.bottom-nav .nav-item {
+  position: relative;
+
+  height: 56px;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  min-width: 0;
-  height: 52px;
-  border-radius: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  gap: 2px;
+
+  color: rgba(255, 255, 255, 0.52);
+
+  text-decoration: none;
+
+  border-radius: 17px;
+
   transition:
-    transform 0.22s ease,
-    color 0.22s ease;
+    color 0.25s ease,
+    transform 0.25s cubic-bezier(.2, .8, .2, 1);
 }
 
-.premium-bottom-nav .nav-icon {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  font-size: 21px;
-  line-height: 1.1;
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease,
-    box-shadow 0.25s ease;
-}
 
-.premium-bottom-nav .nav-label {
-  font-size: 9px;
-  font-weight: 850;
-}
+/* =========================================================
+   ICON
+========================================================= */
 
-.premium-bottom-nav .nav-item.active,
-.premium-bottom-nav .nav-item.router-link-active {
-  background: transparent;
-  color: #fff;
-  transform: translateY(-9px);
-}
-
-.premium-bottom-nav .nav-item.active .nav-icon,
-.premium-bottom-nav .nav-item.router-link-active .nav-icon {
-  width: 54px;
-  height: 54px;
-  margin-top: -13px;
-  border: 4px solid #ededed;
-  background: #29432a;
-  color: #fff;
-  box-shadow: 0 5px 14px #0002;
-  animation: nav-pop 0.28s ease-out;
-}
-
-.premium-bottom-nav .nav-item {
+.bottom-nav .nav-icon {
   position: relative;
-  overflow: visible;
-  -webkit-tap-highlight-color: transparent;
+
+  width: 36px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  transition:
+    transform 0.3s cubic-bezier(.2, .8, .2, 1),
+    background 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.premium-bottom-nav .nav-item:active .nav-icon {
-  transform: scale(.88);
+.bottom-nav .nav-icon i {
+  position: relative;
+  z-index: 2;
+
+  font-size: 1.15rem;
+
+  transition:
+    transform 0.3s cubic-bezier(.2, .8, .2, 1),
+    color 0.25s ease,
+    filter 0.25s ease;
 }
 
-.premium-bottom-nav .nav-item .nav-icon {
-  transition: transform .24s cubic-bezier(.2, .8, .2, 1), background .24s ease, box-shadow .24s ease;
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+.bottom-nav .nav-label {
+  font-size: 0.58rem;
+  line-height: 1;
+
+  font-weight: 700;
+
+  letter-spacing: 0.01em;
+
+  white-space: nowrap;
+
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
 }
 
-.premium-bottom-nav .nav-item.router-link-active .nav-icon {
-  animation: nav-selection-bounce .38s cubic-bezier(.2, .85, .25, 1.3);
+
+/* =========================================================
+   ACTIVE ITEM
+========================================================= */
+
+.bottom-nav .nav-item.active {
+  color: #ffc107;
 }
 
-.premium-bottom-nav .nav-item.router-link-active:after {
-  content: "";
+.bottom-nav .nav-item.active .nav-icon {
+  background:
+    linear-gradient(135deg,
+      rgba(255, 193, 7, 0.22),
+      rgba(255, 193, 7, 0.08));
+
+  box-shadow:
+    0 0 0 1px rgba(255, 193, 7, 0.18),
+    0 5px 18px rgba(255, 193, 7, 0.18);
+
+  transform: translateY(-3px);
+}
+
+.bottom-nav .nav-item.active .nav-icon i {
+  color: #ffc107;
+
+  transform: scale(1.12);
+
+  filter:
+    drop-shadow(0 0 6px rgba(255, 193, 7, 0.65));
+}
+
+.bottom-nav .nav-item.active .nav-label {
+  color: #ffc107;
+
+  transform: translateY(-1px);
+}
+
+
+/* Active indicator */
+
+.bottom-nav .nav-item.active::after {
+  content: '';
+
   position: absolute;
-  top: 0;
+
+  bottom: 1px;
   left: 50%;
+
   width: 5px;
   height: 5px;
-  border-radius: 50%;
-  background: #fff;
+
   transform: translateX(-50%);
-  animation: nav-selection-spark .38s ease-out both;
-  pointer-events: none;
+
+  border-radius: 50%;
+
+  background: #ffc107;
+
+  box-shadow:
+    0 0 7px rgba(255, 193, 7, 0.9),
+    0 0 14px rgba(255, 193, 7, 0.55);
+
+  animation: activeDot 1.8s ease-in-out infinite;
 }
 
-@keyframes nav-selection-bounce {
-  0% {
-    transform: scale(.72) translateY(4px)
-  }
+@keyframes activeDot {
 
-  65% {
-    transform: scale(1.1) translateY(-2px)
-  }
-
+  0%,
   100% {
-    transform: scale(1) translateY(0)
-  }
-}
-
-@keyframes nav-selection-spark {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 7px) scale(.4)
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
   }
 
-  60% {
+  50% {
+    transform: translateX(-50%) scale(1.45);
     opacity: 1;
-    transform: translate(-50%, -5px) scale(1.3)
+  }
+}
+
+
+/* =========================================================
+   TAP / HOVER EFFECT
+========================================================= */
+
+.bottom-nav .nav-item:active {
+  transform: scale(0.9);
+}
+
+.bottom-nav .nav-item:active .nav-icon i {
+  transform: scale(0.88);
+}
+
+@media (hover: hover) {
+  .bottom-nav .nav-item:hover {
+    color: rgba(255, 255, 255, 0.9);
   }
 
+  .bottom-nav .nav-item:hover .nav-icon {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+  }
+
+  .bottom-nav .nav-item:hover .nav-icon i {
+    transform: scale(1.08);
+  }
+
+  .bottom-nav .nav-item.active:hover {
+    color: #ffc107;
+  }
+
+  .bottom-nav .nav-item.active:hover .nav-icon {
+    background:
+      linear-gradient(135deg,
+        rgba(255, 193, 7, 0.28),
+        rgba(255, 193, 7, 0.1));
+  }
+}
+
+
+/* =========================================================
+   WHATSAPP SPECIAL EFFECT
+========================================================= */
+
+.bottom-nav .whatsapp-item .nav-icon i {
+  color: #25d366;
+}
+
+.bottom-nav .whatsapp-item.active .nav-icon {
+  background:
+    linear-gradient(135deg,
+      rgba(37, 211, 102, 0.22),
+      rgba(37, 211, 102, 0.06));
+
+  box-shadow:
+    0 0 0 1px rgba(37, 211, 102, 0.18),
+    0 5px 18px rgba(37, 211, 102, 0.18);
+}
+
+.bottom-nav .whatsapp-item.active .nav-icon i {
+  color: #25d366;
+
+  filter:
+    drop-shadow(0 0 6px rgba(37, 211, 102, 0.65));
+}
+
+.bottom-nav .whatsapp-item.active .nav-label {
+  color: #25d366;
+}
+
+
+/* =========================================================
+   ICON FLOAT ANIMATION
+========================================================= */
+
+.bottom-nav .nav-item.active .nav-icon i {
+  animation: activeIconFloat 2.2s ease-in-out infinite;
+}
+
+@keyframes activeIconFloat {
+
+  0%,
   100% {
-    opacity: 0;
-    transform: translate(-50%, -10px) scale(.6)
+    transform: translateY(0) scale(1.1);
   }
-}
 
-@media(prefers-reduced-motion:reduce) {
-
-  .premium-bottom-nav .nav-item.router-link-active .nav-icon,
-  .premium-bottom-nav .nav-item.router-link-active:after {
-    animation: none !important
+  50% {
+    transform: translateY(-2px) scale(1.16);
   }
 }
 
 
-.premium-bottom-nav .nav-item.active .nav-label,
-.premium-bottom-nav .nav-item.router-link-active .nav-label {
-  color: #fff;
-}
+/* =========================================================
+   MOBILE SAFE AREA
+========================================================= */
 
-@media (min-width: 768px) {
-  .premium-app-header {
-    padding-inline: 28px !important;
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav {
+    bottom: calc(8px + env(safe-area-inset-bottom));
   }
 }
 
-@media (max-width: 380px) {
-  .premium-app-header {
-    padding-inline: 9px !important;
+
+/* =========================================================
+   VERY SMALL DEVICES
+========================================================= */
+
+@media (max-width: 360px) {
+  .bottom-nav {
+    width: calc(100% - 12px);
+    height: 64px;
+    bottom: 7px;
+    padding: 5px;
+    border-radius: 19px;
   }
 
-  .premium-header-brand {
-    gap: 7px;
+  .bottom-nav .nav-item {
+    height: 52px;
+    border-radius: 15px;
   }
 
-  .premium-header-brand .premium-brand-mark {
-    width: 34px;
-    height: 34px;
-    flex-basis: 34px;
+  .bottom-nav .nav-icon {
+    width: 32px;
+    height: 27px;
   }
 
-
-  .premium-bottom-nav {
-    min-height: 70px;
-    border-radius: 22px 22px 0 0;
+  .bottom-nav .nav-icon i {
+    font-size: 1.05rem;
   }
 
-  .premium-bottom-nav .nav-label {
-    font-size: 8px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-  .premium-sidebar,
-  .premium-bottom-nav,
-  .premium-sidebar-menu .sidebar-menu-item {
-    transition: none !important;
+  .bottom-nav .nav-label {
+    font-size: 0.53rem;
   }
 }
 
-/* Compact mobile app controls */
-.premium-app-header {
-  min-height: 56px;
-  padding: 7px 10px !important;
+/* Responsive wallet header and a pinned sign-out action. */
+.sidebar {
+  padding-bottom: 0 !important;
+  overflow: hidden;
 }
 
-.premium-header-inner {
-  gap: 7px;
+.sidebar-header {
+  flex: 0 0 auto;
+  padding: 16px 16px 14px;
 }
 
-.premium-menu-trigger {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  min-height: 36px;
-  padding: 0 !important;
-  font-size: 25px !important;
-}
-
-.premium-header-brand {
+.sidebar-header-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
   min-width: 0;
+  justify-content: space-between;
+}
+
+.sidebar-wallet-card {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 4px 4px;
+  border: 1px solid rgba(25, 135, 84, .16);
+  border-radius: 9px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
 }
 
-.premium-header-brand strong {
+.sidebar-wallet-symbol {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: 6px;
+  color: #fff;
+  /* background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); */
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.sidebar-wallet-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+  line-height: 1.1;
+}
+
+.sidebar-wallet-copy small {
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sidebar-wallet-amount {
   display: block;
-  max-width: min(42vw, 190px);
+  max-width: 100%;
   overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12px;
-}
-
-.premium-header-brand small {
-  display: block;
-  font-size: 8px;
-  line-height: 1.2;
-}
-
-.premium-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-}
-
-.premium-app-header .premium-notification {
-  display: grid;
-  place-items: center;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(255, 255, 255, .35);
-  border-radius: 10px;
-  background: transparent;
-  color: #fff;
-  font-size: 17px;
-}
-
-.premium-header-wallet {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  max-width: 124px;
-  padding: 7px 8px;
-  border: 1px solid rgba(255, 255, 255, .48);
-  border-radius: 10px;
-  color: #fff !important;
-  font-size: 11px;
-  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
-.premium-header-wallet i {
+.sidebar-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   flex: 0 0 auto;
-  font-size: 13px;
-}
-
-.premium-header-wallet span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.premium-sidebar {
-  width: min(290px, 84vw);
-}
-
-.premium-profile-panel {
-  gap: 9px;
-  margin: 0 0 10px;
-}
-
-.premium-avatar {
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
-  border-radius: 11px;
-  font-size: 17px;
-  background: #fae9e4;
-  color: #033c07;
-}
-
-.premium-profile-copy strong {
-  color: #27201d;
-  font-size: 12px;
-  max-width: 180px;
-}
-
-.premium-profile-copy small {
-  color: #8a6c60;
-  font-size: 8px;
-}
-
-.premium-profile-copy a {
-  color: #033c07;
-  font-size: 10px;
-}
-
-.premium-sidebar-wallet {
-  gap: 8px;
-  padding: 0px;
-  border-color: #e9d8c9;
-  border-radius: 11px;
-  background: #fff;
-  color: #29211d;
-}
-
-.premium-sidebar-wallet .sidebar-wallet-symbol {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: #fae9e4;
-  color: #033c07;
-}
-
-.premium-sidebar-wallet .sidebar-wallet-copy small {
-  color: #8a7b73;
-  font-size: 9px;
-}
-
-.premium-sidebar-wallet .sidebar-wallet-amount {
-  color: #29211d;
-  font-size: 13px;
-  overflow-wrap: anywhere;
-}
-
-.premium-sidebar-menu {
-  padding: 10px 9px;
-}
-
-.premium-sidebar-menu .sidebar-menu-item {
-  gap: 9px;
-  min-height: 40px;
-  margin: 2px 0;
+  min-width: 0;
   padding: 7px 9px;
-  border-radius: 10px;
+  white-space: nowrap;
   font-size: 11px;
+  font-weight: 700;
 }
 
-.premium-sidebar-menu .sidebar-menu-item .icon-3d {
-  width: 27px;
-  height: 27px;
-  border-radius: 8px;
-  font-size: 13px;
+.sidebar-profile-btn .icon-3d {
+  margin: 0;
 }
 
-.premium-menu-caption {
-  margin: 8px 9px 4px;
-  font-size: 8px;
+.sidebar-menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
-.premium-bottom-nav {
-  min-height: 64px;
-  padding: 5px 5px calc(6px + env(safe-area-inset-bottom));
-  border-radius: 16px 16px 0 0;
+.sidebar>.p-3.text-center {
+  flex: 0 0 auto;
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom)) !important;
+  background: var(--surface, #fff);
+  border-top: 1px solid #f0f0f0;
 }
 
-.premium-bottom-nav .nav-item {
-  height: 44px;
-  gap: 2px;
-}
-
-.premium-bottom-nav .nav-icon {
-  width: 30px;
-  height: 30px;
-  font-size: 17px;
-}
-
-.premium-bottom-nav .nav-label {
-  font-size: 9px;
-}
-
-.premium-bottom-nav .nav-item.active .nav-icon,
-.premium-bottom-nav .nav-item.router-link-active .nav-icon {
-  width: 38px;
-  height: 38px;
-  margin-top: -5px;
-  border-width: 2px;
-}
-
-@media(max-width:380px) {
-  .premium-header-brand small {
-    display: none;
+@media (max-width:320px) {
+  .sidebar-header {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
-  .premium-header-brand strong {
-    max-width: 31vw;
-    font-size: 11px;
-  }
-
-  .premium-header-actions {
-    gap: 5px;
-  }
-
-  .premium-header-wallet {
-    max-width: 92px;
-    padding: 6px;
+  .sidebar-profile-btn {
+    padding-left: 6px;
+    padding-right: 6px;
     font-size: 10px;
   }
 
-  .premium-app-header {
-    padding-inline: 7px !important;
+  .sidebar-wallet-card {
+    gap: 6px;
+    padding-left: 7px;
+    padding-right: 7px;
   }
+}
 
-  .premium-bottom-nav {
-    min-height: 60px;
+@media (prefers-reduced-motion:reduce) {
+  .sidebar-menu-item .icon-3d {
+    transition: none;
   }
 }
 </style>
