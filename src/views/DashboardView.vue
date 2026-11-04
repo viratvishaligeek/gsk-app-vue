@@ -68,35 +68,24 @@
         <div v-else class="dashboard-inline-empty"><span>🗓️</span><p>No featured result is available yet.</p></div>
       </section>
 
-      <section class="market-section">
-        <div class="section-heading"><div><span class="eyebrow">EXPLORE & PLAY</span><h2>🎯 Live markets</h2></div>
-          <router-link to="/monthly-chart" class="section-link">View charts →</router-link></div>
+      <section class="market-section lobby-preview">
+        <div class="section-heading"><div><span class="eyebrow">YOUR NEXT MOVE</span><h2>🎮 Markets to explore</h2></div>
+          <router-link to="/games" class="section-link">Open game lobby →</router-link></div>
         <div v-if="errorMessage" class="alert alert-danger rounded-4">{{ errorMessage }}
           <button class="btn btn-sm btn-outline-danger ms-2" @click="fetchGames">Retry</button></div>
-        <div v-else-if="isLoading" class="py-2"><LoadingState variant="market-list" :count="3" /></div>
+        <div v-else-if="isLoading" class="py-2"><LoadingState variant="market-list" :count="2" /></div>
         <div v-else-if="games.length === 0" class="dashboard-inline-empty"><span>🎲</span><h3>No markets available</h3><p>Please check again later.</p></div>
-        <div v-else class="market-list">
-          <article v-for="game in games" :key="game.id" v-memo="[game,isGamePlayable(game),serverOffset]"
-            class="market-item" :class="{'market-item-closed':!isGamePlayable(game)}">
-            <div class="market-item-main">
-              <div class="market-symbol">🎮</div>
-              <div class="market-info"><h3>{{ game.name }}</h3>
-                <span class="market-status" :class="isGamePlayable(game)?'status-open':'status-closed'">
-                  <i></i>{{ game.monthly_closure ? 'Month-end closed' : getGameStatus(game) }}
-                </span>
-                <small v-if="game.monthly_closure" class="closure-note">{{ game.play_status_message || 'आज महीने का आखिरी दिन है, इसलिए आज सभी खेल बंद रहेंगे। 1 तारीख से सभी खेल फिर से शुरू करेंगे। धन्यवाद।' }}</small>
-              </div>
-              <div class="market-result"><small>Today</small><strong>{{ game.latest_result?.date === todayDate ? (game.latest_result?.number ?? '--') : '--' }}</strong>
-                <small v-if="isGamePlayable(game)" class="countdown"><GameCountdown :end-at="game.play_window_end_at" :server-offset="serverOffset" /></small>
-              </div>
-            </div>
-            <div class="market-item-footer"><span>Last result: <b>{{ game.previous_result?.number ?? '--' }}</b></span>
-              <span>🕒 {{ formatTime(game.result_time) }}</span>
-              <router-link v-if="isGamePlayable(game)" :to="{name:'play-game',params:{id:game.id}}" class="market-play">Play now →</router-link>
-              <span v-else class="market-closed-label">Closed</span>
-            </div>
+        <div v-else class="lobby-preview-track" aria-label="Featured markets">
+          <article v-for="game in games.slice(0, 5)" :key="game.id" class="lobby-preview-card"
+            :class="{ 'is-closed': !isGamePlayable(game) }">
+            <div class="lobby-preview-top"><span>🎯</span><small :class="isGamePlayable(game) ? 'is-open' : 'is-closed-label'">{{ isGamePlayable(game) ? 'OPEN NOW' : 'CLOSED' }}</small></div>
+            <h3>{{ game.name }}</h3>
+            <div class="lobby-preview-result"><small>Today's result</small><strong>{{ game.latest_result?.date === todayDate ? (game.latest_result?.number ?? '--') : '--' }}</strong></div>
+            <router-link v-if="isGamePlayable(game)" :to="{ name: 'play-game', params: { id: game.id } }">Play market →</router-link>
+            <router-link v-else :to="{ name: 'monthly-chart', query: { game: game.id } }">View chart →</router-link>
           </article>
         </div>
+        <router-link to="/games" class="lobby-preview-all">Explore all {{ marketCount }} markets <span>→</span></router-link>
       </section>
       <section class="dashboard-bottom-link"><span>📊</span><div><strong>Explore monthly charts</strong><small>Browse historical market results</small></div>
         <router-link to="/monthly-chart" aria-label="Open monthly charts">→</router-link></section>
