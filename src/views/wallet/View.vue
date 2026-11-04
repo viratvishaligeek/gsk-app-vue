@@ -1,6 +1,11 @@
 <template>
   <main class="gsk-screen">
     <GskScreenHeader emoji="💰" kicker="YOUR MONEY" title="My wallet" subtitle="Balance, payments and transactions." />
+    <section class="wallet-quick-actions" aria-label="Wallet actions">
+      <router-link to="/wallet/add"><span>➕</span><strong>Add money</strong><small>Instant UPI</small></router-link>
+      <router-link to="/wallet/withdraw"><span>🏦</span><strong>Withdraw</strong><small>UPI or bank</small></router-link>
+      <a href="#wallet-transactions"><span>🧾</span><strong>History</strong><small>Track activity</small></a>
+    </section>
     <section class="wallet-balance-card">
       <div class="wallet-balance-head"><span>AVAILABLE BALANCE</span><button type="button" @click="isBalanceVisible=!isBalanceVisible">{{ isBalanceVisible?'🙈 Hide':'👁️ Show' }}</button></div>
       <strong class="wallet-balance-amount">₹{{ isBalanceVisible?formatCurrency(walletBalance):'••••••' }}</strong>
@@ -12,7 +17,7 @@
       <article><span>🎮</span><small>Played</small><strong>₹{{ formatCurrency(wallet.totalPlayedBet) }}</strong></article>
       <article><span>🏆</span><small>Total wins</small><strong>₹{{ formatCurrency(wallet.totalWin) }}</strong></article>
     </section>
-    <section class="wallet-activity">
+    <section id="wallet-transactions" class="wallet-activity">
       <div class="wallet-activity-heading"><div><span class="gsk-page-kicker">MONEY MOVEMENT</span><h2>Transactions</h2></div><small>{{ totalTransactions }} records</small></div>
       <div class="wallet-filter-tabs"><button v-for="type in transactionFilters" :key="type" type="button" :class="{active:filterType===type}" @click="changeFilter(type)">{{ type==='all'?'All':type==='credit'?'📥 Credits':'📤 Debits' }}</button></div>
       <div v-if="isLoading" class="gsk-empty-state"><span>⏳</span><strong>Loading transactions…</strong></div>
@@ -188,8 +193,12 @@ const goToPage = (page) => {
 onMounted(() => {
   loadWallet()
 })
-</script>
-<style scoped>
+</script><style scoped>
 .gsk-screen{min-height:100dvh;padding:14px 13px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb;color:#1e2c42}.screen-banner{display:flex;align-items:center;gap:13px;padding:19px;border-radius:19px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.screen-banner-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:#ffffff1b;font-size:28px}.screen-banner span{color:#cbd9eb;font-size:9px;font-weight:900;letter-spacing:.13em}.screen-banner h1{margin:2px 0;color:#fff;font-size:22px;font-weight:900}.screen-banner p{margin:0;color:#d5e1f0;font-size:11px}.wallet-balance-card{margin-top:13px;padding:19px;border-radius:19px;background:linear-gradient(130deg,#1b365d,#315f9f);color:#fff;box-shadow:0 12px 26px #1b365d25}.wallet-balance-head{display:flex;justify-content:space-between;align-items:center;color:#d3e0f0;font-size:9px;font-weight:850;letter-spacing:.1em}.wallet-balance-head button{border:1px solid #ffffff35;border-radius:30px;background:#ffffff15;color:#fff;padding:5px 9px;font-size:9px}.wallet-balance-amount{display:block;margin:9px 0 17px;color:#fff;font-size:36px;font-weight:950;letter-spacing:-.03em}.wallet-balance-actions{display:flex;gap:9px}.wallet-balance-actions a{flex:1;padding:11px;border-radius:11px;background:#ffffffeb;color:#244e83;text-align:center;font-size:11px;font-weight:850}.wallet-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:13px 0 21px}.wallet-metrics article{display:grid;grid-template-columns:35px 1fr;grid-template-rows:auto auto;align-items:center;gap:1px 8px;padding:12px;border:1px solid #e5ebf3;border-radius:14px;background:#fff}.wallet-metrics article>span{grid-row:1/3;font-size:23px}.wallet-metrics small{color:#7b899d;font-size:9px}.wallet-metrics strong{font-size:13px;font-weight:900}.wallet-activity{padding:14px;border:1px solid #e5ebf3;border-radius:17px;background:#fff}.wallet-activity-heading{display:flex;justify-content:space-between;align-items:end}.wallet-activity-heading h2{margin:2px 0 0;font-size:17px;font-weight:900}.wallet-activity-heading>small{color:#8390a2;font-size:9px}.wallet-filter-tabs{display:flex;gap:6px;margin:13px 0;padding:4px;border-radius:12px;background:#f1f4f8}.wallet-filter-tabs button{flex:1;min-height:36px;border:0;border-radius:9px;background:transparent;color:#728097;font-size:10px;font-weight:800}.wallet-filter-tabs button.active{background:#fff;color:#28558f;box-shadow:0 2px 7px #1b365d13}.wallet-transaction-list{display:grid}.wallet-transaction{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #edf1f6}.wallet-transaction:last-child{border-bottom:0}.transaction-symbol{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border-radius:12px;background:#edf3fc;font-size:21px}.transaction-copy{display:grid;flex:1;min-width:0;gap:2px}.transaction-copy>strong{overflow:hidden;color:#293b55;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.transaction-copy small{overflow:hidden;color:#8996a8;font-size:8px;text-overflow:ellipsis;white-space:nowrap}.transaction-status{justify-self:start;padding:3px 7px;border-radius:20px;font-size:8px;font-weight:800}.transaction-amount{font-size:11px;white-space:nowrap}.transaction-amount.credit{color:#21865e}.transaction-amount.debit{color:#c75b61}.wallet-pagination{display:grid;justify-items:center;gap:8px;padding-top:14px;color:#7b899d;font-size:9px}.wallet-pagination>div{display:flex;gap:5px}.wallet-pagination button{min-width:30px;min-height:30px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#42536c;font-size:10px}.wallet-pagination button.active{background:#315f9f;color:#fff}.wallet-pagination button:disabled{opacity:.4}
 @media(min-width:720px){.gsk-screen{max-width:760px;margin:0 auto}.wallet-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+<style scoped>
+.wallet-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}.wallet-quick-actions>a{display:grid;justify-items:start;gap:4px;min-width:0;padding:12px 10px;border:1px solid #e3eaf3;border-radius:14px;background:#fff;color:#29415f;text-decoration:none;transition:transform .16s,border-color .16s}.wallet-quick-actions>a:active{transform:scale(.97);border-color:#315f9f}.wallet-quick-actions>a>span{font-size:20px}.wallet-quick-actions strong{font-size:10px;font-weight:900}.wallet-quick-actions small{color:#8795a8;font-size:8px}.wallet-activity{scroll-margin-top:16px}.wallet-transaction{transition:background .15s}.wallet-transaction:active{background:#f3f7fc}
+@media(min-width:620px){.wallet-quick-actions{gap:12px}.wallet-quick-actions>a{padding:15px}}
+@media(prefers-reduced-motion:reduce){.wallet-quick-actions>a{transition:none}}
 </style>
