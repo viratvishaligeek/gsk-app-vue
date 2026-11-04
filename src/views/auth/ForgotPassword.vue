@@ -31,7 +31,7 @@
         <label for="phone" class="form-label">Phone Number</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-telephone text-muted"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">📞</span>
           </span>
           <span class="input-group-text bg-transparent border-end-0 fw-semibold">+91</span>
           <input type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10"
@@ -58,7 +58,7 @@
         <label for="otp" class="form-label">Enter 6-Digit OTP</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-key text-muted"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </span>
           <input type="text" maxLength="6" class="form-control border-start-0 text-center fw-bold fs-5"
             :class="{ 'is-invalid': errors.otp }" id="otp" v-model.trim="form.otp" placeholder="123456"
@@ -74,14 +74,14 @@
         <label for="password" class="form-label">New Password</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-lock text-muted"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
           </span>
           <input :type="showPassword ? 'text' : 'password'" class="form-control border-start-0 border-end-0"
             :class="{ 'is-invalid': errors.password }" id="password" v-model="form.password"
             placeholder="Enter new password" @input="clearFieldError('password')" />
           <button type="button" class="input-group-text bg-transparent border-start-0"
             @click="showPassword = !showPassword">
-            <i :class="['bi', showPassword ? 'bi-eye-slash' : 'bi-eye', 'text-muted']"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">✨</span>
           </button>
         </div>
         <div v-if="errors.password" class="invalid-feedback d-block small mt-1">
@@ -94,7 +94,7 @@
         <label for="password_confirmation" class="form-label">Confirm Password</label>
         <div class="input-group">
           <span class="input-group-text bg-transparent border-end-0">
-            <i class="bi bi-lock-fill text-muted"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔒</span>
           </span>
           <input :type="showPassword ? 'text' : 'password'" class="form-control border-start-0"
             :class="{ 'is-invalid': errors.passwordConfirmation }" id="password_confirmation"
@@ -122,7 +122,7 @@
 
     <div class="text-center">
       <router-link to="/" class="text-primary-color text-decoration-none fw-bold small">
-        <i class="bi bi-arrow-left me-1"></i> Back to Login
+        <span class="gsk-emoji-icon" aria-hidden="true">✨</span> Back to Login
       </router-link>
     </div>
   </div>
