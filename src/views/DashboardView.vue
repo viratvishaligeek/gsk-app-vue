@@ -60,8 +60,8 @@
           <div class="featured-result-top"><span>⭐ FEATURED MARKET</span><span>🕒 {{ formatTime(featuredGame.result_time) }}</span></div>
           <h3>{{ featuredGame.name }}</h3>
           <div class="featured-result-bottom">
-            <div><small>Today's result</small><strong>{{ featuredGame.today_result?.date === todayDate ? (featuredGame.today_result?.number ?? '--') : '--' }}</strong></div>
-            <span v-if="featuredGame.today_result?.date === todayDate" class="result-live">● Published</span>
+            <div><small>Today's result</small><strong>{{ featuredGame.latest_result?.date === todayDate ? (featuredGame.latest_result?.number ?? '--') : '--' }}</strong></div>
+            <span v-if="featuredGame.latest_result?.date === todayDate" class="result-live">● Published</span>
             <span v-else class="result-pending">⌛ Awaiting result</span>
           </div>
         </article>
