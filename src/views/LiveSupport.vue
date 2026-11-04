@@ -6,7 +6,7 @@
           <div class="d-flex align-items-center gap-3">
             <div
               class="icon-circle bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center">
-              <i class="bi bi-headset fs-5"></i></div>
+              <span class="gsk-emoji-icon" aria-hidden="true">🎧</span></div>
             <div>
               <h6 class="fw-bold text-white mb-1">VIP Live Support Desk</h6><span class="small text-white-50">{{
                 realtimeConnected ? 'Connected · live messages' : connected ? 'Connected · recovery sync' :
@@ -32,8 +32,7 @@
               <button type="button"
                 class="btn w-100 text-start fw-semibold d-flex justify-content-between align-items-center"
                 @click="activeFaqId = activeFaqId === faq.id ? null : faq.id">
-                <span>{{ faq.question }}</span><i
-                  :class="activeFaqId === faq.id ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <span>{{ faq.question }}</span><span class="gsk-emoji-icon" aria-hidden="true">✨</span>
               </button>
               <div v-if="activeFaqId === faq.id" class="px-3 pb-3 text-muted" style="white-space:pre-line">{{ faq.answer
                 }}</div>
@@ -42,8 +41,7 @@
           <p v-else class="small text-muted py-2 mb-0">No FAQs are published for this platform yet.</p>
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 pt-3 border-top">
             <span class="small text-muted">Still need help from a person?</span>
-            <button class="btn btn-warning text-dark fw-bold" type="button" @click="openHumanSupport"><i
-                class="bi bi-headset me-1"></i>Contact human support</button>
+            <button class="btn btn-warning text-dark fw-bold" type="button" @click="openHumanSupport"><span class="gsk-emoji-icon" aria-hidden="true">🎧</span>Contact human support</button>
           </div>
         </div>
       </section>
@@ -61,8 +59,7 @@
             :class="msg.sender === 'user' ? 'align-items-end' : 'align-items-start'">
             <div class="message-bubble p-3 rounded-4 shadow-sm"
               :class="msg.sender === 'user' ? 'bg-warning text-dark rounded-bottom-right-0' : 'bg-white border text-dark rounded-bottom-left-0'">
-              <div v-if="msg.sender !== 'user'" class="small fw-bold text-danger mb-1"><i
-                  class="bi bi-patch-check-fill"></i> Support Desk</div>
+              <div v-if="msg.sender !== 'user'" class="small fw-bold text-danger mb-1"><span class="gsk-emoji-icon" aria-hidden="true">✅</span> Support Desk</div>
               <p v-if="msg.body" class="mb-1" style="white-space:pre-line">{{ msg.body }}</p>
               <template v-if="msg.media_url">
                 <img v-if="(msg.media_mime || '').startsWith('image/')" :src="msg.display_media_url"
@@ -85,19 +82,19 @@
             <input ref="fileInput" type="file" class="d-none" accept="image/*,video/mp4,video/webm,audio/*"
               @change="onFileSelected">
             <button type="button" class="btn btn-light rounded-circle border" style="width:38px;height:38px"
-              title="Attach image, video, or audio" @click="fileInput?.click()"><i class="bi bi-paperclip"></i></button>
+              title="Attach image, video, or audio" @click="fileInput?.click()"><span class="gsk-emoji-icon" aria-hidden="true">📎</span></button>
             <button type="button" class="btn rounded-circle border"
               :class="recording ? 'btn-danger text-white' : 'btn-light'" style="width:38px;height:38px"
               :disabled="!canRecord" :title="recording ? 'Stop voice recording' : 'Record voice message'"
-              @click="toggleRecording"><i :class="recording ? 'bi bi-stop-fill' : 'bi bi-mic-fill'"></i></button>
+              @click="toggleRecording"><span class="gsk-emoji-icon" aria-hidden="true">✨</span></button>
             <input v-model="newMessage" type="text"
               class="form-control form-control-sm border-0 bg-light rounded-pill px-3 py-2 shadow-none"
               placeholder="Type your message…" maxlength="5000">
             <button type="submit" class="btn btn-warning text-dark rounded-circle" style="width:38px;height:38px"
-              :disabled="sending || (!newMessage.trim() && !selectedFile)"><i class="bi bi-send-fill"></i></button>
+              :disabled="sending || (!newMessage.trim() && !selectedFile)"><span class="gsk-emoji-icon" aria-hidden="true">📨</span></button>
           </form>
           <div v-if="selectedFile" class="small text-muted mt-2 d-flex align-items-center justify-content-between">
-            <span><i class="bi bi-paperclip me-1"></i>{{ selectedFile.name }}</span><button
+            <span><span class="gsk-emoji-icon" aria-hidden="true">📎</span>{{ selectedFile.name }}</span><button
               class="btn btn-sm btn-link text-danger p-0" @click="selectedFile = null">Remove</button></div>
           <div v-if="recording" class="small text-danger mt-2"><span
               class="spinner-grow spinner-grow-sm me-1"></span>Recording
