@@ -470,3 +470,21 @@ const handleSignUp = async () => {
   }
 }
 </style>
+
+
+<style scoped>
+.gsk-auth-page{min-height:100dvh;background:radial-gradient(circle at 80% 0,#44368b 0,transparent 36%),linear-gradient(160deg,#0b1225,#080d1b);color:#f4f6ff}
+.auth-brand-panel{position:relative;overflow:hidden;border:1px solid #7a6bd35c;border-radius:0 0 28px 28px;background:radial-gradient(circle at 80% 0,#8b72ff55 0,transparent 40%),linear-gradient(140deg,#211e4b,#142b50);color:#fff}
+.auth-brand-panel>span,.auth-eyebrow{color:#b9adff;font-size:9px;font-weight:950;letter-spacing:.15em}.auth-brand-panel h1{color:#fff;font-weight:950}.auth-brand-panel p{color:#c2cde6}
+.auth-brand-mark{border:1px solid #ffffff30;border-radius:18px;background:linear-gradient(145deg,#765cf5,#286ee9);box-shadow:0 9px 25px #765cf544}
+.auth-brand-art{opacity:.18}
+.auth-form-panel{border:1px solid #2e3d5e;border-radius:22px;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 20px 50px #00000035}
+.auth-mobile-brand{color:#fff}.auth-mobile-brand>span{background:linear-gradient(145deg,#765cf5,#286ee9)}
+.auth-heading h2{color:#fff;font-weight:950}.auth-heading p{color:#9ba9c8}.auth-form-panel .form-label{color:#cbd5e9;font-weight:800}
+.auth-form-panel .form-control,.auth-form-panel .input-group-text{border-color:#39496c;background:#0b1428;color:#fff}.auth-form-panel .form-control::placeholder{color:#7888aa}
+.auth-form-panel .input-group-text{color:#c6d1e8}.auth-form-panel .btn-outline-secondary{border-color:#465779;background:#1a2945;color:#c6d1e8}
+.auth-submit{border:1px solid #9b8aff;background:linear-gradient(105deg,#795cf5,#286ee9);box-shadow:0 10px 24px #4f5de944}
+.auth-switch{color:#aebbd5}.auth-switch a,.auth-form-panel a{color:#b8adff}.auth-safety{color:#8292b2}
+.password-meter{background:#0b1428}.gsk-auth-page .alert-danger{border-color:#824252;background:#3c202f;color:#ff9eae}
+@media(max-width:767px){.auth-form-panel{margin:14px;border-radius:22px}}
+</style>
