@@ -1,5 +1,6 @@
 <template>
-  <main class="profile-page">\n      <header class="profile-screen-heading"><span>👤</span><div><small>YOUR ACCOUNT</small><h1>Profile & security</h1></div></header>
+  <main class="profile-page">
+      <header class="profile-screen-heading"><span>👤</span><div><small>YOUR ACCOUNT</small><h1>Profile & security</h1></div></header>
     <div class="profile-layout">
       <section class="profile-section" >
         <div class="section-heading">
