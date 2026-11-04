@@ -1,0 +1,204 @@
+<template>
+  <div class="overlay" id="overlay"></div>
+  <main class="auth-container auth-container--premium">
+    <div class="text-center mb-4">
+      <div class="mb-3">
+        <img src="../../assets/img/logo.png" class="auth-brand-logo" alt="" />
+      </div>
+      <h4 class="fw-bold text-primary-color">Gali Satta Kings</h4>
+      <p class="text-muted">Sign in to your account</p>
+    </div>
+    <div v-if="errors.api" class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ errors.api }}
+      <button type="button" class="btn-close" @click="errors.api = ''" aria-label="Close"></button>
+    </div>
+    <form @submit.prevent="handleLogin" class="auth-form" novalidate>
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent border-end-0">
+            <i class="bi bi-telephone text-danger"></i>
+          </span>
+          <span class="input-group-text bg-transparent border-end-0">+91</span>
+          <input
+            type="text"
+            inputmode="numeric"
+            class="form-control border-start-0"
+            :class="{ 'is-invalid': errors.phone }"
+            id="phone"
+            :value="form.phone"
+            placeholder="Enter mobile number"
+            @input="handlePhoneInput"
+          />
+        </div>
+        <div v-if="errors.phone" class="invalid-feedback d-block small mt-1">
+          {{ errors.phone }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <label for="password" class="form-label mb-0">Password</label>
+          <router-link to="/forgot-password" class="small text-primary-color text-decoration-none">
+            Forgot Password?
+          </router-link>
+        </div>
+        <div class="input-group">
+          <span class="input-group-text bg-transparent border-end-0">
+            <i class="bi bi-lock text-success"></i>
+          </span>
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            class="form-control border-start-0 border-end-0"
+            :class="{ 'is-invalid': errors.password }"
+            id="password"
+            v-model="form.password"
+            placeholder="Enter your password"
+            @input="clearFieldError('password')"
+          />
+          <button
+            type="button"
+            class="input-group-text bg-transparent border-start-0"
+            id="togglePassword"
+            @click="showPassword = !showPassword"
+            aria-label="Toggle password visibility"
+          >
+            <i :class="['bi', showPassword ? 'bi-eye-slash' : 'bi-eye', 'text-info']"></i>
+          </button>
+        </div>
+        <div v-if="errors.password" class="invalid-feedback d-block small mt-1">
+          {{ errors.password }}
+        </div>
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="rememberMe" v-model="form.rememberMe" />
+        <label class="form-check-label" for="rememberMe">Remember me</label>
+      </div>
+
+      <div class="d-grid gap-2 mb-4">
+        <button type="submit" class="btn btn-app btn-primary" :disabled="isLoading">
+          <span
+            v-if="isLoading"
+            class="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          <span>{{ isLoading ? 'Signing In...' : 'Sign In' }}</span>
+        </button>
+      </div>
+
+      <div class="text-center">
+        <p class="mb-0">
+          Don't have an account?
+          <router-link to="/sign-up" class="text-primary-color text-decoration-none fw-bold">
+            Register
+          </router-link>
+        </p>
+      </div>
+    </form>
+  </main>
+</template>
+
+<script setup>
+defineOptions({ name: 'AuthLoginView' })
+import { reactive, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import api from '@/plugins/axios'
+import { useAuthStore } from '@/utils/auth'
+import { isValidIndianPhone } from '@/utils/indianPhone'
+
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+
+const form = reactive({
+  phone: '',
+  password: '',
+  rememberMe: false,
+})
+
+const showPassword = ref(false)
+const isLoading = ref(false)
+
+const errors = reactive({
+  phone: '',
+  password: '',
+  api: '',
+})
+
+const clearFieldError = (field) => {
+  errors[field] = ''
+  errors.api = ''
+}
+
+const validateForm = () => {
+  let isValid = true
+  console.log(form)
+  if (!form.phone) {
+    errors.phone = 'Phone number is required.'
+    isValid = false
+  } else if (!isValidIndianPhone(form.phone)) {
+    errors.phone = 'Enter a valid 10-digit Indian mobile number.'
+    isValid = false
+  } else {
+    errors.phone = ''
+  }
+
+  if (!form.password) {
+    errors.password = 'Password is required.'
+    isValid = false
+  } else if (form.password.length < 6) {
+    errors.password = 'Password must be at least 6 characters long.'
+    isValid = false
+  } else {
+    errors.password = ''
+  }
+
+  return isValid
+}
+const handlePhoneInput = (event) => {
+  const value = event.target.value.replace(/\D/g, '').slice(0, 10)
+  form.phone = value
+  clearFieldError('phone')
+}
+
+const handleLogin = async () => {
+  errors.api = ''
+
+  if (!validateForm()) {
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    const response = await api.post('/login', {
+      phone: form.phone,
+      password: form.password,
+      remember: form.rememberMe,
+    })
+
+    const responseData = response.data
+
+    if (responseData?.success && responseData?.data?.token) {
+      const userData = responseData.data.user || {}
+
+      authStore.setAuth(responseData.data.token, userData, form.rememberMe)
+
+      const redirectPath =
+        typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard'
+
+      await router.push(redirectPath)
+
+      return
+    }
+
+    errors.api = responseData?.message || 'Login failed. Please try again.'
+  } catch (error) {
+    errors.api = error.response?.data?.message || 'Unable to login. Please try again.'
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>

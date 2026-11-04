@@ -1,0 +1,3242 @@
+<template>
+  <main class="content-area premium-page premium-add-page">
+    <div class="container-fluid px-0">
+      <section class="amount-card">
+        <div class="section-label">
+          <span class="section-icon green">
+            <i class="bi bi-wallet2"></i>
+          </span>
+          <div>
+            <strong>Add money</strong>
+            <small>Choose how much you want to add</small>
+          </div>
+        </div>
+        <div class="amount-input-box">
+          <span class="rupee-symbol">₹</span>
+          <input v-model.number="form.amount" type="number" min="1" inputmode="decimal" placeholder="0"
+            aria-label="Amount" />
+          <span class="amount-suffix">INR</span>
+        </div>
+        <div class="quick-amounts">
+          <button v-for="amount in quickAmounts" :key="amount" type="button"
+            :class="{ selected: Number(form.amount) === amount }" @click="form.amount = amount">
+            ₹{{ amount.toLocaleString('en-IN') }}
+          </button>
+        </div>
+      </section>
+
+      <section class="payment-card">
+        <div class="section-heading">
+          <div>
+            <h6>Choose payment method</h6>
+            <span>Fast & secure payment</span>
+          </div>
+          <span class="secured-pill">
+            <i class="bi bi-lock-fill"></i>
+            Secure
+          </span>
+        </div>
+        <!-- AUTOMATIC GATEWAY -->
+        <div v-if="gatewayEnabled" class="gateway-option" :class="{ selected: form.paymentMethod === 'gateway' }"
+          @click="form.paymentMethod = 'gateway'">
+          <div class="gateway-top">
+            <div class="gateway-radio">
+              <span></span>
+            </div>
+            <div class="gateway-main">
+              <div class="gateway-title-row">
+                <strong>UPI Payment</strong>
+                <span class="recommended-badge"> Recommended </span>
+              </div>
+              <small> Pay instantly using your preferred UPI app </small>
+            </div>
+            <div class="gateway-lightning">
+              <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+          </div>
+          <!-- UPI APP STYLE -->
+          <div class="upi-apps">
+            <div class="upi-app">
+              <div class="upi-icon">
+                <img src="../../assets/img/gpay.jpg" height="20px" alt="" />
+              </div>
+              <small>Google Pay</small>
+            </div>
+            <div class="upi-app">
+              <div class="upi-icon">
+                <img src="../../assets/img/phone.jpg" height="20px" alt="" />
+              </div>
+              <small>PhonePe</small>
+            </div>
+            <div class="upi-app">
+              <div class="upi-icon">
+                <img src="../../assets/img/paytm.jpg" height="20px" alt="" />
+              </div>
+              <small>Paytm</small>
+            </div>
+            <div class="upi-app">
+              <div class="upi-icon bhim">
+                <img src="../../assets/img/bhim.jpg" height="20px" alt="" />
+              </div>
+              <small>BHIM</small>
+            </div>
+            <div class="upi-app">
+              <div class="upi-icon more">
+                <i class="bi bi-three-dots"></i>
+              </div>
+              <small>More</small>
+            </div>
+          </div>
+          <div class="gateway-note">
+            <i class="bi bi-shield-check"></i>
+            You'll be redirected to the secure payment page.
+          </div>
+        </div>
+        <!-- MANUAL UPI -->
+        <div class="manual-option" :class="{ selected: form.paymentMethod === 'manual_upi' }"
+          @click="form.paymentMethod = 'manual_upi'">
+          <div class="manual-option-inner">
+            <div class="gateway-radio">
+              <span></span>
+            </div>
+            <div class="manual-icon">
+              <i class="bi bi-qr-code-scan"></i>
+            </div>
+            <div class="manual-content">
+              <strong>Manual UPI</strong>
+              <small> Pay by QR and submit UTR </small>
+            </div>
+            <i class="bi bi-chevron-right manual-arrow"></i>
+          </div>
+        </div>
+      </section>
+
+      <transition name="slide-fade">
+        <div v-if="apiMessage.text" class="api-message"
+          :class="apiMessage.type === 'error' ? 'message-error' : 'message-success'">
+          <div class="message-icon">
+            <i :class="apiMessage.type === 'error'
+              ? 'bi bi-exclamation-circle-fill'
+              : 'bi bi-check-circle-fill'
+              "></i>
+          </div>
+          <div class="flex-grow-1">
+            {{ apiMessage.text }}
+          </div>
+          <button type="button" class="message-close" @click="apiMessage.text = ''">×</button>
+        </div>
+      </transition>
+      <button type="button" class="pay-button" :disabled="isLoading" @click="handleAddMoney">
+        <span v-if="isLoading" class="spinner-border spinner-border-sm"></span>
+        <template v-else>
+          <span class="pay-button-left">
+            <i class="bi bi-lock-fill"></i>
+            Secure Payment
+          </span>
+          <span class="pay-button-amount">
+            ₹{{ formatCurrency(form.amount) }}
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        </template>
+      </button>
+
+      <div class="secure-footer">
+        <i class="bi bi-shield-check"></i>
+        Your payment is processed securely.
+      </div>
+
+      <section class="pending-section">
+        <div class="section-heading pending-heading">
+          <div>
+            <h6>Pending payments</h6>
+            <span>Your recent add-money requests</span>
+          </div>
+          <button type="button" class="refresh-btn" :class="{ spinning: pendingLoading }" @click="loadPendingPayments">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        <!-- LOADING -->
+        <div v-if="pendingLoading && pendingPayments.length === 0" class="pending-loading">
+          <div class="spinner-border spinner-border-sm"></div>
+          <span>Loading requests...</span>
+        </div>
+        <!-- EMPTY -->
+        <div v-else-if="!pendingLoading && pendingPayments.length === 0" class="empty-pending">
+          <div class="empty-icon">
+            <i class="bi bi-receipt"></i>
+          </div>
+          <strong>No pending payments</strong>
+          <span> Your pending add-money requests will appear here. </span>
+        </div>
+        <!-- TABLE / LIST -->
+        <div v-else class="pending-list">
+          <div v-for="payment in pendingPayments" :key="payment.id" class="pending-item">
+            <div class="pending-item-left">
+              <div class="pending-payment-icon">
+                <i class="bi bi-arrow-down-left"></i>
+              </div>
+              <div>
+                <strong> ₹{{ formatCurrency(payment.amount) }} </strong>
+                <small>
+                  {{ formatPaymentDate(payment.created_at) }}
+                </small>
+              </div>
+            </div>
+            <div class="pending-item-right">
+              <span class="status-pill" :class="getStatusClass(payment.status)">
+                <span class="status-dot"></span>
+                {{ formatStatus(payment.status) }}
+              </span>
+              <small v-if="payment.utr"> UTR: {{ payment.utr }} </small>
+              <button v-if="
+                payment.payment_method === 'gateway' &&
+                payment.gateway_payment_url &&
+                ['pending', 'processing'].includes(String(payment.status).toLowerCase())
+              " type="button" class="resume-payment-btn" @click="resumeGatewayPayment(payment)">
+                Resume payment
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <transition name="modal">
+      <div v-if="showGatewayModal" class="modal-backdrop-custom gateway-payment-backdrop"
+        @click.self="closeGatewayPayment" @keydown.esc="closeGatewayPayment">
+        <div class="manual-modal gateway-payment-modal">
+          <div class="modal-header-custom">
+            <div class="modal-title-wrap">
+              <div class="modal-upi-icon"><i class="bi bi-qr-code-scan"></i></div>
+              <div>
+                <h5>Complete UPI payment</h5>
+                <small>₹{{ formatCurrency(gatewayPaymentAmount) }}</small>
+              </div>
+            </div>
+            <button type="button" class="modal-close" aria-label="Close payment screen" @click="closeGatewayPayment">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-body-custom">
+            <div class="gateway-payment-status" :class="getStatusClass(gatewayPaymentStatus)">
+              <span class="status-dot"></span>
+              <strong>{{ formatStatus(gatewayPaymentStatus) }}</strong>
+            </div>
+            <p class="gateway-payment-help">
+              Complete the payment in the secure UPIGateway screen below. Keep this screen open
+              while the server verifies your payment. Closing this screen does not cancel the
+              transaction.
+            </p>
+            <iframe v-if="gatewayPaymentUrl" :src="gatewayPaymentUrl" title="UPIGateway UPI payment"
+              class="gateway-payment-frame" referrerpolicy="no-referrer" allow="payment *"></iframe>
+            <p class="gateway-payment-status-message" role="status">{{ gatewayStatusMessage }}</p>
+            <button type="button" class="manual-submit-btn" :disabled="gatewayStatusChecking"
+              @click="refreshGatewayPaymentStatus">
+              <span v-if="gatewayStatusChecking" class="spinner-border spinner-border-sm me-2"></span>
+              Check payment status
+            </button>
+            <button type="button" class="gateway-back-btn" @click="closeGatewayPayment">
+              Back to Add Money
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <transition name="modal">
+      <div v-if="showManualModal" class="modal-backdrop-custom" @click.self="closeManualModal">
+        <div class="manual-modal">
+          <div class="modal-header-custom">
+            <div class="modal-title-wrap">
+              <div class="modal-upi-icon">
+                <i class="bi bi-qr-code"></i>
+              </div>
+              <div>
+                <h5>Pay via UPI</h5>
+                <small> ₹{{ formatCurrency(form.amount) }} </small>
+              </div>
+            </div>
+            <button type="button" class="modal-close" @click="closeManualModal">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <transition name="slide-fade">
+            <div v-if="apiMessage.text" class="api-message"
+              :class="apiMessage.type === 'error' ? 'message-error' : 'message-success'">
+              <div class="message-icon">
+                <i :class="apiMessage.type === 'error'
+                  ? 'bi bi-exclamation-circle-fill'
+                  : 'bi bi-check-circle-fill'
+                  "></i>
+              </div>
+              <div class="flex-grow-1">
+                {{ apiMessage.text }}
+              </div>
+              <button type="button" class="message-close" @click="apiMessage.text = ''">×</button>
+            </div>
+          </transition>
+          <div class="modal-body-custom">
+            <div class="qr-container">
+              <div class="qr-label">Scan & Pay</div>
+              <img v-if="paymentInfo.qr_url" :src="paymentInfo.qr_url" class="manual-qr" alt="UPI QR Code" />
+              <div v-else class="qr-placeholder">
+                <i class="bi bi-qr-code"></i>
+                <span>QR unavailable</span>
+              </div>
+              <strong>
+                {{ paymentInfo.name || 'UPI Payment' }}
+              </strong>
+              <button v-if="paymentInfo.upi_id" type="button" class="upi-copy" @click="copyUpiId">
+                {{ paymentInfo.upi_id }}
+                <i class="bi bi-copy"></i>
+              </button>
+            </div>
+            <div class="manual-instruction">
+              <i class="bi bi-info-circle-fill"></i>
+              <span v-if="getSetting('add_money_notice')" class="add-money-hindi-notice" lang="hi">{{
+                getSetting('add_money_notice') }}
+              </span>
+            </div>
+            <div class="form-field">
+              <label> UTR / Transaction ID </label>
+              <div class="field-with-icon">
+                <i class="bi bi-receipt"></i>
+                <input v-model="manualForm.utr" type="text" autocomplete="off" placeholder="Enter 12 digit UTR" />
+              </div>
+            </div>
+            <div class="form-field">
+              <label> Payment Screenshot </label>
+              <label class="upload-box">
+                <input type="file" accept="image/png,image/jpeg,image/webp" @change="handleScreenshot" />
+                <template v-if="!screenshotPreview">
+                  <div class="upload-icon">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                  </div>
+                  <strong>Upload screenshot</strong>
+                  <small> JPG, PNG or WEBP • Max 15 MB </small>
+                </template>
+                <template v-else>
+                  <img :src="screenshotPreview" class="screenshot-preview" alt="Payment screenshot preview" />
+                  <span class="change-image"> Tap to change </span>
+                </template>
+              </label>
+            </div>
+            <button type="button" class="manual-submit-btn" :disabled="manualLoading" @click="submitManualRequest">
+              <span v-if="manualLoading" class="spinner-border spinner-border-sm"></span>
+              <template v-else>
+                <i class="bi bi-check2-circle"></i>
+                Submit Payment
+              </template>
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </main>
+</template>
+<style scoped>
+.premium-add-page {
+  max-width: 780px;
+}
+
+.premium-add-page .container-fluid {
+  max-width: 740px;
+}
+
+.premium-payment-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+.premium-payment-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #0d9c78;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.premium-payment-heading h1 {
+  margin: 7px 0 4px;
+  color: #033c07;
+  font-size: 30px;
+  font-weight: 850;
+  letter-spacing: -0.05em;
+}
+
+.premium-payment-heading p {
+  margin: 0;
+  color: #8490a3;
+  font-size: 11px;
+}
+
+.premium-back-wallet {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 11px;
+  border: 1px solid #e1e7f0;
+  border-radius: 12px;
+  background: #fff;
+  color: #4e5b76;
+  font-size: 9px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.premium-back-wallet>i:first-child {
+  color: #0e9d78;
+}
+
+.premium-add-page .amount-card,
+.premium-add-page .payment-card,
+.premium-add-page .pending-section {
+  padding: 18px;
+  border: 1px solid #e2e8f1;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(23, 27, 53, 0.04);
+}
+
+.premium-add-page .section-label {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 16px;
+}
+
+.premium-add-page .section-label strong {
+  color: #202642;
+  font-size: 14px;
+}
+
+.premium-add-page .section-label small {
+  display: block;
+  margin-top: 3px;
+  color: #8994a6;
+  font-size: 10px;
+}
+
+.premium-add-page .section-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: #e4faf2;
+  color: #0b9b75;
+}
+
+.premium-add-page .amount-input-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 60px;
+  padding: 0 14px;
+  border: 1px solid #dce4ef;
+  border-radius: 15px;
+  background: #f9fafc;
+}
+
+.premium-add-page .rupee-symbol {
+  color: #0d9d78;
+  font-size: 27px;
+  font-weight: 900;
+}
+
+.premium-add-page .amount-input-box input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #202642;
+  font-size: 27px;
+  font-weight: 850;
+}
+
+.premium-add-page .amount-suffix {
+  color: #8e99aa;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.premium-add-page .quick-amounts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.premium-add-page .quick-amounts button {
+  min-height: 39px;
+  border: 1px solid #e1e7f0;
+  border-radius: 11px;
+  background: #fff;
+  color: #66728a;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.premium-add-page .quick-amounts button.selected {
+  border-color: #17b890;
+  background: #e4faf2;
+  color: #0b926d;
+}
+
+.premium-add-page .payment-card {
+  margin-top: 13px;
+}
+
+.premium-add-page .section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.premium-add-page .section-heading h6 {
+  margin: 0;
+  color: #202642;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.premium-add-page .section-heading span {
+  display: block;
+  margin-top: 4px;
+  color: #8994a6;
+  font-size: 10px;
+}
+
+.premium-add-page .secured-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #e4faf2;
+  color: #0b926d;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.premium-add-page .gateway-option,
+.premium-add-page .manual-option {
+  margin-top: 9px;
+  padding: 14px;
+  border: 1px solid #e1e7f0;
+  border-radius: 15px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.premium-add-page .gateway-option.selected,
+.premium-add-page .manual-option.selected {
+  border-color: #17b890;
+  background: #f4fdf9;
+  box-shadow: 0 0 0 2px rgba(23, 184, 144, 0.08);
+}
+
+.premium-add-page .gateway-top,
+.premium-add-page .manual-option-inner {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.premium-add-page .gateway-radio {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 50%;
+}
+
+.premium-add-page .selected .gateway-radio {
+  border-color: #17b890;
+}
+
+.premium-add-page .selected .gateway-radio span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #17b890;
+}
+
+.premium-add-page .gateway-main,
+.premium-add-page .manual-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.premium-add-page .gateway-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.premium-add-page .gateway-title-row strong,
+.premium-add-page .manual-content strong {
+  color: #202642;
+  font-size: 12px;
+}
+
+.premium-add-page .gateway-main small,
+.premium-add-page .manual-content small {
+  display: block;
+  margin-top: 4px;
+  color: #8994a6;
+  font-size: 9px;
+}
+
+.premium-add-page .recommended-badge {
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: #e4faf2;
+  color: #0b926d;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.premium-add-page .gateway-lightning,
+.premium-add-page .manual-icon {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 11px;
+  background: #edf2ff;
+  color: #353d68;
+  font-size: 16px;
+}
+
+.premium-add-page .upi-apps {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid #edf0f5;
+}
+
+.premium-add-page .upi-app {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  color: #788498;
+}
+
+.premium-add-page .upi-app small {
+  font-size: 8px;
+}
+
+.premium-add-page .upi-icon {
+  display: grid;
+  place-items: center;
+  width: 33px;
+  height: 33px;
+  border: 1px solid #e7ebf2;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.premium-add-page .upi-icon img {
+  max-width: 24px;
+  max-height: 24px;
+  object-fit: contain;
+}
+
+.premium-add-page .gateway-note {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  color: #8792a4;
+  font-size: 9px;
+}
+
+.premium-add-page .gateway-note i {
+  color: #0d9d78;
+}
+
+.premium-add-page .api-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 13px;
+  padding: 12px;
+  border-radius: 13px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.premium-add-page .message-success {
+  border: 1px solid #c9f1e3;
+  background: #edfcf6;
+  color: #087655;
+}
+
+.premium-add-page .message-error {
+  border: 1px solid #f4cbd2;
+  background: #fff2f4;
+  color: #b53043;
+}
+
+.premium-add-page .message-close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+}
+
+.premium-add-page .pay-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  margin-top: 14px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 15px;
+  background: linear-gradient(130deg, #033c07, #2a3154);
+  color: #fff;
+  box-shadow: 0 9px 20px rgba(23, 27, 53, 0.15);
+}
+
+.premium-add-page .pay-button-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.premium-add-page .pay-button-amount {
+  font-size: 15px;
+  font-weight: 900;
+  color: #f5c65d;
+}
+
+.premium-add-page .secure-footer {
+  margin: 9px 0 20px;
+  color: #99a3b1;
+  text-align: center;
+  font-size: 9px;
+}
+
+.premium-add-page .secure-footer i {
+  color: #0d9d78;
+}
+
+.premium-add-page .pending-section {
+  margin-top: 18px;
+}
+
+.premium-add-page .pending-heading {
+  margin-bottom: 12px;
+}
+
+.premium-add-page .pending-heading h6 {
+  margin: 0;
+  color: #202642;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.premium-add-page .refresh-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e2e8f1;
+  border-radius: 10px;
+  background: #fff;
+  color: #6c7890;
+}
+
+.premium-add-page .pending-list {
+  display: grid;
+  gap: 8px;
+}
+
+.premium-add-page .pending-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px;
+  border: 1px solid #edf0f5;
+  border-radius: 13px;
+  background: #fafbfd;
+}
+
+.premium-add-page .pending-item-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.premium-add-page .pending-payment-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #e4faf2;
+  color: #0b926d;
+}
+
+.premium-add-page .pending-item strong {
+  color: #252c49;
+  font-size: 11px;
+}
+
+.premium-add-page .pending-item small {
+  display: block;
+  margin-top: 3px;
+  color: #8b96a7;
+  font-size: 8px;
+}
+
+.premium-add-page .pending-item-right {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+}
+
+.premium-add-page .resume-payment-btn {
+  padding: 5px 8px;
+  border: 1px solid #d5f3e7;
+  border-radius: 8px;
+  background: #edfcf6;
+  color: #0b926d;
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.premium-add-page .empty-pending,
+.premium-add-page .pending-loading {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px 12px;
+  color: #8b96a7;
+  text-align: center;
+  font-size: 10px;
+}
+
+.premium-add-page .empty-icon {
+  font-size: 25px;
+  color: #aab5c4;
+}
+
+.premium-add-page .modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(13, 19, 39, 0.62);
+  backdrop-filter: blur(6px);
+}
+
+.premium-add-page .manual-modal {
+  width: min(100%, 470px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  border: 1px solid #e2e8f1;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 25px 80px rgba(13, 19, 39, 0.28);
+}
+
+.premium-add-page .modal-header-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 17px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.premium-add-page .modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.premium-add-page .modal-upi-icon {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  background: #e4faf2;
+  color: #0b926d;
+}
+
+.premium-add-page .modal-header-custom h5 {
+  margin: 0;
+  color: #202642;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.premium-add-page .modal-header-custom small {
+  display: block;
+  margin-top: 3px;
+  color: #8994a6;
+  font-size: 10px;
+}
+
+.premium-add-page .modal-close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e2e8f1;
+  border-radius: 10px;
+  background: #fff;
+  color: #6b768a;
+}
+
+.premium-add-page .modal-body-custom {
+  padding: 17px;
+}
+
+.premium-add-page .gateway-payment-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: #f3f6fa;
+  color: #6e7a8f;
+  font-size: 10px;
+}
+
+.premium-add-page .gateway-payment-help,
+.premium-add-page .gateway-payment-status-message {
+  color: #7e899b;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.premium-add-page .gateway-payment-frame {
+  width: 100%;
+  min-height: 340px;
+  border: 1px solid #e2e8f1;
+  border-radius: 13px;
+  background: #f9fafc;
+}
+
+.premium-add-page .manual-submit-btn,
+.premium-add-page .gateway-back-btn {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 12px;
+  background: #033c07;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.premium-add-page .gateway-back-btn {
+  border: 1px solid #e2e8f1;
+  background: #fff;
+  color: #58647b;
+}
+
+.premium-add-page .qr-container {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid #e5eaf2;
+  border-radius: 15px;
+  background: #fafbfd;
+}
+
+.premium-add-page .manual-qr {
+  max-width: 190px;
+  max-height: 190px;
+  object-fit: contain;
+}
+
+.premium-add-page .qr-label {
+  color: #8994a6;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.premium-add-page .qr-container strong {
+  color: #202642;
+  font-size: 12px;
+}
+
+.premium-add-page .upi-copy {
+  border: 0;
+  background: transparent;
+  color: #0d9d78;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.premium-add-page .manual-instruction {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  color: #8a6a1e;
+  font-size: 10px;
+}
+
+.premium-add-page .field-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid #dfe6ef;
+  border-radius: 11px;
+  background: #fafbfd;
+}
+
+.premium-add-page .field-with-icon input {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #202642;
+  font-size: 13px;
+}
+
+.premium-add-page .upload-box {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 18px;
+  border: 1px dashed #ccd7e6;
+  border-radius: 13px;
+  background: #fafbfd;
+  color: #788498;
+  text-align: center;
+}
+
+.premium-add-page .upload-box input {
+  max-width: 100%;
+  font-size: 10px;
+}
+
+.premium-add-page .screenshot-preview {
+  max-width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+.premium-add-page .change-image {
+  color: #0d9d78;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+@media (min-width: 700px) {
+  .premium-add-page .container-fluid {
+    padding-inline: 10px;
+  }
+
+  .premium-add-page .payment-card,
+  .premium-add-page .amount-card {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 390px) {
+  .premium-add-page {
+    padding-inline: 10px;
+  }
+
+  .premium-payment-heading {
+    align-items: flex-start;
+  }
+
+  .premium-back-wallet span {
+    display: none;
+  }
+
+  .premium-add-page .amount-card,
+  .premium-add-page .payment-card,
+  .premium-add-page .pending-section {
+    padding: 14px;
+  }
+
+  .premium-add-page .quick-amounts {
+    gap: 5px;
+  }
+
+  .premium-add-page .quick-amounts button {
+    font-size: 9px;
+  }
+}
+</style>
+
+<script setup>
+defineOptions({ name: 'WalletAddView' })
+import { reactive, ref, computed, onMounted, onBeforeUnmount } from 'vue'
+
+import { useSettings } from '@/composables/useSettings'
+import { useRouter, useRoute } from 'vue-router'
+import { App } from '@capacitor/app'
+import { useAuthStore } from '@/utils/auth'
+import api from '@/plugins/axios'
+import { playNotificationSound } from '@/services/notificationAudio'
+import { isTrustedGatewayPaymentUrl } from '@/utils/paymentUrl'
+
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+
+const { loadSettings, getSetting } = useSettings()
+
+const minAddMoney = computed(() => {
+  return Number(getSetting('min_deposit', 1)) || 1
+})
+
+const maxAddMoney = computed(() => {
+  const configuredMaximum = Number(getSetting('max_deposit', 0)) || 0
+  return configuredMaximum > 0 ? Math.min(configuredMaximum, 1000000) : 1000000
+})
+
+/*
+|--------------------------------------------------------------------------
+| State
+|--------------------------------------------------------------------------
+*/
+
+const isLoading = ref(false)
+const manualLoading = ref(false)
+
+const gatewayEnabled = ref(false)
+const showManualModal = ref(false)
+
+const pendingLoading = ref(false)
+const pendingGatewayRequestId = ref(null)
+const showGatewayModal = ref(false)
+const gatewayPaymentUrl = ref('')
+const gatewayPaymentAmount = ref(0)
+const gatewayPaymentStatus = ref('processing')
+const gatewayStatusMessage = ref('Payment is waiting for provider confirmation.')
+const gatewayStatusChecking = ref(false)
+
+const quickAmounts = [100, 500, 1000, 2000]
+
+const form = reactive({
+  amount: 500,
+  paymentMethod: 'gateway',
+})
+
+const paymentInfo = reactive({
+  upi_id: '',
+  name: '',
+  qr_url: '',
+})
+
+const manualForm = reactive({
+  utr: '',
+  screenshot: null,
+})
+
+const screenshotPreview = ref(null)
+
+const apiMessage = reactive({
+  text: '',
+  type: 'error',
+})
+
+/*
+|--------------------------------------------------------------------------
+| Pending payments
+|--------------------------------------------------------------------------
+|
+| Change this endpoint if your backend uses another route.
+|--------------------------------------------------------------------------
+*/
+
+const PENDING_PAYMENT_ENDPOINT = '/wallet/get-money-request'
+
+const pendingPayments = ref([])
+
+/*
+|--------------------------------------------------------------------------
+| Demo activity
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| This is intentionally labelled as demo activity.
+| Replace it with real activity API if required.
+|--------------------------------------------------------------------------
+*/
+
+const demoActivities = [
+  {
+    name: 'Rahul',
+    amount: '500',
+    initials: 'R',
+  },
+  {
+    name: 'Aman',
+    amount: '1,000',
+    initials: 'A',
+  },
+  {
+    name: 'Vikas',
+    amount: '2,000',
+    initials: 'V',
+  },
+  {
+    name: 'Neha',
+    amount: '500',
+    initials: 'N',
+  },
+  {
+    name: 'Rohit',
+    amount: '1,500',
+    initials: 'R',
+  },
+  {
+    name: 'Pooja',
+    amount: '1,000',
+    initials: 'P',
+  },
+  {
+    name: 'Arjun',
+    amount: '2,500',
+    initials: 'A',
+  },
+]
+
+const activityIndex = ref(0)
+
+let activityTimer = null
+let pendingTimer = null
+let gatewayStatusTimer = null
+let appStateListener = null
+let appBackButtonListener = null
+let gatewayStatusInFlight = false
+const handledGatewayTerminalRequests = new Set()
+const gatewaySuccessStatuses = new Set(['approved', 'success', 'completed', 'paid'])
+const gatewayFailureStatuses = new Set(['failed', 'rejected', 'cancelled', 'canceled', 'expired'])
+
+/*
+|--------------------------------------------------------------------------
+| Currency
+|--------------------------------------------------------------------------
+*/
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(Number(value || 0))
+}
+
+/*
+|--------------------------------------------------------------------------
+| Payment Date
+|--------------------------------------------------------------------------
+*/
+
+const formatPaymentDate = (value) => {
+  if (!value) {
+    return '--'
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value)
+  }
+
+  return date.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+/*
+|--------------------------------------------------------------------------
+| Payment Status
+|--------------------------------------------------------------------------
+*/
+
+const formatStatus = (status) => {
+  const value = String(status || '').toLowerCase()
+
+  const map = {
+    pending: 'Pending',
+    processing: 'Processing',
+    approved: 'Approved',
+    success: 'Success',
+    completed: 'Completed',
+    paid: 'Paid',
+    rejected: 'Rejected',
+    failed: 'Failed',
+    cancelled: 'Cancelled',
+    canceled: 'Cancelled',
+    expired: 'Expired',
+  }
+
+  return map[value] || 'Pending'
+}
+
+const getStatusClass = (status) => {
+  const value = String(status || '').toLowerCase()
+
+  if (value === 'approved' || value === 'success' || value === 'completed') {
+    return 'status-success'
+  }
+
+  if (
+    value === 'rejected' ||
+    value === 'failed' ||
+    value === 'cancelled' ||
+    value === 'canceled' ||
+    value === 'expired'
+  ) {
+    return 'status-danger'
+  }
+
+  return 'status-pending'
+}
+
+/*
+|--------------------------------------------------------------------------
+| Load payment methods
+|--------------------------------------------------------------------------
+*/
+
+const loadPaymentMethods = async () => {
+  try {
+    const response = await api.get('/wallet/payment-methods')
+
+    if (!response.data?.success) {
+      return
+    }
+
+    const data = response.data.data || {}
+
+    const manualUpi = data.manual_upi || {}
+
+    const gateway = data.gateway || {}
+
+    paymentInfo.upi_id = manualUpi.upi_id || ''
+
+    paymentInfo.name = manualUpi.name || ''
+
+    paymentInfo.qr_url = manualUpi.qr_url || ''
+
+    gatewayEnabled.value = Boolean(gateway.enabled)
+
+    /*
+     * Prefer automatic gateway when available.
+     */
+    if (gatewayEnabled.value) {
+      form.paymentMethod = 'gateway'
+    } else {
+      form.paymentMethod = 'manual_upi'
+    }
+  } catch (error) {
+    console.error('Payment methods error:', error)
+
+    /*
+     * Don't break the page if payment-method
+     * configuration API fails.
+     */
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Add money
+|--------------------------------------------------------------------------
+*/
+
+const handleAddMoney = async () => {
+  apiMessage.text = ''
+
+  const amount = Number(form.amount)
+
+  if (!amount || Number.isNaN(amount) || amount < minAddMoney.value) {
+    apiMessage.type = 'error'
+
+    apiMessage.text = `Minimum add money amount is ₹${formatCurrency(minAddMoney.value)}.`
+
+    return
+  }
+
+  if (maxAddMoney.value > 0 && amount > maxAddMoney.value) {
+    apiMessage.type = 'error'
+
+    apiMessage.text = `Maximum add money amount is ₹${formatCurrency(maxAddMoney.value)}.`
+
+    return
+  }
+
+  if (form.paymentMethod === 'manual_upi') {
+    showManualModal.value = true
+
+    return
+  }
+
+  await createGatewayOrder()
+}
+
+/*
+|--------------------------------------------------------------------------
+| Automatic Gateway
+|--------------------------------------------------------------------------
+*/
+
+const createGatewayOrder = async () => {
+  if (isLoading.value) return
+  isLoading.value = true
+
+  try {
+    const response = await api.post('/wallet/gateway/create-order', {
+      amount: Number(form.amount),
+    })
+
+    if (!response.data?.success) {
+      throw new Error(response.data?.message || 'Unable to start payment.')
+    }
+
+    const paymentData = response.data?.data || {}
+    const paymentUrl = String(paymentData.payment_url || '')
+    const requestId = paymentData.request_id
+    if (!isTrustedGatewayPaymentUrl(paymentUrl) || !requestId) {
+      throw new Error(
+        'The provider returned an unsupported payment URL. Please contact support; no wallet credit was made.',
+      )
+    }
+
+    pendingGatewayRequestId.value = String(requestId)
+    gatewayPaymentAmount.value = Number(form.amount)
+    gatewayPaymentUrl.value = paymentUrl
+    gatewayPaymentStatus.value = 'processing'
+    gatewayStatusMessage.value = 'Waiting for UPIGateway to confirm payment.'
+    showGatewayModal.value = true
+    startGatewayStatusPolling()
+    await refreshGatewayPaymentStatus()
+  } catch (error) {
+    console.error('Gateway payment error:', error)
+    apiMessage.type = 'error'
+    apiMessage.text = error.response?.data?.message || error.message || 'Unable to start payment.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Screenshot
+|--------------------------------------------------------------------------
+*/
+
+const handleScreenshot = (event) => {
+  const file = event.target.files?.[0]
+
+  if (!file) {
+    return
+  }
+
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    apiMessage.type = 'error'
+
+    apiMessage.text = 'Please upload JPG, PNG or WEBP.'
+
+    return
+  }
+
+  if (file.size > 15 * 1024 * 1024) {
+    apiMessage.type = 'error'
+
+    apiMessage.text = 'Screenshot must not exceed 15 MB.'
+
+    return
+  }
+
+  manualForm.screenshot = file
+
+  if (screenshotPreview.value) {
+    URL.revokeObjectURL(screenshotPreview.value)
+  }
+
+  screenshotPreview.value = URL.createObjectURL(file)
+}
+
+/*
+|--------------------------------------------------------------------------
+| Submit Manual UPI
+|--------------------------------------------------------------------------
+*/
+
+const submitManualRequest = async () => {
+  apiMessage.text = ''
+
+  if (!manualForm.utr.trim()) {
+    apiMessage.type = 'error'
+
+    apiMessage.text = 'Please enter UTR / transaction number.'
+
+    return
+  }
+
+  if (!manualForm.screenshot) {
+    apiMessage.type = 'error'
+
+    apiMessage.text = 'Please upload payment screenshot.'
+
+    return
+  }
+
+  manualLoading.value = true
+
+  try {
+    const formData = new FormData()
+
+    formData.append('amount', Number(form.amount))
+
+    formData.append('utr', manualForm.utr.trim())
+
+    formData.append('screenshot', manualForm.screenshot)
+
+    const response = await api.post('/wallet/add-money-request', formData)
+
+    if (!response.data?.success) {
+      throw new Error(response.data?.message || 'Unable to submit payment request.')
+    }
+
+    void playNotificationSound('add_money', `manual-${response.data?.data?.id || Date.now()}`)
+
+    showManualModal.value = false
+
+    apiMessage.type = 'success'
+
+    apiMessage.text = response.data.message || 'Payment submitted successfully.'
+
+    resetManualForm()
+
+    /*
+     * Immediately refresh pending list.
+     */
+    await loadPendingPayments()
+
+    setTimeout(() => {
+      router.push('/wallet')
+    }, 1800)
+  } catch (error) {
+    console.error('Manual payment error:', error)
+
+    apiMessage.type = 'error'
+
+    apiMessage.text =
+      error.response?.data?.message || error.message || 'Unable to submit payment request.'
+  } finally {
+    manualLoading.value = false
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Pending Payments API
+|--------------------------------------------------------------------------
+*/
+
+const loadPendingPayments = async () => {
+  pendingLoading.value = true
+
+  try {
+    const response = await api.get(PENDING_PAYMENT_ENDPOINT, {
+      params: {
+        statuses: ['pending', 'processing'],
+        type: 'credit',
+      },
+    })
+
+    /*
+     * Supports:
+     *
+     * { success: true, data: [] }
+     *
+     * OR
+     *
+     * { status: true, data: [] }
+     *
+     * OR
+     *
+     * { success: true, data: { data: [] } }
+     */
+
+    const responseData = response.data
+
+    let list = responseData?.data
+
+    if (list && !Array.isArray(list) && Array.isArray(list.data)) {
+      list = list.data
+    }
+
+    pendingPayments.value = Array.isArray(list) ? list : []
+  } catch (error) {
+    console.error('Pending payments error:', error)
+
+    /*
+     * Don't show an error banner here.
+     * The payment page should remain usable even
+     * if pending-history API is temporarily unavailable.
+     */
+  } finally {
+    pendingLoading.value = false
+  }
+}
+
+const refreshGatewayPaymentStatus = async () => {
+  const requestId = pendingGatewayRequestId.value
+  if (!requestId || gatewayStatusInFlight || handledGatewayTerminalRequests.has(requestId)) return
+
+  gatewayStatusInFlight = true
+  gatewayStatusChecking.value = true
+  try {
+    const response = await api.get(`/wallet/gateway/${encodeURIComponent(requestId)}/status`, {
+      cache: false,
+      showGlobalLoader: false,
+    })
+    // Ignore stale responses if the user has switched to a different payment.
+    if (pendingGatewayRequestId.value !== requestId) return
+
+    const payment = response.data?.data
+    const status = String(payment?.status || '').toLowerCase()
+    if (!payment) throw new Error('Payment status response was empty.')
+
+    gatewayPaymentStatus.value = status || 'processing'
+    gatewayStatusMessage.value = payment.message || 'Payment is still pending verification.'
+
+    // Only a server-verified terminal status can complete this flow. Unknown,
+    // pending and network-timeout states remain unconfirmed.
+    if (gatewaySuccessStatuses.has(status)) {
+      handledGatewayTerminalRequests.add(requestId)
+      stopGatewayStatusPolling()
+      showGatewayModal.value = false
+      apiMessage.type = 'success'
+      apiMessage.text = 'Payment verified successfully. Your wallet has been refreshed.'
+      if (Number.isFinite(Number(payment.wallet_balance))) {
+        authStore.updateUserData({ balance: Number(payment.wallet_balance) })
+      }
+      gatewayPaymentUrl.value = ''
+      pendingGatewayRequestId.value = null
+      await loadPendingPayments()
+    } else if (gatewayFailureStatuses.has(status)) {
+      handledGatewayTerminalRequests.add(requestId)
+      stopGatewayStatusPolling()
+      showGatewayModal.value = false
+      apiMessage.type = 'error'
+      apiMessage.text =
+        status === 'cancelled' || status === 'canceled'
+          ? 'The payment provider confirmed that this payment was cancelled. No wallet credit was applied.'
+          : status === 'expired'
+            ? 'This payment session expired. You can safely start a new payment.'
+            : 'The provider confirmed that this payment failed. You can safely start a new payment.'
+      gatewayPaymentUrl.value = ''
+      pendingGatewayRequestId.value = null
+      await loadPendingPayments()
+    }
+  } catch (error) {
+    // A timeout or unreachable API is not evidence of payment failure.
+    if (pendingGatewayRequestId.value === requestId) {
+      gatewayStatusMessage.value =
+        'Status could not be refreshed. Your payment remains unconfirmed; try again shortly.'
+    }
+    console.warn('Unable to refresh gateway payment status:', error)
+  } finally {
+    gatewayStatusChecking.value = false
+    gatewayStatusInFlight = false
+  }
+}
+
+const startGatewayStatusPolling = () => {
+  stopGatewayStatusPolling()
+  gatewayStatusTimer = setInterval(() => {
+    if (
+      showGatewayModal.value &&
+      !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) &&
+      !gatewayFailureStatuses.has(gatewayPaymentStatus.value)
+    ) {
+      void refreshGatewayPaymentStatus()
+    }
+  }, 5000)
+}
+
+const stopGatewayStatusPolling = () => {
+  if (gatewayStatusTimer) {
+    clearInterval(gatewayStatusTimer)
+    gatewayStatusTimer = null
+  }
+}
+
+const closeGatewayPayment = () => {
+  showGatewayModal.value = false
+  stopGatewayStatusPolling()
+  if (
+    pendingGatewayRequestId.value &&
+    !gatewaySuccessStatuses.has(gatewayPaymentStatus.value) &&
+    !gatewayFailureStatuses.has(gatewayPaymentStatus.value)
+  ) {
+    apiMessage.type = 'error'
+    apiMessage.text =
+      'Payment status is still pending verification. You can resume it from Pending payments; closing this screen does not cancel the transaction.'
+  }
+}
+
+const resumeGatewayPayment = (payment) => {
+  const requestId = payment?.request_id || payment?.gateway_request_id || payment?.id
+  if (!requestId || !payment?.gateway_payment_url) return
+  pendingGatewayRequestId.value = String(requestId)
+  gatewayPaymentUrl.value = String(payment.gateway_payment_url)
+  gatewayPaymentAmount.value = Number(payment.amount || 0)
+  gatewayPaymentStatus.value = String(payment.status || 'processing').toLowerCase()
+  gatewayStatusMessage.value = 'Reopened pending payment. Checking the provider status now.'
+  showGatewayModal.value = true
+  startGatewayStatusPolling()
+  void refreshGatewayPaymentStatus()
+}
+
+/*
+|--------------------------------------------------------------------------
+| Reset manual form
+|--------------------------------------------------------------------------
+*/
+
+const resetManualForm = () => {
+  manualForm.utr = ''
+
+  manualForm.screenshot = null
+
+  if (screenshotPreview.value) {
+    URL.revokeObjectURL(screenshotPreview.value)
+  }
+
+  screenshotPreview.value = null
+}
+
+/*
+|--------------------------------------------------------------------------
+| Close modal
+|--------------------------------------------------------------------------
+*/
+
+const closeManualModal = () => {
+  if (manualLoading.value) {
+    return
+  }
+
+  showManualModal.value = false
+}
+
+/*
+|--------------------------------------------------------------------------
+| Copy UPI
+|--------------------------------------------------------------------------
+*/
+
+const copyUpiId = async () => {
+  if (!paymentInfo.upi_id) {
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(paymentInfo.upi_id)
+
+    apiMessage.type = 'success'
+
+    apiMessage.text = 'UPI ID copied.'
+  } catch (error) {
+    console.error('Copy UPI error:', error)
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Demo activity rotation
+|--------------------------------------------------------------------------
+*/
+
+const startActivityRotation = () => {
+  if (activityTimer) {
+    clearInterval(activityTimer)
+  }
+
+  /*
+   * 4.5 seconds keeps it noticeable
+   * without becoming annoying.
+   */
+  activityTimer = setInterval(() => {
+    activityIndex.value = (activityIndex.value + 1) % demoActivities.length
+  }, 4500)
+}
+
+/*
+|--------------------------------------------------------------------------
+| Pending refresh
+|--------------------------------------------------------------------------
+*/
+
+const startPendingRefresh = () => {
+  if (pendingTimer) {
+    clearInterval(pendingTimer)
+  }
+
+  pendingTimer = setInterval(() => {
+    loadPendingPayments()
+  }, 30000)
+}
+
+/*
+|--------------------------------------------------------------------------
+| Lifecycle
+|--------------------------------------------------------------------------
+*/
+
+onMounted(async () => {
+  try {
+    appStateListener = await App.addListener('appStateChange', ({ isActive }) => {
+      if (isActive && showGatewayModal.value) void refreshGatewayPaymentStatus()
+    })
+    appBackButtonListener = await App.addListener('backButton', ({ canGoBack }) => {
+      if (showGatewayModal.value) {
+        closeGatewayPayment()
+      } else if (canGoBack) {
+        router.back()
+      } else {
+        router.replace({ name: 'dashboard' })
+      }
+    })
+  } catch (error) {
+    console.warn('Unable to register app resume listener:', error)
+  }
+
+  await Promise.all([loadSettings(['min_deposit']), loadPaymentMethods(), loadPendingPayments()])
+
+  if (String(route.query.gateway_return || '') === '1') {
+    pendingGatewayRequestId.value = String(route.query.request_id || '')
+    if (pendingGatewayRequestId.value) {
+      await refreshGatewayPaymentStatus()
+    } else {
+      // A return URL is only a navigation signal, never proof of payment.
+      apiMessage.type = 'error'
+      apiMessage.text =
+        'Payment returned to the app, but the transaction could not be identified. Check Pending payments for its verified status.'
+      await loadPendingPayments()
+    }
+
+    const remainingQuery = { ...route.query }
+    delete remainingQuery.gateway_return
+    delete remainingQuery.status
+    delete remainingQuery.request_id
+    await router.replace({ path: route.path, query: remainingQuery })
+  }
+
+  startActivityRotation()
+  startPendingRefresh()
+})
+
+onBeforeUnmount(async () => {
+  stopGatewayStatusPolling()
+  if (appStateListener) {
+    await appStateListener.remove()
+    appStateListener = null
+  }
+  if (appBackButtonListener) {
+    await appBackButtonListener.remove()
+    appBackButtonListener = null
+  }
+
+  if (activityTimer) {
+    clearInterval(activityTimer)
+
+    activityTimer = null
+  }
+
+  if (pendingTimer) {
+    clearInterval(pendingTimer)
+
+    pendingTimer = null
+  }
+
+  if (screenshotPreview.value) {
+    URL.revokeObjectURL(screenshotPreview.value)
+  }
+})
+</script>
+
+<style scoped>
+/* =========================================================
+   BASE
+========================================================= */
+
+.add-money-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f7faf9 0%, #f5f7f8 42%, #f8f9fa 100%);
+  color: #172033;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid #edf0f1;
+}
+
+.header-inner {
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-btn {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e8eded;
+  color: #172033;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(20, 35, 45, 0.06);
+  transition: 0.2s ease;
+}
+
+.back-btn:active {
+  transform: scale(0.93);
+}
+
+.header-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-title h5 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.header-title span {
+  display: block;
+  margin-top: 1px;
+  color: #8a94a3;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.secure-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: #e9faf4;
+  color: #009b70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.container-fluid {
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+}
+
+/* =========================================================
+   API MESSAGE
+========================================================= */
+
+.api-message {
+  margin-top: 12px;
+  padding: 11px 13px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 5px 18px rgba(20, 35, 45, 0.06);
+}
+
+.message-success {
+  color: #087953;
+  background: #edfff8;
+  border: 1px solid #c8f2e3;
+}
+
+.message-error {
+  color: #bd3043;
+  background: #fff2f4;
+  border: 1px solid #ffd6dc;
+}
+
+.message-icon {
+  font-size: 17px;
+}
+
+.message-close {
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+  color: inherit;
+  opacity: 0.6;
+}
+
+/* =========================================================
+   COMMON SECTION
+========================================================= */
+
+.amount-card,
+.payment-card,
+.pending-section,
+.activity-section {
+  margin-top: 14px;
+  border-radius: 22px;
+  background: #fff;
+  border: 1px solid #e9eeee;
+  box-shadow: 0 8px 25px rgba(24, 40, 52, 0.055);
+}
+
+/* =========================================================
+   AMOUNT
+========================================================= */
+
+.amount-card {
+  padding: 18px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.section-icon {
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-icon.green {
+  color: #008e68;
+  background: #eafaf4;
+}
+
+.section-label strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.section-label small {
+  display: block;
+  color: #8993a1;
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.amount-input-box {
+  height: 50px;
+  padding: 0 12px;
+  border-radius: 17px;
+  background: #f7f9f9;
+  border: 1px solid #e8eeee;
+  display: flex;
+  align-items: center;
+  transition: 0.2s ease;
+}
+
+.amount-input-box:focus-within {
+  background: #fff;
+  border-color: #00a878;
+  box-shadow: 0 0 0 4px rgba(0, 168, 120, 0.07);
+}
+
+.rupee-symbol {
+  color: #00966e;
+  font-size: 27px;
+  font-weight: 900;
+}
+
+.amount-input-box input {
+  min-width: 0;
+  flex: 1;
+  height: 100%;
+  padding: 0 8px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #172033;
+  font-size: 30px;
+  font-weight: 950;
+}
+
+.amount-input-box input::placeholder {
+  color: #b7bec6;
+}
+
+.amount-input-box input::-webkit-inner-spin-button,
+.amount-input-box input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.amount-suffix {
+  color: #98a1ab;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.quick-amounts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.quick-amounts button {
+  min-height: 39px;
+  padding: 4px;
+  border: 1px solid #e2e8e6;
+  border-radius: 11px;
+  background: #fff;
+  color: #536071;
+  font-size: 11px;
+  font-weight: 800;
+  transition: 0.2s ease;
+}
+
+.quick-amounts button:active {
+  transform: scale(0.95);
+}
+
+.quick-amounts button.selected {
+  color: #008b65;
+  background: #eafaf4;
+  border-color: #9ee1cc;
+}
+
+.amount-hint {
+  margin-top: 10px;
+  color: #919aa5;
+  font-size: 10px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+/* =========================================================
+   PAYMENT
+========================================================= */
+
+.payment-card {
+  padding: 18px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.section-heading h6 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.section-heading span {
+  display: block;
+  color: #8b95a1;
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.secured-pill {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border-radius: 20px;
+  color: #008c67 !important;
+  background: #eafaf4;
+  font-size: 9px !important;
+  font-weight: 800;
+}
+
+/* Gateway */
+
+.gateway-option {
+  position: relative;
+  padding: 14px;
+  border: 1.5px solid #e3e9e7;
+  border-radius: 18px;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.gateway-option.selected {
+  border-color: #00a878;
+  background: linear-gradient(145deg, #f5fffb, #fff);
+  box-shadow: 0 7px 22px rgba(0, 168, 120, 0.09);
+}
+
+.gateway-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gateway-radio {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border: 2px solid #ccd5d2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected .gateway-radio {
+  border-color: #00a878;
+}
+
+.selected .gateway-radio span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00a878;
+}
+
+.gateway-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.gateway-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gateway-title-row strong {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.gateway-main small {
+  display: block;
+  margin-top: 3px;
+  color: #7d8792;
+  font-size: 10px;
+}
+
+.recommended-badge {
+  display: inline-block !important;
+  padding: 3px 6px;
+  border-radius: 5px;
+  color: #008b65 !important;
+  background: #dff8ee;
+  font-size: 7px !important;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.gateway-lightning {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, #00a878, #00ca96);
+  box-shadow: 0 5px 12px rgba(0, 168, 120, 0.2);
+}
+
+/* UPI apps */
+
+.upi-apps {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-top: 15px;
+  padding: 12px 2px 3px;
+  border-top: 1px dashed #e2e8e6;
+}
+
+.upi-app {
+  min-width: 42px;
+  text-align: center;
+}
+
+.upi-icon {
+  width: 37px;
+  height: 37px;
+  margin: auto;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  box-shadow: 0 4px 9px rgba(20, 35, 45, 0.1);
+}
+
+.upi-app small {
+  display: block;
+  margin-top: 5px;
+  color: #7e8994;
+  font-size: 7px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.more {
+  color: #687481;
+  background: #edf1f2;
+}
+
+.gateway-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 11px;
+  color: #7f8994;
+  font-size: 9px;
+}
+
+/* Manual */
+
+.manual-option {
+  margin-top: 9px;
+  padding: 13px 14px;
+  border: 1px solid #e5eaea;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.manual-option.selected {
+  border-color: #00a878;
+  background: #f7fffc;
+}
+
+.manual-option-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.manual-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  color: #5361d9;
+  background: #eef0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.manual-content {
+  flex: 1;
+}
+
+.manual-content strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.manual-content small {
+  display: block;
+  margin-top: 2px;
+  color: #8b95a0;
+  font-size: 9px;
+}
+
+.manual-arrow {
+  color: #a3abb3;
+}
+
+/* =========================================================
+   PAY BUTTON
+========================================================= */
+
+.pay-button {
+  width: 100%;
+  min-height: 57px;
+  margin-top: 15px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 17px;
+  color: #fff;
+  background: linear-gradient(135deg, #008e67, #00a878, #00c592);
+  box-shadow: 0 10px 24px rgba(0, 157, 112, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 900;
+  transition: 0.2s ease;
+}
+
+.pay-button:active {
+  transform: scale(0.98);
+}
+
+.pay-button:disabled {
+  opacity: 0.7;
+}
+
+.pay-button-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+}
+
+.pay-button-amount {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+}
+
+.secure-footer {
+  margin-top: 7px;
+  text-align: center;
+  color: #9ba3ad;
+  font-size: 9px;
+}
+
+.secure-footer i {
+  color: #00a878;
+}
+
+/* =========================================================
+   PENDING
+========================================================= */
+
+.pending-section {
+  padding: 16px;
+}
+
+.pending-heading {
+  margin-bottom: 12px;
+}
+
+.refresh-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e4e9e8;
+  border-radius: 10px;
+  background: #fff;
+  color: #65717d;
+}
+
+.refresh-btn.spinning i {
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+
+.pending-loading {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #89939d;
+  font-size: 10px;
+}
+
+.pending-loading .spinner-border {
+  color: #00a878;
+}
+
+.empty-pending {
+  padding: 25px 10px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 9px;
+  border-radius: 15px;
+  color: #8b96a1;
+  background: #f1f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+}
+
+.empty-pending strong {
+  display: block;
+  font-size: 12px;
+}
+
+.empty-pending span {
+  display: block;
+  margin-top: 4px;
+  color: #98a1ab;
+  font-size: 9px;
+}
+
+.pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pending-item {
+  min-height: 61px;
+  padding: 9px;
+  border-radius: 14px;
+  background: #f8faf9;
+  border: 1px solid #edf1ef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pending-item-left,
+.pending-item-right {
+  display: flex;
+  align-items: center;
+}
+
+.pending-item-left {
+  gap: 9px;
+}
+
+.pending-item-right {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.pending-payment-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  color: #009b70;
+  background: #e7f9f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pending-item-left strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.pending-item-left small,
+.pending-item-right small {
+  display: block;
+  margin-top: 2px;
+  color: #929ca6;
+  font-size: 8px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  border-radius: 20px;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.status-pending {
+  color: #a16a00;
+  background: #fff6dc;
+}
+
+.status-pending .status-dot {
+  background: #f2a900;
+  box-shadow: 0 0 5px #f2a900;
+}
+
+.status-success {
+  color: #087c58;
+  background: #e7faf2;
+}
+
+.status-success .status-dot {
+  background: #00a878;
+}
+
+.status-danger {
+  color: #c12e40;
+  background: #fff0f2;
+}
+
+.status-danger .status-dot {
+  background: #dc3545;
+}
+
+/* =========================================================
+   ACTIVITY
+========================================================= */
+
+.activity-section {
+  padding: 13px;
+  background: linear-gradient(145deg, #ffffff, #f9fffc);
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.activity-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00b67d;
+  box-shadow:
+    0 0 0 4px rgba(0, 182, 125, 0.1),
+    0 0 8px rgba(0, 182, 125, 0.5);
+  animation: pulse 1.3s infinite;
+}
+
+.activity-header strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.activity-header span {
+  display: block;
+  margin-top: 1px;
+  color: #9aa3ad;
+  font-size: 8px;
+}
+
+.activity-card {
+  min-height: 57px;
+  padding: 9px;
+  border-radius: 13px;
+  background: #f5faf8;
+  border: 1px solid #e1f0ea;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.activity-avatar {
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  border-radius: 11px;
+  color: #fff;
+  background: linear-gradient(135deg, #008f69, #00c594);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-message {
+  color: #4d5966;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.activity-message strong {
+  color: #172033;
+}
+
+.activity-content small {
+  display: block;
+  margin-top: 3px;
+  color: #00a878;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.activity-money {
+  color: #008b65;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  padding: 12px;
+  background: rgba(12, 20, 28, 0.72);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.gateway-payment-backdrop {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  align-items: center;
+}
+
+.gateway-payment-modal {
+  max-width: 560px;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.gateway-payment-help {
+  color: #66727d;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 10px 0 12px;
+}
+
+.gateway-payment-frame {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 42dvh, 420px);
+  min-height: 220px;
+  border: 1px solid #e5eaea;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.gateway-payment-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.gateway-payment-status-message {
+  min-height: 2.8em;
+  overflow-wrap: anywhere;
+  margin: 10px 0 0;
+  color: #66727d;
+  font-size: 10px;
+  text-align: center;
+}
+
+.gateway-back-btn,
+.resume-payment-btn {
+  border: 1px solid #dfe5e4;
+  border-radius: 10px;
+  background: #fff;
+  color: #536071;
+  padding: 9px 12px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.gateway-back-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.resume-payment-btn {
+  margin-top: 4px;
+  color: #008b65;
+  border-color: #bce8d9;
+}
+
+.manual-modal {
+  width: 100%;
+  max-width: 490px;
+  max-height: 94vh;
+  overflow-y: auto;
+  border-radius: 25px 25px 18px 18px;
+  background: #fff;
+  box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.28);
+}
+
+.modal-header-custom {
+  padding: 15px 16px;
+  border-bottom: 1px solid #edf0f1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.modal-upi-icon {
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  color: #5664d9;
+  background: #eef0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-title-wrap h5 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.modal-title-wrap small {
+  color: #00a878;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: #f1f3f4;
+  color: #69737d;
+}
+
+.modal-body-custom {
+  padding: 16px;
+}
+
+.qr-container {
+  text-align: center;
+}
+
+.qr-label {
+  margin-bottom: 7px;
+  color: #7f8993;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.manual-qr,
+.qr-placeholder {
+  width: 190px;
+  height: 190px;
+  margin: auto;
+  border-radius: 15px;
+  border: 1px solid #e5eaea;
+  padding: 8px;
+  object-fit: contain;
+  background: #fff;
+  display: block;
+}
+
+.qr-placeholder {
+  color: #9ba4ad;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.qr-placeholder i {
+  font-size: 40px;
+}
+
+.qr-container>strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.upi-copy {
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #68737f;
+  font-size: 9px;
+}
+
+.upi-copy i {
+  margin-left: 3px;
+}
+
+.manual-app-row {
+  margin: 14px 0;
+  padding: 10px 0;
+  border-top: 1px dashed #e2e7e6;
+  border-bottom: 1px dashed #e2e7e6;
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+}
+
+.manual-app-row>div {
+  text-align: center;
+}
+
+.mini-upi-icon {
+  width: 35px;
+  height: 35px;
+  margin: auto;
+  border-radius: 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.manual-app-row span {
+  display: block;
+  margin-top: 4px;
+  color: #7c8791;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.manual-instruction {
+  padding: 9px;
+  border-radius: 11px;
+  color: #735f5f;
+  background: #f4f8f7;
+  display: flex;
+  gap: 7px;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.manual-instruction i {
+  color: #00a878;
+}
+
+.form-field {
+  margin-top: 13px;
+}
+
+.form-field>label {
+  display: block;
+  margin-bottom: 6px;
+  color: #394552;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.field-with-icon {
+  height: 45px;
+  padding: 0 11px;
+  border: 1px solid #dfe5e4;
+  border-radius: 12px;
+  background: #fafcfc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-with-icon:focus-within {
+  border-color: #00a878;
+}
+
+.field-with-icon i {
+  color: #82908d;
+}
+
+.field-with-icon input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 11px;
+}
+
+.upload-box {
+  min-height: 105px;
+  padding: 12px;
+  border: 1.5px dashed #cbd9d5;
+  border-radius: 13px;
+  background: #f9fcfb;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-box input {
+  display: none;
+}
+
+.upload-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  color: #009d72;
+  background: #e5f8f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+.upload-box strong {
+  margin-top: 5px;
+  font-size: 10px;
+}
+
+.upload-box small {
+  margin-top: 2px;
+  color: #929ca6;
+  font-size: 8px;
+}
+
+.screenshot-preview {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.change-image {
+  margin-top: 4px;
+  color: #008e67;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.manual-submit-btn {
+  width: 100%;
+  min-height: 49px;
+  margin-top: 15px;
+  border: 0;
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #008e67, #00b987);
+  box-shadow: 0 8px 18px rgba(0, 157, 112, 0.2);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: 0.25s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-7px);
+}
+
+.activity-slide-enter-active,
+.activity-slide-leave-active {
+  transition: all 0.35s ease;
+}
+
+.activity-slide-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.activity-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.modal-enter-active,
+.modal-leave-active {
+  transition: 0.25s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .manual-modal,
+.modal-leave-to .manual-modal {
+  transform: translateY(30px);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .amount-card,
+  .payment-card,
+  .pending-section {
+    padding: 14px;
+  }
+
+  .amount-input-box {
+    height: 50px;
+  }
+
+  .amount-input-box input {
+    font-size: 20px;
+  }
+
+  .upi-apps {
+    gap: 8px;
+  }
+
+  .upi-app {
+    min-width: 38px;
+  }
+
+  .upi-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .manual-app-row {
+    gap: 16px;
+  }
+}
+
+/* =========================================================
+   TABLET / DESKTOP
+========================================================= */
+
+@media (min-width: 768px) {
+  .app-header {
+    border-radius: 0;
+  }
+
+  .modal-backdrop-custom {
+    align-items: center;
+  }
+
+  .manual-modal {
+    border-radius: 25px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
