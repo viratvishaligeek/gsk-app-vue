@@ -13,7 +13,7 @@ const pushPermissionNotice = ref('')
 onMounted(async () => {
   try {
     await StatusBar.setStyle({ style: Style.Dark })
-    await StatusBar.setBackgroundColor({ color: '#212529' })
+    await StatusBar.setBackgroundColor({ color: '#102b56' })
     await StatusBar.setOverlaysWebView({ overlay: false })
   } catch (err) {
     console.log('Not on mobile native app:', err)
