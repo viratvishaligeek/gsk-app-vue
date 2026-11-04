@@ -33,9 +33,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/utils/auth'
 import api from '@/plugins/axios'
-import winIcon from '@/assets/img/win.png'
-import creditIcon from '@/assets/img/credit.png'
-import debitIcon from '@/assets/img/debit.png'
 
 
 const authStore = useAuthStore()
