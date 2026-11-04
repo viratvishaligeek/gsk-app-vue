@@ -166,3 +166,15 @@ p,.text-muted { color:var(--gsk-muted); }
   .profile-layout,.edit-grid,.destination-grid { grid-template-columns:minmax(0,1fr)!important; }
   .result-table-wrapper { margin-inline:-2px; }
 }
+
+.overlay { position:fixed!important; inset:0!important; z-index:1090!important; background:rgba(16,35,63,.48)!important; backdrop-filter:blur(3px); }
+.sidebar.active { transform:translate3d(0,0,0)!important; }
+.premium-sidebar { z-index:1091!important; }
+.app-header { z-index:1030!important; }
+.content-area .text-primary,.text-primary-color { color:var(--gsk-brand)!important; }
+.content-area .text-success,.text-success { color:var(--gsk-success)!important; }
+.content-area .text-danger { color:var(--gsk-danger)!important; }
+.content-area .bg-dark,.card.bg-dark { background:var(--gsk-brand-strong)!important; }
+.content-area .bg-warning,.btn-warning { background:var(--gsk-accent)!important; border-color:var(--gsk-accent)!important; color:#182235!important; }
+.content-area .border-warning,.border-warning { border-color:#e7a63c!important; }
+.content-area .spinner-border,.spinner-grow { color:var(--gsk-brand)!important; }
