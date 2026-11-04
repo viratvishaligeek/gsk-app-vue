@@ -1,6 +1,6 @@
 <template>
   <main class="gsk-screen">
-    <header class="screen-banner referral-banner"><div class="screen-banner-icon">🎁</div><div><span>GROW YOUR CIRCLE</span><h1>Refer & earn</h1><p>Invite friends and track your rewards.</p></div></header>
+    <GskScreenHeader emoji="🎁" kicker="GROW YOUR CIRCLE" title="Refer & earn" subtitle="Invite friends and track your rewards." />
     <div v-if="error" class="alert alert-danger mt-3">{{ error }}</div><div v-if="success" class="alert alert-success mt-3">{{ success }}</div>
     <div v-if="loading" class="gsk-empty-state mt-3"><span>⏳</span><strong>Loading referral details…</strong></div>
     <template v-else>
@@ -20,6 +20,7 @@
   </main>
 </template>
 <script setup>
+import GskScreenHeader from '@/components/GskScreenHeader.vue'
 import { onMounted, reactive, ref } from 'vue'
 import api from '@/plugins/axios'
 
