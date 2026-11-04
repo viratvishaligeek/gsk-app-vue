@@ -3,7 +3,7 @@
     <div class="page-content">
       <div class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between gap-3 mb-3">
         <div>
-          <div class="fw-bold text-dark"><i class="bi bi-bell-fill me-2"></i>Notification</div>
+          <div class="fw-bold text-dark"><span class="gsk-emoji-icon" aria-hidden="true">🔔</span>Notification</div>
           <div v-if="pushStatus" class="small mt-1" role="status">{{ pushStatus }}</div>
           <div v-if="permissionMessage" class="small mt-1 text-muted" role="status">{{ permissionMessage }}</div>
           <div v-if="preferenceMessage" class="small mt-1" role="status">{{ preferenceMessage }}</div>
@@ -21,7 +21,7 @@
         class="alert alert-light border rounded-3 d-flex align-items-center justify-content-between gap-3 mb-3"
         style="background: linear-gradient(135deg, #9fbf3c8c, #ff450066);">
         <div>
-          <div class="fw-bold text-danger btn btn-sm border"><i class="bi bi-arrow-down-circle me-2"></i>Update App
+          <div class="fw-bold text-danger btn btn-sm border"><span class="gsk-emoji-icon" aria-hidden="true">⬇️</span>Update App
           </div>
           <div v-if="appUpdate.latest_url" class="text-dark">
             <span v-if="appUpdate.latest_version">Version {{ appUpdate.latest_version }} · </span>Published {{
@@ -70,7 +70,7 @@
         </template>
         <div v-if="notifications.length === 0" class="text-center py-5">
           <div class="empty-icon mb-2">
-            <i class="bi bi-bell-slash"></i>
+            <span class="gsk-emoji-icon" aria-hidden="true">🔕</span>
           </div>
           <h6 class="fw-bold text-dark">
             No Notifications
