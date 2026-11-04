@@ -1,7 +1,8 @@
 <template>
   <div class="add-money-page pb-5">
 
-    <main class="container-fluid px-3 gsk-payment-flow">\n      <header class="payment-screen-header"><router-link to="/wallet" class="payment-back" aria-label="Back to wallet">←</router-link><div class="payment-screen-heading"><small>WALLET SERVICES</small><h1>Add money</h1><p>Choose an amount and payment method.</p></div></header>
+    <main class="container-fluid px-3 gsk-payment-flow">
+      <header class="payment-screen-header"><router-link to="/wallet" class="payment-back" aria-label="Back to wallet">←</router-link><div class="payment-screen-heading"><small>WALLET SERVICES</small><h1>Add money</h1><p>Choose an amount and payment method.</p></div></header>
       
 
       <section class="amount-card">
