@@ -6,8 +6,8 @@ export default [
     meta: { requiresGuest: true },
   },
   {
-    path: '/sign-up',
-    name: 'sign-up',
+    path: '/register',
+    name: 'register',
     component: () => import('../views/auth/SignUp.vue'),
     meta: { requiresGuest: true },
   },
