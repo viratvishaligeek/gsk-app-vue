@@ -4,3 +4,38 @@
 *{box-sizing:border-box}html{min-height:100%;scroll-behavior:smooth;scroll-padding-top:76px}body{min-height:100dvh;margin:0;background:var(--gsk-paper);color:var(--gsk-ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.5;overflow-x:hidden;-webkit-tap-highlight-color:transparent}#app{min-height:100dvh}img{max-width:100%}button,a,input,select,textarea{touch-action:manipulation}button{font:inherit}a{color:var(--gsk-brand);text-decoration:none}.btn{min-height:44px;border-radius:12px;font-weight:750}.btn-primary{--bs-btn-bg:var(--gsk-brand);--bs-btn-border-color:var(--gsk-brand);--bs-btn-hover-bg:var(--gsk-brand-dark);--bs-btn-hover-border-color:var(--gsk-brand-dark)}.btn-success{--bs-btn-bg:var(--gsk-success);--bs-btn-border-color:var(--gsk-success)}.form-control,.form-select,.input-group-text{min-height:46px;border-color:#d8e1ed;border-radius:11px}.form-control:focus,.form-select:focus{border-color:#7697c2;box-shadow:0 0 0 .2rem #315f9f20}.card{border-color:var(--gsk-line);border-radius:var(--gsk-radius);box-shadow:var(--gsk-shadow)}.alert{border-radius:13px}.gsk-emoji-icon{display:inline-flex;align-items:center;justify-content:center;min-width:1.2em;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal;line-height:1.1}.content-area,.page-content,.history-bg{min-height:calc(100dvh - 66px);background:var(--gsk-paper);color:var(--gsk-ink)}.page-content{padding:14px 13px calc(100px + env(safe-area-inset-bottom))}.gsk-page-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:7px 0 17px}.gsk-page-heading h1{margin:0;font-size:22px;font-weight:900;letter-spacing:-.03em}.gsk-page-heading p{margin:5px 0 0;color:var(--gsk-muted);font-size:11px}.gsk-page-kicker{color:#8b9ab0;font-size:9px;font-weight:900;letter-spacing:.13em}.gsk-panel{padding:15px;border:1px solid var(--gsk-line);border-radius:16px;background:#fff;box-shadow:var(--gsk-shadow)}.gsk-panel-title{display:flex;align-items:center;gap:10px;margin-bottom:13px}.gsk-panel-title>span{font-size:24px}.gsk-panel-title h2,.gsk-panel-title h3{margin:0;font-size:14px;font-weight:850}.gsk-panel-title p{margin:3px 0 0;color:var(--gsk-muted);font-size:10px}.gsk-emoji-tile{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#edf3fc;font-size:23px}.gsk-empty-state{display:grid;justify-items:center;gap:6px;padding:28px 16px;border:1px dashed #d7e0ec;border-radius:16px;background:#fff;text-align:center}.gsk-empty-state>span{font-size:38px}.gsk-empty-state strong{font-size:14px}.gsk-empty-state p{margin:0;color:var(--gsk-muted);font-size:11px}.gsk-status-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:30px;font-size:9px;font-weight:850}.gsk-status-success{background:#e5f5ec;color:#237b55}.gsk-status-pending{background:#fff3dc;color:#966b20}.gsk-status-danger{background:#fcebed;color:#b64f58}.gsk-emoji-icon{font-size:1.1em}
 @media(max-width:380px){body{font-size:13px}.gsk-page-heading h1{font-size:20px}.page-content{padding-inline:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* GSK Play v3 visual foundation: midnight surfaces and vivid action colors. */
+:root{--gsk-brand:#8b72ff;--gsk-brand-dark:#6d56e8;--gsk-accent:#ffc45d;--gsk-ink:#f4f6ff;--gsk-muted:#9ba9c8;--gsk-paper:#080d1b;--gsk-surface:#121b31;--gsk-line:#283552;--gsk-success:#35d39a;--gsk-danger:#ff7387;--gsk-radius:18px;--gsk-shadow:0 14px 36px rgba(0,0,0,.24);color-scheme:dark}
+body{background:#080d1b;color:#f4f6ff}
+a{color:#a99bff}
+.btn-primary{--bs-btn-bg:#765cf5;--bs-btn-border-color:#765cf5;--bs-btn-hover-bg:#6248e1;--bs-btn-hover-border-color:#6248e1;--bs-btn-color:#fff;box-shadow:0 7px 20px #765cf533}
+.btn-success{--bs-btn-bg:#168b70;--bs-btn-border-color:#168b70}
+.form-control,.form-select,.input-group-text{border-color:#34415f;background-color:#111a2e;color:#f4f6ff}
+.form-control::placeholder{color:#7888aa}
+.form-control:focus,.form-select:focus{border-color:#8b72ff;background-color:#131e35;color:#fff;box-shadow:0 0 0 .2rem #8b72ff2b}
+.form-select option{background:#111a2e;color:#f4f6ff}
+.card,.gsk-panel{border-color:#283552;background:#121b31;color:#f4f6ff;box-shadow:0 14px 36px #00000030}
+.alert{border-color:#34415f;background:#17233b;color:#eaf0ff}
+.content-area,.page-content,.history-bg{background:#080d1b;color:#f4f6ff}
+.gsk-page-heading h1,.gsk-panel-title h2,.gsk-panel-title h3{color:#f4f6ff}
+.gsk-page-kicker{color:#94a5ca}
+.gsk-panel{border-color:#283552;background:#121b31}
+.gsk-emoji-tile{background:#252d50}
+.gsk-empty-state{border-color:#34415f;background:#111a2e;color:#c4cde1}
+.gsk-empty-state strong{color:#f4f6ff}
+.gsk-empty-state p{color:#9ba9c8}
+.gsk-status-success{background:#123c35;color:#63e4b5}
+.gsk-status-pending{background:#45351d;color:#ffd27d}
+.gsk-status-danger{background:#492631;color:#ff9bab}
+.btn-outline-secondary{--bs-btn-color:#c1cbe0;--bs-btn-border-color:#44516d;--bs-btn-hover-bg:#273653;--bs-btn-hover-border-color:#5b6a8c;--bs-btn-hover-color:#fff}
+.btn-outline-primary{--bs-btn-color:#b6aaff;--bs-btn-border-color:#806cf2;--bs-btn-hover-bg:#765cf5;--bs-btn-hover-border-color:#765cf5;--bs-btn-hover-color:#fff}
+.btn-outline-danger{--bs-btn-color:#ff9bab;--bs-btn-border-color:#a84e61;--bs-btn-hover-bg:#a84e61;--bs-btn-hover-color:#fff}
+.progress{background:#283552}
+.modal-content{border:1px solid #34415f;background:#121b31;color:#f4f6ff}
+.modal-header,.modal-footer{border-color:#283552}
+.dropdown-menu{border-color:#34415f;background:#121b31;color:#f4f6ff}
+.dropdown-item{color:#dbe3f6}
+.dropdown-item:hover,.dropdown-item:focus{background:#273653;color:#fff}
+@media(prefers-reduced-motion:no-preference){.btn,.card,a,button{transition:background-color .18s,border-color .18s,color .18s,box-shadow .18s,transform .18s}}
