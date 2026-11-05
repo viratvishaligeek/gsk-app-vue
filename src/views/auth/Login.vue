@@ -49,7 +49,6 @@ const clearFieldError = (field) => {
 
 const validateForm = () => {
   let isValid = true
-  console.log(form);
   if (!form.phone) {
     errors.phone = 'Phone number is required.'
     isValid = false
@@ -151,4 +150,75 @@ const handleLogin = async () => {
 .auth-switch{color:#aebbd5}.auth-switch a,.auth-form-panel a{color:#b8adff}.auth-safety{color:#8292b2}
 .gsk-auth-page .alert-danger{border-color:#824252;background:#3c202f;color:#ff9eae}
 @media(max-width:767px){.auth-form-panel{margin:14px;border-radius:22px}}
+
+/* Responsive authentication layout: avoid the desktop two-column minimum width on phones. */
+.gsk-auth-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 480px);
+  align-items: stretch;
+  gap: clamp(18px, 4vw, 56px);
+  width: 100%;
+  min-height: 100svh;
+  padding: clamp(16px, 4vw, 48px);
+  box-sizing: border-box;
+}
+.gsk-auth-page > * { min-width: 0; }
+.auth-brand-panel {
+  min-width: 0;
+  min-height: 100%;
+  padding: clamp(24px, 5vw, 64px);
+  border-radius: 26px;
+}
+.auth-form-panel {
+  width: 100%;
+  max-width: 480px;
+  min-width: 0;
+  margin: auto;
+  padding: clamp(20px, 3vw, 34px);
+  box-sizing: border-box;
+}
+.gsk-auth-form .form-control,
+.gsk-auth-form .input-group-text,
+.gsk-auth-form .input-group .btn { min-height: 46px; }
+.gsk-auth-form .input-group { min-width: 0; }
+.gsk-auth-form .input-group > .form-control { min-width: 0; }
+.auth-submit { min-height: 48px; white-space: normal; }
+@media (max-width: 767.98px) {
+  .gsk-auth-page {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 100svh;
+    gap: 0;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom));
+  }
+  .auth-brand-panel { display: none; }
+  .auth-form-panel {
+    width: min(100%, 480px);
+    max-width: 480px;
+    margin: auto;
+    padding: 22px 18px;
+    border-radius: 22px;
+  }
+  .auth-mobile-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .auth-mobile-brand > span {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    flex: 0 0 42px;
+  }
+  .auth-heading { margin-bottom: 20px; }
+  .auth-heading h2 { font-size: clamp(25px, 7vw, 32px); }
+  .gsk-auth-form .mb-3 { margin-bottom: 16px !important; }
+  .auth-switch, .auth-safety { text-align: center; }
+}
+@media (max-width: 360px) {
+  .gsk-auth-page { padding-left: 9px; padding-right: 9px; }
+  .auth-form-panel { padding: 18px 14px; }
+  .auth-heading p { font-size: 13px; }
+  .gsk-auth-form .input-group-text { padding: 0 9px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-submit, .auth-form-panel, .auth-brand-panel { transition: none !important; animation: none !important; }
+}
 </style>
