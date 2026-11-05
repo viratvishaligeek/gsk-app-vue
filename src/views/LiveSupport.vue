@@ -168,7 +168,7 @@ const initRealtime = () => {
       PusherConstructor: window.Pusher,
       key: import.meta.env.VITE_PUSHER_APP_KEY,
       cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-      authEndpoint: import.meta.env.VITE_PUSHER_AUTH_ENDPOINT || '/api/v1/broadcasting/auth',
+      authEndpoint: new URL('/api/broadcasting/auth', api.defaults.baseURL || window.location.origin).toString(),
       token: getAuthToken(),
       userId: authStore.userId,
       onConnected: () => {
