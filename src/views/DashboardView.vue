@@ -77,7 +77,22 @@
               class="carousel-item"
               :class="{ active: index === 0 }"
             >
+              <a
+                v-if="banner.url"
+                :href="banner.url"
+                :target="banner.externalUrl ? '_blank' : undefined"
+                :rel="banner.externalUrl ? 'noopener noreferrer' : undefined"
+                class="d-block"
+                :aria-label="banner.title ? 'Open ' + banner.title : 'Open promotion'"
+              >
+                <img
+                  :src="banner.imageUrl"
+                  class="d-block w-100"
+                  :alt="banner.title || 'GSK promotion'"
+                />
+              </a>
               <img
+                v-else
                 :src="banner.imageUrl"
                 class="d-block w-100"
                 :alt="banner.title || 'GSK promotion'"
@@ -473,11 +488,29 @@ const fetchGames = async () => {
     |--------------------------------------------------------------------------
     */
     const nextBanners = Array.isArray(data.banners)
-      ? data.banners.map((banner) => ({
-          id: banner.id,
-          title: banner.title || banner.name || 'Banner',
-          imageUrl: banner.image_url || banner.image,
-        }))
+      ? data.banners.map((banner) => {
+          const rawUrl = String(banner.url || banner.link || banner.target_url || '').trim()
+          let safeUrl = ''
+          let externalUrl = false
+          if (rawUrl) {
+            try {
+              const parsed = new URL(rawUrl, window.location.origin)
+              if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+                safeUrl = parsed.href
+                externalUrl = parsed.origin !== window.location.origin
+              }
+            } catch {
+              safeUrl = ''
+            }
+          }
+          return {
+            id: banner.id,
+            title: banner.title || banner.name || 'Banner',
+            imageUrl: banner.image_url || banner.image,
+            url: safeUrl,
+            externalUrl,
+          }
+        })
       : []
     const previousBannerSignature = banners.value
       .map((banner) => `${banner.id}:${banner.imageUrl}`)
