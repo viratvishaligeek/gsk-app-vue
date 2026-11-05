@@ -1,19 +1,5 @@
 <template>
   <main class="games-discovery page-content games-discovery-v3">
-    <section class="games-hero-v3">
-      <div class="games-hero-copy">
-        <span>🎮 GSK GAME ARENA</span>
-        <h1>Choose your<br><em>next market.</em></h1>
-        <p>Live schedules, today’s results and one-tap entry — all in one game lobby.</p>
-      </div>
-      <div class="games-hero-orbit" aria-hidden="true"><span>🎯</span><i>✦</i><b>⚡</b></div>
-      <div class="games-hero-stats">
-        <div><strong>{{ games.length }}</strong><small>Markets</small></div>
-        <div><strong>{{ openCount }}</strong><small>Open now</small></div>
-        <div><strong>{{ closedCount }}</strong><small>Closed</small></div>
-      </div>
-    </section>
-
     <section v-if="featuredGame && !searchTerm && activeFilter === 'all'" class="games-spotlight-v3">
       <div class="games-spotlight-heading"><span>⭐ SPOTLIGHT MARKET</span><small>{{ featuredGame.is_playable ? 'READY TO PLAY' : 'NEXT SCHEDULE' }}</small></div>
       <div class="games-spotlight-body">
@@ -49,7 +35,7 @@
       <button type="button" class="btn btn-primary rounded-pill px-4" @click="loadGames">Try again</button>
     </section>
     <section v-else-if="filteredGames.length === 0" class="games-state">
-      <span>🎯</span><strong>{{ games.length ? 'No matching markets' : 'No markets available' }}</strong>
+      <span>🎲</span><strong>{{ games.length ? 'No matching markets' : 'No markets available' }}</strong>
       <p>{{ games.length ? 'Try another filter or search term.' : 'Please check back later.' }}</p>
       <button v-if="searchTerm || activeFilter !== 'all'" type="button" class="btn btn-outline-primary rounded-pill px-4" @click="resetFilters">Show all markets</button>
     </section>
@@ -171,7 +157,7 @@ onMounted(loadGames)
 
 
 <style scoped>
-.games-discovery-v3{background:radial-gradient(circle at 95% 0,#342b70 0,transparent 28%),#080d1b;color:#f4f6ff}
+.games-discovery-v3{background:radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;color:#f4f6ff}
 .games-hero-v3{position:relative;overflow:hidden;margin:5px 0 14px;padding:19px;border:1px solid #7569ca55;border-radius:22px;background:radial-gradient(circle at 90% 10%,#8b72ff55 0,transparent 32%),linear-gradient(140deg,#201e4a,#142b50 72%,#11415d);box-shadow:0 17px 38px #00000040}
 .games-hero-copy{position:relative;z-index:1}.games-hero-copy>span{color:#c0b7ff;font-size:8px;font-weight:950;letter-spacing:.17em}
 .games-hero-copy h1{margin:8px 0;color:#fff;font-size:31px;font-weight:950;line-height:1.03;letter-spacing:-.05em}.games-hero-copy h1 em{color:#ffc96d;font-style:normal}

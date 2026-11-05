@@ -10,7 +10,7 @@
             <router-link to="/profile" @click="closeSidebar">Manage account →</router-link></div>
         </div>
         <router-link to="/wallet" class="drawer-balance" @click="closeSidebar">
-          <span>💰</span><span><small>Available balance</small><strong>₹ {{ formatWalletAmount }}</strong></span><b>→</b>
+          <span>🗃️</span><span><small>Available balance</small><strong>₹ {{ formatWalletAmount }}</strong></span><b>→</b>
         </router-link>
       </div>
       <nav class="drawer-navigation">
@@ -46,7 +46,7 @@
       </div>
       <div class="topbar-actions">
         <router-link to="/notifications" class="topbar-notifications" aria-label="Notifications">🔔</router-link>
-        <router-link to="/wallet" class="topbar-wallet"><span>💰</span><b>₹{{ formatWalletAmount }}</b></router-link>
+        <router-link to="/wallet" class="topbar-wallet"><span>🗃️</span><b>₹{{ formatWalletAmount }}</b></router-link>
       </div>
     </header>
 
@@ -61,9 +61,9 @@
     <nav v-if="!hideBottomNav" class="gsk-bottom-navigation" aria-label="Primary navigation">
       <router-link to="/dashboard" active-class="is-active" exact-active-class="is-active"><span>🏠</span><small>Home</small></router-link>
       <router-link to="/games" active-class="is-active"><span>🎮</span><small>Games</small></router-link>
-      <router-link to="/play-history" active-class="is-active"><span>📜</span><small>Plays</small></router-link>
-      <router-link to="/wallet" active-class="is-active"><span>💰</span><small>Wallet</small></router-link>
-      <router-link to="/profile" active-class="is-active"><span>👤</span><small>Profile</small></router-link>
+      <router-link to="/monthly-chart" active-class="is-active"><span>📊</span><small>Chart</small></router-link>
+      <router-link to="/wallet" active-class="is-active"><span>🗃️</span><small>Wallet</small></router-link>
+      <router-link to="/page/offers" active-class="is-active"><span>🎁</span><small>Offer</small></router-link>
     </nav>
   </div>
 </template>
@@ -151,7 +151,7 @@ const handleLogout = async () => {
 }
 // -------------
 </script><style scoped>
-.gsk-app-shell{position:relative;isolation:isolate;width:100%;max-width:680px;min-height:100dvh;margin:0 auto;overflow-x:clip;background:#080d1b;color:#f4f6ff;box-shadow:0 0 70px #02061755}
+.gsk-app-shell{position:relative;isolation:isolate;width:100%;max-width:680px;min-height:min-content;margin:0 auto;overflow-x:clip;background:#080d1b;color:#f4f6ff;box-shadow:0 0 70px #02061755}
 .gsk-drawer-backdrop{position:fixed;inset:0;z-index:1090;background:#020617b8;backdrop-filter:blur(7px);animation:gsk-backdrop-in .2s ease both}
 .gsk-drawer{position:fixed;inset:0 auto 0 0;z-index:1091;display:flex;width:min(88vw,350px);height:100dvh;flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);border-right:1px solid #ffffff12;background:radial-gradient(circle at 8% 0,#243d79 0,transparent 37%),linear-gradient(160deg,#111a34,#080d1b 72%);color:#f7f8ff;box-shadow:22px 0 70px #02061780;transform:translate3d(-105%,0,0);transition:transform .32s cubic-bezier(.2,.8,.2,1);will-change:transform}
 .gsk-drawer.is-open{transform:translate3d(0,0,0)}

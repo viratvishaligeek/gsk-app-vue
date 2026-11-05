@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "303313412968",
+    "project_id": "galisattakings",
+    "storage_bucket": "galisattakings.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303313412968:android:c65a0b97332100ab57acdd",
+        "android_client_info": {
+          "package_name": "com.galidisawar.playgame"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGZY9QJVToBHUvoj_95FYGoxMZnr8la9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

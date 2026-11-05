@@ -25,7 +25,7 @@
 
         <section class="play-mode-picker" aria-label="Choose play type">
           <button type="button" :class="{active:activeTab==='single'}" @click="changeMode('single')">
-            <span class="mode-symbol">🎯</span><span><strong>Jodi</strong><small>00–99 numbers</small></span><b>{{ activeTab==='single'?'✓':'→' }}</b>
+            <span class="mode-symbol">🎲</span><span><strong>Jodi</strong><small>00–99 numbers</small></span><b>{{ activeTab==='single'?'✓':'→' }}</b>
           </button>
           <button type="button" :class="{active:activeTab==='harup'}" @click="changeMode('harup')">
             <span class="mode-symbol">🎲</span><span><strong>Harup</strong><small>Ander & Bahar</small></span><b>{{ activeTab==='harup'?'✓':'→' }}</b>
@@ -417,7 +417,7 @@ const submitBetsAPI = async () => {
       </div>
 
       <div class="bet-confirm-warning">
-        <span class="gsk-emoji-icon" aria-hidden="true">💰</span>
+        <span class="gsk-emoji-icon" aria-hidden="true">🗃️</span>
         This amount will be deducted from your wallet.
       </div>
     </div>
@@ -578,7 +578,7 @@ onMounted(() => {
 })
 </script>
 <style scoped>
-.play-studio{min-height:100dvh;max-width:760px;margin:0 auto;padding:12px 13px calc(150px + env(safe-area-inset-bottom));background:#f3f6fb;color:#172b45;overflow-x:clip}
+.play-studio{min-height:min-content;max-width:760px;margin:0 auto;padding:12px 13px calc(150px + env(safe-area-inset-bottom));background:#f3f6fb;color:#172b45;overflow-x:clip}
 .play-studio-header{display:flex;align-items:center;gap:11px;padding:15px;border-radius:20px;background:linear-gradient(125deg,#152d4d,#285a91);color:#fff;box-shadow:0 12px 26px #18385c22}
 .play-studio-back{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid #ffffff40;border-radius:13px;color:#fff;font-size:23px;text-decoration:none}
 .play-studio-title{display:grid;gap:2px;flex:1;min-width:0}.play-studio-title>span,.play-step-intro>div>span,.play-panel-heading>div>span{font-size:8px;font-weight:900;letter-spacing:.14em;opacity:.72}.play-studio-title h1{margin:0;color:#fff;font-size:19px;font-weight:950;overflow-wrap:anywhere}.play-studio-title small{color:#d6e4f5;font-size:10px}
@@ -599,7 +599,7 @@ onMounted(() => {
 </style>
 
 <style scoped>
-.play-studio{--play-ink:#f4f6ff;--play-muted:#9ba9c8;min-height:100dvh;max-width:760px;margin:0 auto;padding:13px 13px calc(126px + env(safe-area-inset-bottom));overflow-x:clip;background:radial-gradient(circle at 95% 0,#342b70 0,transparent 28%),#080d1b;color:var(--play-ink)}
+.play-studio{--play-ink:#f4f6ff;--play-muted:#9ba9c8;min-height:min-content;max-width:760px;margin:0 auto;padding:15px 13px calc(13px + env(safe-area-inset-bottom));overflow-x:clip;background:radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;color:var(--play-ink)}
 .play-studio-header{position:sticky;top:68px;z-index:6;display:flex;align-items:center;gap:11px;margin:-13px -13px 14px;padding:12px 13px;border-bottom:1px solid #2c3a5a;background:#0b1325ed;backdrop-filter:blur(16px)}
 .play-studio-back{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid #354363;border-radius:13px;background:#15213a;color:#fff;font-size:22px}
 .play-studio-title{display:grid;flex:1;min-width:0;gap:1px}.play-studio-title>span{color:#a99bff;font-size:8px;font-weight:950;letter-spacing:.15em}
