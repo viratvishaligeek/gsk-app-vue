@@ -1,6 +1,17 @@
 name: GSK Vue and Android validation
 
 on:
+  push:
+    branches:
+      - implementation/**
+    paths:
+      - 'src/**'
+      - 'android/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.*'
+      - 'vite.config.*'
+      - '.github/workflows/**'
   pull_request:
     branches:
       - main
