@@ -1,0 +1,86 @@
+/* GSK Play mobile-first arcade visual system v4. */
+:root{
+  --gsk-brand:#7357f4;--gsk-brand-dark:#553bd0;--gsk-accent:#ffc85a;
+  --gsk-cyan:#29c9df;--gsk-ink:#f4f6ff;--gsk-muted:#9eaccb;
+  --gsk-paper:#090f20;--gsk-surface:#141f38;--gsk-line:#2b3b5d;
+  --gsk-radius:20px;--gsk-shadow:0 16px 38px rgba(0,0,0,.25);
+}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:radial-gradient(ellipse at 90% 0,#26305b 0,transparent 35%),#090f20;color:#f4f6ff}
+#app{min-height:100dvh}
+.gsk-app-shell{background:transparent;color:#f4f6ff}
+.gsk-topbar{background:rgba(13,22,42,.96);border-bottom:1px solid #2b3b5d;box-shadow:0 8px 26px #0003;backdrop-filter:blur(18px)}
+.gsk-wordmark strong{color:#fff;font-family:Outfit,Inter,sans-serif;letter-spacing:-.03em}
+.gsk-wordmark>span:first-child,.menu-trigger{background:linear-gradient(145deg,#7357f4,#315be8);color:#fff;box-shadow:0 8px 18px #7357f433}
+.topbar-wallet{border:1px solid #3c4d72;background:#1b2948;color:#ffe09a}
+.topbar-notifications{background:#1b2948;border:1px solid #3c4d72}
+.gsk-drawer{background:linear-gradient(180deg,#151f3a,#0d172c);border-right:1px solid #334363;box-shadow:20px 0 50px #0006}
+.drawer-balance{background:linear-gradient(120deg,#30265f,#1e3c75);border:1px solid #6153a5}
+.drawer-navigation a{color:#c6d1e8;border-radius:13px}
+.drawer-navigation a:hover,.drawer-navigation a.router-link-active{background:#28365a;color:#fff}
+.drawer-navigation a>span{background:#263556;border:1px solid #3b4d70}
+.drawer-navigation p{color:#8798bc}
+.drawer-footer{border-color:#2d3d5f}
+.drawer-logout{border:1px solid #99516b;background:#49283d;color:#ffb1c1}
+.gsk-bottom-navigation{background:rgba(13,22,42,.97);border:1px solid #2d3d5f;box-shadow:0 -10px 34px #0005;backdrop-filter:blur(18px)}
+.gsk-bottom-navigation a{color:#aab7d4}
+.gsk-bottom-navigation a.router-link-active,.gsk-bottom-navigation a.is-active{color:#d9d1ff;background:#2b2851}
+.gsk-bottom-navigation a.router-link-active>span,.gsk-bottom-navigation a.is-active>span{background:linear-gradient(145deg,#7357f4,#315be8);box-shadow:0 5px 18px #7357f455}
+.gsk-dashboard{background:transparent;color:#f4f6ff}
+.dashboard-announcement,.dashboard-notice{border-radius:16px;box-shadow:0 8px 24px #0002}
+.dashboard-announcement{background:#16223c;border-color:#344567}
+.dashboard-announcement span{color:#d5def2}
+.dashboard-notice{background:#332b20;border-color:#725a32;color:#ffe5b1}
+.dashboard-notice ul{color:#e5cfaa}
+.dashboard-hero-v3{border:1px solid #3b4a70;border-radius:24px;background:radial-gradient(circle at 90% 0,#6653bd 0,transparent 36%),linear-gradient(130deg,#18264a,#263e78);box-shadow:var(--gsk-shadow)}
+.dashboard-hero-v3 h1{font-family:Outfit,Inter,sans-serif;color:#fff;letter-spacing:-.04em}
+.dashboard-hero-v3 p{color:#c8d4ed}
+.dashboard-wallet-glance{border:1px solid #6476a2;background:#111e3a;border-radius:16px}
+.dashboard-wallet-glance strong{color:#ffda7e}
+.dashboard-promotions-v3 .carousel{border:1px solid #3b4a70;border-radius:20px;overflow:hidden;box-shadow:var(--gsk-shadow)}
+.dashboard-promotions-v3 .carousel-item img{width:100%;height:auto;max-height:310px;object-fit:cover}
+.gsk-banner-control{width:12%;opacity:.9}
+.dashboard-action-grid-v3>a{border:1px solid #334363;border-radius:17px;background:linear-gradient(150deg,#192747,#121d35);color:#f4f6ff;box-shadow:0 8px 24px #0002}
+.dashboard-action-grid-v3>a>span{background:#2b315e;border:1px solid #4b4a86}
+.dashboard-action-grid-v3>a strong{color:#fff}
+.dashboard-action-grid-v3>a small{color:#aab8d6}
+.featured-result-section-v3,.dashboard-market-section-v3,.dashboard-chart-section-v3{color:#f4f6ff}
+.featured-result-section-v3 .section-heading h2,.dashboard-market-section-v3 h2,.dashboard-chart-section-v3 h2{color:#fff}
+.featured-result-card-v3,.dashboard-game-card-v3,.dashboard-chart-card-v3{border:1px solid #344567;border-radius:19px;background:linear-gradient(150deg,#1b2a4a,#111c34);color:#f4f6ff;box-shadow:0 12px 28px #0003}
+.featured-result-card-v3 h3,.dashboard-game-card-v3 h3{color:#fff}
+.featured-result-card-v3 .result-number,.dashboard-game-card-v3 .result-number{color:#ffdb7d}
+.dashboard-service-grid-v3>a{border-color:#344567;background:#121e36;color:#f4f6ff}
+.dashboard-service-grid-v3 small{color:#9eaccb}
+.content-area,.page-content,.history-bg{background:transparent;color:#f4f6ff}
+.page-content{padding:14px 13px calc(100px + env(safe-area-inset-bottom))}
+.card,.gsk-panel,.modal-content{border-color:#304263;background:#141f38;color:#f4f6ff;box-shadow:var(--gsk-shadow)}
+.card-header,.card-footer,.modal-header,.modal-footer{border-color:#2b3b5d;background:#172542;color:#f4f6ff}
+.table{--bs-table-bg:transparent;--bs-table-color:#e8edfb;--bs-table-border-color:#2b3b5d}
+.table thead th{background:#202f53;color:#fff}
+.table tbody tr:hover>*{background:#1c2b4a;color:#fff}
+.form-control,.form-select,.input-group-text{border-color:#3a4c70;background:#0f1a32;color:#f4f6ff}
+.form-control::placeholder{color:#8292b2}
+.form-control:focus,.form-select:focus{border-color:#8b70ff;background:#111e38;color:#fff;box-shadow:0 0 0 .2rem #8b70ff2b}
+.btn-primary{--bs-btn-bg:#7357f4;--bs-btn-border-color:#7357f4;--bs-btn-hover-bg:#5d45d4;--bs-btn-hover-border-color:#5d45d4;box-shadow:0 7px 18px #7357f433}
+.btn-warning{--bs-btn-bg:#ffc85a;--bs-btn-border-color:#ffc85a;--bs-btn-color:#35260b}
+.btn-outline-secondary{--bs-btn-color:#d0daef;--bs-btn-border-color:#526487;--bs-btn-hover-bg:#2b3b5d;--bs-btn-hover-color:#fff}
+.alert-danger{background:#482635;border-color:#87465d;color:#ffc0ce}
+.alert-success{background:#123c36;border-color:#24745f;color:#8cf0ce}
+.badge.bg-light,.bg-light{background:#1c2b49!important;color:#dbe4f7!important}
+.text-muted{color:#9eaccb!important}
+@media(max-width:680px){
+ .gsk-topbar{min-height:64px;padding-inline:12px}
+ .gsk-main-content{padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+ .dashboard-hero-v3{border-radius:19px;padding:17px}
+ .dashboard-action-grid-v3{gap:8px}
+ .dashboard-action-grid-v3>a{min-width:0}
+ .dashboard-promotions-v3 .carousel{border-radius:16px}
+ .dashboard-promotions-v3 .carousel-item img{max-height:220px}
+}
+@media(max-width:360px){
+ .gsk-dashboard{padding-inline:10px}
+ .dashboard-hero-v3 h1{font-size:25px}
+ .dashboard-action-grid-v3>a strong{font-size:9px}
+ .dashboard-action-grid-v3>a small{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dashboard-action-grid-v3>a,.gsk-bottom-navigation a{transition:none!important}}
