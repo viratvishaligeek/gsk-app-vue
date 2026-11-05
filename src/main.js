@@ -11,6 +11,7 @@ import 'vue-toastification/dist/index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './assets/css/gsk-mobile.css'
+import './assets/css/gsk-arcade-v4.css'
 
 const app = createApp(App)
 
