@@ -79,10 +79,9 @@
             >
               <a
                 v-if="banner.url"
-                :href="banner.url"
-                :target="banner.externalUrl ? '_blank' : undefined"
-                :rel="banner.externalUrl ? 'noopener noreferrer' : undefined"
+                href="#"
                 class="d-block"
+                @click.prevent="openBanner(banner)"
                 :aria-label="banner.title ? 'Open ' + banner.title : 'Open promotion'"
               >
                 <img
@@ -252,6 +251,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Carousel } from 'bootstrap'
+import { Browser } from '@capacitor/browser'
+import { Capacitor } from '@capacitor/core'
 import api from '../plugins/axios'
 import LoadingState from '@/components/LoadingState.vue'
 import { useAuthStore } from '@/utils/auth'
@@ -625,6 +626,27 @@ const handleBannerSlid = (event) => {
 const goToBanner = (index) => {
   activeBannerIndex.value = index
   heroCarouselInstance?.to(index)
+}
+
+const openBanner = async (banner) => {
+  if (!banner?.url) return
+
+  try {
+    if (Capacitor.isNativePlatform()) {
+      await Browser.open({ url: banner.url })
+      return
+    }
+
+    if (banner.externalUrl) {
+      window.open(banner.url, '_blank', 'noopener,noreferrer')
+      return
+    }
+
+    window.location.assign(banner.url)
+  } catch (error) {
+    console.error('Unable to open promotion URL:', error)
+    window.location.assign(banner.url)
+  }
 }
 
 /*
