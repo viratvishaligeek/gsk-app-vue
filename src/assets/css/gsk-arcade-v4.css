@@ -26,30 +26,30 @@ body{background:radial-gradient(ellipse at 90% 0,#26305b 0,transparent 35%),#090
 .gsk-bottom-navigation a{color:#aab7d4}
 .gsk-bottom-navigation a.router-link-active,.gsk-bottom-navigation a.is-active{color:#d9d1ff;background:#2b2851}
 .gsk-bottom-navigation a.router-link-active>span,.gsk-bottom-navigation a.is-active>span{background:linear-gradient(145deg,#7357f4,#315be8);box-shadow:0 5px 18px #7357f455}
-.gsk-dashboard{background:transparent;color:#f4f6ff}
+.gsk-dashboard{background:transparent!important;color:#f4f6ff!important}
 .dashboard-announcement,.dashboard-notice{border-radius:16px;box-shadow:0 8px 24px #0002}
-.dashboard-announcement{background:#16223c;border-color:#344567}
+.dashboard-announcement{background:#16223c!important;border-color:#344567!important;color:#d5def2!important}
 .dashboard-announcement span{color:#d5def2}
-.dashboard-notice{background:#332b20;border-color:#725a32;color:#ffe5b1}
+.dashboard-notice{background:#332b20!important;border-color:#725a32!important;color:#ffe5b1!important}
 .dashboard-notice ul{color:#e5cfaa}
-.dashboard-hero-v3{border:1px solid #3b4a70;border-radius:24px;background:radial-gradient(circle at 90% 0,#6653bd 0,transparent 36%),linear-gradient(130deg,#18264a,#263e78);box-shadow:var(--gsk-shadow)}
+.dashboard-hero-v3{border:1px solid #3b4a70!important;border-radius:24px;background:radial-gradient(circle at 90% 0,#6653bd 0,transparent 36%),linear-gradient(130deg,#18264a,#263e78)!important;box-shadow:var(--gsk-shadow)!important}
 .dashboard-hero-v3 h1{font-family:Outfit,Inter,sans-serif;color:#fff;letter-spacing:-.04em}
 .dashboard-hero-v3 p{color:#c8d4ed}
-.dashboard-wallet-glance{border:1px solid #6476a2;background:#111e3a;border-radius:16px}
+.dashboard-wallet-glance{border:1px solid #6476a2!important;background:#111e3a!important;border-radius:16px!important;color:#f4f6ff!important}
 .dashboard-wallet-glance strong{color:#ffda7e}
 .dashboard-promotions-v3 .carousel{border:1px solid #3b4a70;border-radius:20px;overflow:hidden;box-shadow:var(--gsk-shadow)}
 .dashboard-promotions-v3 .carousel-item img{width:100%;height:auto;max-height:310px;object-fit:cover}
 .gsk-banner-control{width:12%;opacity:.9}
-.dashboard-action-grid-v3>a{border:1px solid #334363;border-radius:17px;background:linear-gradient(150deg,#192747,#121d35);color:#f4f6ff;box-shadow:0 8px 24px #0002}
+.dashboard-action-grid-v3>a{border:1px solid #334363!important;border-radius:17px!important;background:linear-gradient(150deg,#192747,#121d35)!important;color:#f4f6ff!important;box-shadow:0 8px 24px #0002!important}
 .dashboard-action-grid-v3>a>span{background:#2b315e;border:1px solid #4b4a86}
 .dashboard-action-grid-v3>a strong{color:#fff}
 .dashboard-action-grid-v3>a small{color:#aab8d6}
 .featured-result-section-v3,.dashboard-market-section-v3,.dashboard-chart-section-v3{color:#f4f6ff}
 .featured-result-section-v3 .section-heading h2,.dashboard-market-section-v3 h2,.dashboard-chart-section-v3 h2{color:#fff}
-.featured-result-card-v3,.dashboard-game-card-v3,.dashboard-chart-card-v3{border:1px solid #344567;border-radius:19px;background:linear-gradient(150deg,#1b2a4a,#111c34);color:#f4f6ff;box-shadow:0 12px 28px #0003}
+.featured-result-card-v3,.lobby-preview-card-v3{border:1px solid #344567!important;border-radius:19px!important;background:linear-gradient(150deg,#1b2a4a,#111c34)!important;color:#f4f6ff!important;box-shadow:0 12px 28px #0003!important}
 .featured-result-card-v3 h3,.dashboard-game-card-v3 h3{color:#fff}
 .featured-result-card-v3 .result-number,.dashboard-game-card-v3 .result-number{color:#ffdb7d}
-.dashboard-service-grid-v3>a{border-color:#344567;background:#121e36;color:#f4f6ff}
+.dashboard-service-grid-v3>a{border-color:#344567!important;background:#121e36!important;color:#f4f6ff!important}
 .dashboard-service-grid-v3 small{color:#9eaccb}
 .content-area,.page-content,.history-bg{background:transparent;color:#f4f6ff}
 .page-content{padding:14px 13px calc(100px + env(safe-area-inset-bottom))}
