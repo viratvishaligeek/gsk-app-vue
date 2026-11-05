@@ -1261,9 +1261,9 @@ onUnmounted(() => {
   width: 14px;
   height: 14px;
 }
-</style>
 
-<style scoped>
+/* Preserved responsive/theme overrides */
+
 .gsk-dashboard {
   --gsk-navy: #e9edff;
   --gsk-blue: #a99bff;
