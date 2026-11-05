@@ -256,7 +256,7 @@ const handleSignUp = async () => {
   }
 }
 </script>
-<style>
+<style scoped>
 .gsk-auth-page {
   --auth-navy: #18365e;
   display: grid;
@@ -469,10 +469,9 @@ const handleSignUp = async () => {
     margin-top: 18px;
   }
 }
-</style>
 
+/* Preserved responsive/theme overrides */
 
-<style scoped>
 .gsk-auth-page{min-height:min-content;background:radial-gradient(circle at 80% 0,#44368b 0,transparent 36%),linear-gradient(160deg,#0b1225,#080d1b);color:#f4f6ff}
 .auth-brand-panel{position:relative;overflow:hidden;border:1px solid #7a6bd35c;border-radius:0 0 28px 28px;background:radial-gradient(circle at 80% 0,#8b72ff55 0,transparent 40%),linear-gradient(140deg,#211e4b,#142b50);color:#fff}
 .auth-brand-panel>span,.auth-eyebrow{color:#b9adff;font-size:9px;font-weight:950;letter-spacing:.15em}.auth-brand-panel h1{color:#fff;font-weight:950}.auth-brand-panel p{color:#c2cde6}
