@@ -77,7 +77,21 @@
               class="carousel-item"
               :class="{ active: index === 0 }"
             >
+              <a
+                v-if="banner.url"
+                href="#"
+                class="d-block"
+                @click.prevent="openBanner(banner)"
+                :aria-label="banner.title ? 'Open ' + banner.title : 'Open promotion'"
+              >
+                <img
+                  :src="banner.imageUrl"
+                  class="d-block w-100"
+                  :alt="banner.title || 'GSK promotion'"
+                />
+              </a>
               <img
+                v-else
                 :src="banner.imageUrl"
                 class="d-block w-100"
                 :alt="banner.title || 'GSK promotion'"
@@ -237,6 +251,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Carousel } from 'bootstrap'
+import { Browser } from '@capacitor/browser'
+import { Capacitor } from '@capacitor/core'
 import api from '../plugins/axios'
 import LoadingState from '@/components/LoadingState.vue'
 import { useAuthStore } from '@/utils/auth'
@@ -473,17 +489,35 @@ const fetchGames = async () => {
     |--------------------------------------------------------------------------
     */
     const nextBanners = Array.isArray(data.banners)
-      ? data.banners.map((banner) => ({
-          id: banner.id,
-          title: banner.title || banner.name || 'Banner',
-          imageUrl: banner.image_url || banner.image,
-        }))
+      ? data.banners.map((banner) => {
+          const rawUrl = String(banner.url || banner.link || banner.target_url || '').trim()
+          let safeUrl = ''
+          let externalUrl = false
+          if (rawUrl) {
+            try {
+              const parsed = new URL(rawUrl, window.location.origin)
+              if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+                safeUrl = parsed.href
+                externalUrl = parsed.origin !== window.location.origin
+              }
+            } catch {
+              safeUrl = ''
+            }
+          }
+          return {
+            id: banner.id,
+            title: banner.title || banner.name || 'Banner',
+            imageUrl: banner.image_url || banner.image,
+            url: safeUrl,
+            externalUrl,
+          }
+        })
       : []
     const previousBannerSignature = banners.value
-      .map((banner) => `${banner.id}:${banner.imageUrl}`)
+      .map((banner) => `${banner.id}:${banner.imageUrl}:${banner.url || ''}`)
       .join('|')
     const nextBannerSignature = nextBanners
-      .map((banner) => `${banner.id}:${banner.imageUrl}`)
+      .map((banner) => `${banner.id}:${banner.imageUrl}:${banner.url || ''}`)
       .join('|')
     if (previousBannerSignature !== nextBannerSignature) {
       banners.value = nextBanners
@@ -592,6 +626,27 @@ const handleBannerSlid = (event) => {
 const goToBanner = (index) => {
   activeBannerIndex.value = index
   heroCarouselInstance?.to(index)
+}
+
+const openBanner = async (banner) => {
+  if (!banner?.url) return
+
+  try {
+    if (Capacitor.isNativePlatform()) {
+      await Browser.open({ url: banner.url })
+      return
+    }
+
+    if (banner.externalUrl) {
+      window.open(banner.url, '_blank', 'noopener,noreferrer')
+      return
+    }
+
+    window.location.assign(banner.url)
+  } catch (error) {
+    console.error('Unable to open promotion URL:', error)
+    window.location.assign(banner.url)
+  }
 }
 
 /*
@@ -1228,9 +1283,9 @@ onUnmounted(() => {
   width: 14px;
   height: 14px;
 }
-</style>
 
-<style scoped>
+/* Preserved responsive/theme overrides */
+
 .gsk-dashboard {
   --gsk-navy: #e9edff;
   --gsk-blue: #a99bff;
