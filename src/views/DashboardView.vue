@@ -513,10 +513,10 @@ const fetchGames = async () => {
         })
       : []
     const previousBannerSignature = banners.value
-      .map((banner) => `${banner.id}:${banner.imageUrl}`)
+      .map((banner) => `${banner.id}:${banner.imageUrl}:${banner.url || ''}`)
       .join('|')
     const nextBannerSignature = nextBanners
-      .map((banner) => `${banner.id}:${banner.imageUrl}`)
+      .map((banner) => `${banner.id}:${banner.imageUrl}:${banner.url || ''}`)
       .join('|')
     if (previousBannerSignature !== nextBannerSignature) {
       banners.value = nextBanners
