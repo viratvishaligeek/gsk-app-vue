@@ -185,7 +185,7 @@ const handleLogout = async () => {
 .menu-trigger{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border:1px solid #ffffff1b;border-radius:14px;background:#ffffff09;color:#eaf0ff;font-size:22px;transition:background .18s,transform .18s}
 .menu-trigger:active{transform:scale(.94);background:#765cf52c}
 .gsk-wordmark{display:flex;align-items:center;gap:9px;min-width:0;color:#fff;text-decoration:none}
-.gsk-wordmark>span:first-child{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border:1px solid #9a8cff50;border-radius:13px;background:linear-gradient(145deg,#765cf5,#2468db);box-shadow:0 7px 22px #5e5af544;font-size:21px}
+.gsk-wordmark>span:first-child{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border:1px solid #fff50;border-radius:13px;background:linear-gradient(145deg,#765cf5,#2468db);box-shadow:0 7px 22px #5e5af544;font-size:21px}
 .gsk-wordmark>span:last-child{display:grid;gap:0}
 .gsk-wordmark strong{color:#fff;font-size:14px;font-weight:950;line-height:1.15;letter-spacing:-.02em}
 .gsk-wordmark small{color:#8395bd;font-size:8px;font-weight:900;letter-spacing:.17em}

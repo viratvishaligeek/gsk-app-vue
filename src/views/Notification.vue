@@ -411,7 +411,7 @@ onUnmounted(() => {
 </style>
 
 <style scoped>
-.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;color:#f4f6ff}
+.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
 .notification-shortcuts{display:flex;gap:8px;margin:13px 0}.notification-shortcuts a{flex:1;padding:10px 12px;border:1px solid #354363;border-radius:12px;background:#131e35;color:#c8c0ff;font-size:10px;font-weight:850}
 .push-preference-card,.app-update-card,.notification-row{border:1px solid #2e3d5e;border-radius:17px;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 10px 24px #00000022}
 .push-preference-copy strong,.app-update-copy strong{color:#fff}.push-preference-copy small,.app-update-copy small{color:#91a0bf}

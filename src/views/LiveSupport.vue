@@ -351,7 +351,7 @@ onUnmounted(() => {
 </style>
 
 <style scoped>
-.content-area.history-bg{min-height:min-content;padding-bottom:calc(24px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;color:#f4f6ff}
+.content-area.history-bg{min-height:min-content;padding-bottom:calc(24px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
 .content-area .container-fluid{max-width:760px;margin-inline:auto}
 .support-banner{border:1px solid #7569c05c;border-radius:20px;background:radial-gradient(circle at 100% 0,#765cf533 0,transparent 38%),linear-gradient(140deg,#211e4b,#142b50);box-shadow:0 13px 30px #00000030}
 .support-banner h1{color:#fff}.support-banner .text-white-50{color:#bdc8e2!important}

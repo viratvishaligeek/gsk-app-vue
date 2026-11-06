@@ -1294,7 +1294,7 @@ onUnmounted(() => {
   --gsk-muted: #9ba9c8;
   min-height: 100dvh;
   padding: 13px 13px calc(13px + env(safe-area-inset-bottom));
-  background: radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;
+  background: radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;
   color: #f4f6ff;
   overflow-x: clip;
 }
@@ -1348,7 +1348,7 @@ onUnmounted(() => {
   z-index: 1;
 }
 .dashboard-hero-kicker {
-  color: #b9b2ff;
+  color: #fff;
   font-size: 8px;
   font-weight: 950;
   letter-spacing: 0.16em;
@@ -1498,7 +1498,7 @@ onUnmounted(() => {
 }
 .featured-result-section-v3 .eyebrow,
 .lobby-preview-v3 .eyebrow {
-  color: #9a8cff;
+  color: #fff;
 }
 .featured-result-section-v3 .market-count {
   border: 1px solid #34415f;

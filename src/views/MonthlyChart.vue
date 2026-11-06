@@ -554,7 +554,7 @@ onBeforeUnmount(async () => {
 .gsk-screen {
   min-height: min-content;
   padding: 15px 13px calc(13px + env(safe-area-inset-bottom));
-  background: radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;
+  background: radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;
   color: #f4f6ff;
 }
 .chart-shortcuts {

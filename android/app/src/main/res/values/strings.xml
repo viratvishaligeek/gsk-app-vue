@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">GSK Play</string>
     <string name="title_activity_main">GSK Play</string>
-    <string name="package_name">com.galidisawar.playgame</string>
-    <string name="custom_url_scheme">com.galidisawar.playgame</string>
+    <string name="package_name">com.galisatta.kings</string>
+    <string name="custom_url_scheme">com.galisatta.kings</string>
 </resources>

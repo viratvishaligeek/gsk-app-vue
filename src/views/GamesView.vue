@@ -157,7 +157,7 @@ onMounted(loadGames)
 
 
 <style scoped>
-.games-discovery-v3{background:radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;color:#f4f6ff}
+.games-discovery-v3{background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
 .games-hero-v3{position:relative;overflow:hidden;margin:5px 0 14px;padding:19px;border:1px solid #7569ca55;border-radius:22px;background:radial-gradient(circle at 90% 10%,#8b72ff55 0,transparent 32%),linear-gradient(140deg,#201e4a,#142b50 72%,#11415d);box-shadow:0 17px 38px #00000040}
 .games-hero-copy{position:relative;z-index:1}.games-hero-copy>span{color:#c0b7ff;font-size:8px;font-weight:950;letter-spacing:.17em}
 .games-hero-copy h1{margin:8px 0;color:#fff;font-size:31px;font-weight:950;line-height:1.03;letter-spacing:-.05em}.games-hero-copy h1 em{color:#ffc96d;font-style:normal}

@@ -200,7 +200,7 @@ onMounted(() => {
 </style>
 
 <style scoped>
-.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;color:#f4f6ff}
+.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
 .wallet-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
 .wallet-quick-actions>a{display:grid;justify-items:center;gap:4px;min-width:0;padding:12px 6px;border:1px solid #34415f;border-radius:15px;background:#131e35;color:#e7ebff;text-align:center;box-shadow:0 8px 20px #0000001c}
 .wallet-quick-actions>a>span{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#292550;color:#d2caff;font-size:20px}

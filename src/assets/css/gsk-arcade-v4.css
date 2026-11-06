@@ -26,7 +26,7 @@ body{background:radial-gradient(ellipse at 90% 0,#26305b 0,transparent 35%),#090
 .gsk-bottom-navigation a{color:#aab7d4}
 .gsk-bottom-navigation a.router-link-active,.gsk-bottom-navigation a.is-active{color:#d9d1ff;background:#2b2851}
 .gsk-bottom-navigation a.router-link-active>span,.gsk-bottom-navigation a.is-active>span{background:linear-gradient(145deg,#7357f4,#315be8);box-shadow:0 5px 18px #7357f455}
-.gsk-dashboard{background:transparent!important;color:#f4f6ff!important}
+/* .gsk-dashboard{background:transparent!important;color:#f4f6ff!important} */
 .dashboard-announcement,.dashboard-notice{border-radius:16px;box-shadow:0 8px 24px #0002}
 .dashboard-announcement{background:#16223c!important;border-color:#344567!important;color:#d5def2!important}
 .dashboard-announcement span{color:#d5def2}

@@ -599,7 +599,7 @@ onMounted(() => {
 </style>
 
 <style scoped>
-.play-studio{--play-ink:#f4f6ff;--play-muted:#9ba9c8;min-height:min-content;max-width:760px;margin:0 auto;padding:15px 13px calc(13px + env(safe-area-inset-bottom));overflow-x:clip;background:radial-gradient(circle at 100% 0, #08051c 0, #7171718a 20%), #213774;color:var(--play-ink)}
+.play-studio{--play-ink:#f4f6ff;--play-muted:#9ba9c8;min-height:min-content;max-width:760px;margin:0 auto;padding:15px 13px calc(13px + env(safe-area-inset-bottom));overflow-x:clip;background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:var(--play-ink)}
 .play-studio-header{position:sticky;top:68px;z-index:6;display:flex;align-items:center;gap:11px;margin:-13px -13px 14px;padding:12px 13px;border-bottom:1px solid #2c3a5a;background:#0b1325ed;backdrop-filter:blur(16px)}
 .play-studio-back{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid #354363;border-radius:13px;background:#15213a;color:#fff;font-size:22px}
 .play-studio-title{display:grid;flex:1;min-width:0;gap:1px}.play-studio-title>span{color:#a99bff;font-size:8px;font-weight:950;letter-spacing:.15em}

@@ -1,4 +1,4 @@
-package com.galidisawar.playgame;
+package com.galisatta.kings;
 
 import com.getcapacitor.BridgeActivity;
 
