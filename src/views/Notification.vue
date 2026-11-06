@@ -1,6 +1,5 @@
 <template>
   <main class="gsk-screen">
-    <GskScreenHeader emoji="🔔" kicker="STAY IN THE LOOP" title="Notifications" subtitle="Updates about your account and activity." />
     <nav class="notification-shortcuts" aria-label="Notification destinations"><router-link to="/wallet">🗃️ Wallet activity</router-link><router-link to="/play-history">🎟️ My plays</router-link></nav>
     <section class="push-preference-card">
       <div class="push-preference-copy"><span>🔔</span><div><strong>Push notifications</strong><small>{{ notificationsEnabled&&pushPermissionState==='granted'?'Notifications are enabled on this device.':'Enable alerts to receive important updates.' }}</small></div></div>

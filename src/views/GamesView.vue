@@ -1,26 +1,15 @@
 <template>
   <main class="games-discovery page-content games-discovery-v3">
-    <section v-if="featuredGame && !searchTerm && activeFilter === 'all'" class="games-spotlight-v3">
-      <div class="games-spotlight-heading"><span>⭐ SPOTLIGHT MARKET</span><small>{{ featuredGame.is_playable ? 'READY TO PLAY' : 'NEXT SCHEDULE' }}</small></div>
-      <div class="games-spotlight-body">
-        <div class="games-spotlight-icon">🎲</div>
-        <div class="games-spotlight-copy"><h2>{{ featuredGame.name }}</h2><p>🕒 {{ formatTime(featuredGame.play_start) }} – {{ formatTime(featuredGame.play_end) }}</p></div>
-        <div class="games-spotlight-result"><small>TODAY</small><strong>{{ resultNumber(featuredGame) }}</strong></div>
-      </div>
-      <router-link v-if="featuredGame.is_playable" :to="{name:'play-game',params:{id:featuredGame.id}}">Enter game studio <b>→</b></router-link>
-      <router-link v-else :to="{name:'monthly-chart',query:{game:featuredGame.id}}">Explore market history <b>→</b></router-link>
-    </section>
-
     <section class="games-discovery-controls-v3" aria-label="Find a market">
-      <div class="games-discovery-heading"><div><span>MARKET DIRECTORY</span><h2>Explore all games</h2></div><router-link to="/monthly-chart">📊 Charts</router-link></div>
+      <div class="games-discovery-heading"><div><span>GAME DIRECTORY</span><h2>All Games List</h2></div><router-link to="/monthly-chart">📊 Charts</router-link></div>
       <label class="games-search">
         <span aria-hidden="true">🔎</span>
         <input v-model="searchTerm" type="search" placeholder="Search market name…" aria-label="Search markets">
         <button v-if="searchTerm" type="button" aria-label="Clear search" @click="searchTerm = ''">✕</button>
       </label>
-      <div class="games-filter-row" role="group" aria-label="Filter markets">
+      <div class="games-filter-row justify-content-around" role="group" aria-label="Filter markets">
         <button v-for="option in filters" :key="option.value" type="button"
-          :class="{ 'is-selected': activeFilter === option.value }"
+          :class="{ 'is-selected bg-danger': activeFilter === option.value }"
           :aria-pressed="activeFilter === option.value" @click="activeFilter = option.value">
           {{ option.label }} <span>{{ filterCounts[option.value] }}</span>
         </button>
@@ -44,14 +33,14 @@
       <article v-for="game in discoveryGames" :key="game.id" class="game-lobby-card"
         :class="{ 'game-lobby-card-closed': !game.is_playable }">
         <div class="game-card-top">
-          <span class="game-card-symbol" aria-hidden="true">🎮</span>
+          <span class="game-card-symbol" aria-hidden="true">🌐</span>
           <span class="game-card-status" :class="game.is_playable ? 'status-open' : 'status-closed'">
             <i></i>{{ game.monthly_closure ? 'Month-end closed' : (game.is_playable ? 'Open now' : 'Closed') }}
           </span>
         </div>
-        <div class="game-card-copy">
+        <div class="game-card-copy text-center">
           <h2>{{ game.name }}</h2>
-          <p>🕒 {{ formatTime(game.play_start) }} – {{ formatTime(game.play_end) }}</p>
+          <p class="text-light">🕒 {{ formatTime(game.play_start) }} – {{ formatTime(game.play_end) }}</p>
         </div>
         <div class="game-card-result">
           <div><small>Today's result</small><strong>{{ resultNumber(game) }}</strong></div>
@@ -59,13 +48,12 @@
         </div>
         <div class="game-card-actions">
           <router-link v-if="game.is_playable" :to="{ name: 'play-game', params: { id: game.id } }"
-            class="btn btn-primary">Play now <span>→</span></router-link>
-          <router-link v-else :to="{ name: 'monthly-chart', query: { game: game.id } }"
-            class="btn btn-outline-secondary">View history <span>→</span></router-link>
+            class="btn btn-success text-center">Play now</router-link>
+          <span v-else
+            class="btn btn-danger">🕒 Time Out <span>→</span></span>
         </div>
       </article>
     </section>
-    <p class="games-footnote">Market availability and play timings are controlled by the server. Play responsibly.</p>
   </main>
 </template>
 
@@ -106,7 +94,7 @@ const filteredGames = computed(() => {
   })
 })
 
-const discoveryGames = computed(() => filteredGames.value.filter(game => !(game.id === featuredGame.value?.id && !searchTerm.value.trim() && activeFilter.value === 'all')))
+const discoveryGames = computed(() => filteredGames.value)
 
 const hasTodayResult = game => Boolean(game.today_result?.number ?? (game.latest_result?.date === serverToday.value ? game.latest_result?.number : null))
 const resultNumber = game => {
@@ -152,7 +140,84 @@ onMounted(loadGames)
 </script>
 
 <style scoped>
-.games-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:4px 0 18px}.games-intro h1{margin:5px 0 4px;font-size:26px;font-weight:950;letter-spacing:-.04em}.games-intro p{max-width:440px;margin:0;color:var(--gsk-muted);font-size:11px}.games-results-link{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;padding:10px 12px;border:1px solid var(--gsk-line);border-radius:12px;background:#fff;font-size:10px;font-weight:850}.games-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:15px}.games-summary>div{display:grid;gap:2px;padding:13px;border:1px solid var(--gsk-line);border-radius:14px;background:#fff}.games-summary strong{font-size:21px;font-weight:950;line-height:1.2}.games-summary span{color:var(--gsk-muted);font-size:9px}.games-controls{position:sticky;top:64px;z-index:5;margin:0 -13px 15px;padding:10px 13px 12px;background:var(--gsk-paper);border-bottom:1px solid var(--gsk-line)}.games-search{display:flex;align-items:center;gap:9px;min-height:46px;padding:0 12px;border:1px solid var(--gsk-line);border-radius:13px;background:#fff}.games-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:12px}.games-search button{border:0;background:transparent;color:var(--gsk-muted)}.games-filter-row{display:flex;gap:7px;overflow-x:auto;padding-top:10px;scrollbar-width:none}.games-filter-row::-webkit-scrollbar{display:none}.games-filter-row button{display:flex;align-items:center;gap:7px;flex:0 0 auto;min-height:35px;padding:0 11px;border:1px solid var(--gsk-line);border-radius:30px;background:#fff;color:#5f6e83;font-size:10px;font-weight:800}.games-filter-row button.is-selected{border-color:var(--gsk-brand);background:var(--gsk-brand);color:#fff}.games-filter-row button span{opacity:.72}.games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.game-lobby-card{display:flex;min-width:0;flex-direction:column;gap:12px;padding:13px;border:1px solid var(--gsk-line);border-radius:17px;background:#fff;box-shadow:var(--gsk-shadow)}.game-lobby-card-closed{background:linear-gradient(160deg,#fff,#f7f8fa)}.game-card-top{display:flex;align-items:center;justify-content:space-between;gap:6px}.game-card-symbol{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#edf3fc;font-size:22px}.game-card-status{display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border-radius:30px;font-size:8px;font-weight:850;white-space:nowrap}.game-card-status i{width:5px;height:5px;border-radius:50%;background:currentColor}.status-open{background:#e5f5ec;color:#237b55}.status-closed{background:#eef0f3;color:#69778a}.game-card-copy h2{overflow-wrap:anywhere;margin:0 0 4px;font-size:13px;font-weight:900}.game-card-copy p{margin:0;color:var(--gsk-muted);font-size:9px}.game-card-result{display:flex;align-items:end;justify-content:space-between;gap:5px;padding:10px;border-radius:11px;background:#f1f5fa}.game-card-result>div{display:grid;gap:2px}.game-card-result small{color:var(--gsk-muted);font-size:8px}.game-card-result strong{font-size:22px;font-weight:950;line-height:1.1}.game-card-result>span{color:var(--gsk-muted);font-size:8px;text-align:right}.game-card-actions{margin-top:auto}.game-card-actions .btn{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:40px;padding:0 10px;font-size:9px}.games-state{display:grid;justify-items:center;gap:6px;padding:35px 16px;border:1px dashed var(--gsk-line);border-radius:17px;background:#fff;text-align:center}.games-state>span{font-size:34px}.games-state strong{font-size:14px}.games-state p{margin:0 0 8px;color:var(--gsk-muted);font-size:11px}.games-footnote{margin:18px 0 0;color:var(--gsk-muted);font-size:9px;text-align:center}@media(max-width:390px){.games-intro{align-items:flex-start;flex-direction:column}.games-results-link{align-self:flex-start}.games-grid{grid-template-columns:1fr}.games-controls{top:58px}}@media(prefers-reduced-motion:reduce){.game-lobby-card{transition:none}}
+
+.games-grid-v3 .game-card-actions .btn-success {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid #40e69a;
+  background: linear-gradient(110deg, #12b76a, #079455);
+  color: #fff;
+  box-shadow: 0 4px 14px #12b76a35;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+/* Sliding shine line */
+.games-grid-v3 .game-card-actions .btn-success::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 45%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, .15),
+    rgba(255, 255, 255, .85),
+    rgba(255, 255, 255, .15),
+    transparent
+  );
+  transform: skewX(-25deg);
+  animation: playSlideShine 2.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes playSlideShine {
+  0% {
+    left: -100%;
+  }
+  65%, 100% {
+    left: 150%;
+  }
+}
+
+.games-grid-v3 .game-card-actions .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px #12b76a65;
+}
+
+.games-grid-v3 .game-card-actions .btn-success:active {
+  transform: scale(.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .games-grid-v3 .game-card-actions .btn-success::before {
+    animation: none;
+  }
+}
+
+.games-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:4px 0 18px}.games-intro h1{margin:5px 0 4px;font-size:26px;font-weight:950;letter-spacing:-.04em}.games-intro p{max-width:440px;margin:0;color:var(--gsk-muted);font-size:11px}.games-results-link{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;padding:10px 12px;border:1px solid var(--gsk-line);border-radius:12px;background:#fff;font-size:10px;font-weight:850}.games-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:15px}.games-summary>div{display:grid;gap:2px;padding:13px;border:1px solid var(--gsk-line);border-radius:14px;background:#fff}.games-summary strong{font-size:21px;font-weight:950;line-height:1.2}.games-summary span{color:var(--gsk-muted);font-size:9px}.games-controls{position:sticky;top:64px;z-index:5;margin:0 -13px 15px;padding:10px 13px 12px;background:var(--gsk-paper);border-bottom:1px solid var(--gsk-line)}.games-search{display:flex;align-items:center;gap:9px;min-height:46px;padding:0 12px;border:1px solid var(--gsk-line);border-radius:13px;background:#fff}.games-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:12px}.games-search button{border:0;background:transparent;color:var(--gsk-muted)}.games-filter-row{display:flex;gap:7px;overflow-x:auto;padding-top:10px;scrollbar-width:none}.games-filter-row::-webkit-scrollbar{display:none}.games-filter-row button{display:flex;align-items:center;gap:7px;flex:0 0 auto;min-height:35px;padding:0 11px;border:1px solid var(--gsk-line);border-radius:30px;background:#fff;color:#5f6e83;font-size:10px;font-weight:800}.games-filter-row button.is-selected{border-color:var(--gsk-brand);color:#fff}.games-filter-row button span{opacity:.72}.games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.game-lobby-card{display:flex;min-width:0;flex-direction:column;gap:12px;padding:13px;border:1px solid var(--gsk-line);border-radius:17px;background:#fff;box-shadow:var(--gsk-shadow)}.game-lobby-card-closed{background:linear-gradient(160deg,#fff,#f7f8fa)}.game-card-top{display:flex;align-items:center;justify-content:space-between;gap:6px}.game-card-symbol{
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 12px;
+    background: #edf3fc;
+    font-size: 15px;
+}.game-card-status{display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border-radius:30px;font-size:8px;font-weight:850;white-space:nowrap}.game-card-status i{width:5px;height:5px;border-radius:50%;background:currentColor}.status-open{background:#e5f5ec;color:#237b55}.status-closed{background:#eef0f3;color:#69778a}.game-card-copy h2{overflow-wrap: anywhere;
+    margin: 0 0 4px;
+    font-size: 17px;
+    font-weight: 800;
+    border: 0.1em solid #ffffff1c;
+    border-radius: 7px;}.game-card-copy p{margin:0;color:var(--gsk-muted);font-size:9px}.game-card-result{display:flex;align-items:end;justify-content:space-between;gap:5px;padding:10px;border-radius:11px;background:#f1f5fa}.game-card-result>div{display:grid;gap:2px}.game-card-result small{color:var(--gsk-muted);font-size:8px}.game-card-result strong{font-size:22px;font-weight:950;line-height:1.1}.game-card-result>span{color:var(--gsk-muted);font-size:8px;text-align:right}.game-card-actions{margin-top:auto}.game-card-actions .btn{    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: 15px;}.games-state{display:grid;justify-items:center;gap:6px;padding:35px 16px;border:1px dashed var(--gsk-line);border-radius:17px;background:#fff;text-align:center}.games-state>span{font-size:34px}.games-state strong{font-size:14px}.games-state p{margin:0 0 8px;color:var(--gsk-muted);font-size:11px}.games-footnote{margin:18px 0 0;color:var(--gsk-muted);font-size:9px;text-align:center}@media(max-width:390px){.games-intro{align-items:flex-start;flex-direction:column}.games-results-link{align-self:flex-start}.games-grid{grid-template-columns:1fr}.games-controls{top:58px}}@media(prefers-reduced-motion:reduce){.game-lobby-card{transition:none}}
 </style>
 
 
@@ -181,7 +246,7 @@ onMounted(loadGames)
 .games-discovery-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.games-discovery-heading>div>span{color:#9b8cff;font-size:8px;font-weight:950;letter-spacing:.14em}
 .games-discovery-heading h2{margin:3px 0 0;color:#f4f6ff;font-size:17px;font-weight:950}.games-discovery-heading>a{color:#b6aaff;font-size:9px;font-weight:850}
 .games-search{border-color:#354363;background:#121d34;color:#fff}.games-search input{color:#fff}.games-search input::placeholder{color:#7888aa}
-.games-filter-row button{border-color:#354363;background:#131e35;color:#b7c4df}.games-filter-row button.is-selected{border-color:#8b72ff;background:linear-gradient(110deg,#765cf5,#326ce5);color:#fff;box-shadow:0 5px 15px #4e54d944}
+.games-filter-row button{border-color:#354363;background:#131e35;color:#b7c4df}.games-filter-row button.is-selected{border-color:#8b72ff;color:#fff;box-shadow:0 5px 15px #4e54d944}
 .games-grid-v3{gap:10px}.games-grid-v3 .game-lobby-card{border-color:#2e3d5e;background:linear-gradient(155deg,#18233d,#101a2e);box-shadow:0 10px 25px #00000025}
 .games-grid-v3 .game-lobby-card-closed{background:linear-gradient(155deg,#151d31,#101827);opacity:.88}
 .games-grid-v3 .game-card-symbol{background:#292650}.games-grid-v3 .game-card-copy h2{color:#f4f6ff}

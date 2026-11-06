@@ -129,7 +129,7 @@ watch(() => route.params.slug, fetchPage)
 </style>
 
 <style scoped>
-.dynamic-page-bg{min-height:min-content;padding-bottom:calc(105px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
+.dynamic-page-bg{min-height:min-content;padding-bottom:calc(105px + env(safe-area-inset-bottom));background:linear-gradient(105deg,#795cf5,#286ee9);color:#f4f6ff}
 .dynamic-kicker{color:#a99bff;font-size:9px;font-weight:950;letter-spacing:.14em}
 .page-card{border:1px solid #2e3d5e;border-radius:19px;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 12px 28px #00000024}
 .page-title{color:#fff;font-size:22px;font-weight:950}.cms-content{color:#c5d0e6;line-height:1.75}

@@ -413,9 +413,10 @@ onBeforeUnmount(async () => {
   position: sticky;
   top: 0;
   z-index: 3;
-  background: #edf3fb;
-  color: #38516f;
-  font-size: 14px;
+  background: green;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
 }
 .gsk-chart-table .chart-date-column {
   position: sticky;
@@ -451,6 +452,7 @@ onBeforeUnmount(async () => {
   background: #edf3fc;
   color: green;
   font-weight: 900;
+  font-size: 15px;
 }
 .chart-today-result {
   background: #ffe7ad;
@@ -554,7 +556,7 @@ onBeforeUnmount(async () => {
 .gsk-screen {
   min-height: min-content;
   padding: 15px 13px calc(13px + env(safe-area-inset-bottom));
-  background: radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;
+  background: linear-gradient(105deg,#795cf5,#286ee9);
   color: #f4f6ff;
 }
 .chart-shortcuts {

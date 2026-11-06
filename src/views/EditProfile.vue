@@ -352,7 +352,7 @@ const handleChangePassword = async () => {
 .security-banner{border-color:#51488a;background:#24244b;color:#d4ceff}.security-banner strong{color:#f4f0ff}.security-banner small{color:#b7b1dc}
 .security-section{border-color:#2e3d5e;background:#111a2e}.security-grid{gap:10px}
 .status-message{border-color:#2d6d5b;background:#123a34;color:#7ce6c0}.status-message.error{border-color:#824252;background:#3c202f;color:#ff9eae}
-.save-button,.save-button--dark{border:1px solid #9b8aff;background:linear-gradient(105deg,#795cf5,#286ee9);color:#fff;box-shadow:0 9px 22px #4f5de944}
+.save-button,.save-button--dark{border:1px solid #9b8aff;background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#fff;box-shadow:0 9px 22px #4f5de944}
 .dismiss-button{border-color:#465779;background:#1a2945;color:#c7d2e8}.footer-note{color:#8393b5}
 @media(min-width:760px){.profile-layout{grid-template-columns:190px minmax(0,1fr);align-items:start}.profile-section-nav{position:sticky;top:84px;display:grid}.profile-section-nav a{min-width:0}}
 </style>

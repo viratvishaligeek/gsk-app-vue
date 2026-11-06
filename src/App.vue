@@ -93,7 +93,9 @@ onMounted(async () => {
         <div class="launch-splash__glow launch-splash__glow--one"></div>
         <div class="launch-splash__glow launch-splash__glow--two"></div>
         <div class="launch-splash__content">
-          <div class="launch-splash__logo" aria-hidden="true">🎮</div>
+          <div class="launch-splash__logo" aria-hidden="true">
+            <img src="../src/assets/logo.png" alt="">
+          </div>
           <p class="launch-splash__eyebrow">WELCOME TO</p>
           <h1>GSK Play</h1>
           <p class="launch-splash__tagline">Fast results. Smooth play.</p>

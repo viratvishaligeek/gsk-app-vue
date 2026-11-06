@@ -970,7 +970,7 @@ onBeforeUnmount(() => {
 .withdraw-page .qr-upload-action{background:#28244f;color:#c7bdff}
 .withdraw-page .qr-preview-label{background:#123b35;color:#73e4bd}
 .withdraw-page .field-error{color:#ff9bab}
-.withdraw-page .withdraw-button{min-height:54px;border:1px solid #9b8aff;border-radius:16px;background:linear-gradient(105deg,#795cf5,#286ee9);color:#fff;box-shadow:0 12px 28px #4e54d944;font-size:12px;font-weight:950}
+.withdraw-page .withdraw-button{min-height:54px;border:1px solid #9b8aff;border-radius:16px;background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#fff;box-shadow:0 12px 28px #4e54d944;font-size:12px;font-weight:950}
 .withdraw-page .withdraw-button:disabled{opacity:.55}
 .withdraw-page .secure-note,.withdraw-page .page-footer-note{color:#8999bb}
 .withdraw-page .withdraw-info-banner{border-color:#51488a;background:#24244b;color:#d0c9ff}

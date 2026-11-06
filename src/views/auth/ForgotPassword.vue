@@ -170,6 +170,6 @@ const handleResetPassword = async () => {
 .auth-form-panel .form-label{color:#cbd5e9;font-weight:800}.auth-form-panel .form-control,.auth-form-panel .input-group-text{border-color:#39496c;background:#0b1428;color:#fff}
 .auth-form-panel .form-control::placeholder{color:#7888aa}.auth-form-panel .input-group-text{color:#c6d1e8}
 .auth-form-panel .btn-outline-secondary{border-color:#465779;background:#1a2945;color:#c6d1e8}
-.auth-submit{border:1px solid #9b8aff;background:linear-gradient(105deg,#795cf5,#286ee9);box-shadow:0 10px 24px #4f5de944}
+.auth-submit{border:1px solid #9b8aff;background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;box-shadow:0 10px 24px #4f5de944}
 .auth-safety{color:#8292b2}.gsk-auth-single .alert-success{border-color:#286b5a;background:#123a34;color:#76e4bf}.gsk-auth-single .alert-danger{border-color:#824252;background:#3c202f;color:#ff9eae}
 </style>

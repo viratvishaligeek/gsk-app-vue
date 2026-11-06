@@ -1461,7 +1461,7 @@ onBeforeUnmount(async () => {
 .add-money-page .api-message{border-radius:14px}
 .add-money-page .message-error{border:1px solid #864458;background:#351d30;color:#ffb3c0}
 .add-money-page .message-success{border:1px solid #286d5b;background:#123a34;color:#8af0cb}
-.add-money-page .pay-button,.add-money-page .manual-submit-btn{min-height:54px;border:1px solid #9b8aff;border-radius:16px;background:linear-gradient(105deg,#795cf5,#286ee9);color:#fff;box-shadow:0 12px 28px #4e54d944;font-size:12px;font-weight:950}
+.add-money-page .pay-button,.add-money-page .manual-submit-btn{min-height:54px;border:1px solid #9b8aff;border-radius:16px;background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#fff;box-shadow:0 12px 28px #4e54d944;font-size:12px;font-weight:950}
 .add-money-page .pay-button:disabled{opacity:.55}
 .add-money-page .secure-footer{color:#8999bb}
 .add-money-page .pending-section{margin-top:18px}

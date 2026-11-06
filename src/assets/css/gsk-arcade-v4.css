@@ -40,8 +40,8 @@ body{background:radial-gradient(ellipse at 90% 0,#26305b 0,transparent 35%),#090
 .dashboard-promotions-v3 .carousel{border:1px solid #3b4a70;border-radius:20px;overflow:hidden;box-shadow:var(--gsk-shadow)}
 .dashboard-promotions-v3 .carousel-item img{width:100%;height:auto;max-height:310px;object-fit:cover}
 .gsk-banner-control{width:12%;opacity:.9}
-.dashboard-action-grid-v3>a{border:1px solid #334363!important;border-radius:17px!important;background:linear-gradient(150deg,#192747,#121d35)!important;color:#f4f6ff!important;box-shadow:0 8px 24px #0002!important}
-.dashboard-action-grid-v3>a>span{background:#2b315e;border:1px solid #4b4a86}
+.dashboard-action-grid-v3>a{border:1px solid #334363!important;border-radius:17px!important;color:#f4f6ff!important;box-shadow:0 8px 24px #0002!important}
+/* .dashboard-action-grid-v3>a>span{background:#2b315e;border:1px solid #4b4a86} */
 .dashboard-action-grid-v3>a strong{color:#fff}
 .dashboard-action-grid-v3>a small{color:#aab8d6}
 .featured-result-section-v3,.dashboard-market-section-v3,.dashboard-chart-section-v3{color:#f4f6ff}
@@ -52,7 +52,7 @@ body{background:radial-gradient(ellipse at 90% 0,#26305b 0,transparent 35%),#090
 .dashboard-service-grid-v3>a{border-color:#344567!important;background:#121e36!important;color:#f4f6ff!important}
 .dashboard-service-grid-v3 small{color:#9eaccb}
 .content-area,.page-content,.history-bg{background:transparent;color:#f4f6ff}
-.page-content{padding:14px 13px calc(100px + env(safe-area-inset-bottom))}
+.page-content{padding:0px 13px calc(100px + env(safe-area-inset-bottom))}
 .card,.gsk-panel,.modal-content{border-color:#304263;background:#141f38;color:#f4f6ff;box-shadow:var(--gsk-shadow)}
 .card-header,.card-footer,.modal-header,.modal-footer{border-color:#2b3b5d;background:#172542;color:#f4f6ff}
 .table{--bs-table-bg:transparent;--bs-table-color:#e8edfb;--bs-table-border-color:#2b3b5d}

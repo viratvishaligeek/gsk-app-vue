@@ -233,7 +233,7 @@ onMounted(() => {
 </style>
 
 <style scoped>
-.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
+.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:linear-gradient(105deg,#795cf5,#286ee9);color:#f4f6ff}
 .history-shortcuts{display:flex;gap:8px;margin:13px 0;overflow-x:auto}.history-shortcuts a{flex:1;min-width:max-content;padding:10px 12px;border:1px solid #354363;border-radius:12px;background:#131e35;color:#c8c0ff;font-size:10px;font-weight:850}
 .history-date-panel,.history-stat-grid article,.history-slip{border-color:#2e3d5e;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 9px 22px #00000020}
 .history-date-panel{border-radius:16px}.history-date-panel strong{color:#fff}.history-date-panel small{color:#91a0bf}

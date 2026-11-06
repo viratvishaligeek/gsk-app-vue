@@ -48,6 +48,7 @@
         <div class="mb-3">
           <label for="password" class="form-label">Create password</label>
           <div class="input-group">
+            <span class="input-group-text">🗝️</span>
             <input
               id="password"
               v-model="form.password"
@@ -472,20 +473,116 @@ const handleSignUp = async () => {
 
 /* Preserved responsive/theme overrides */
 
-.gsk-auth-page{min-height:min-content;background:radial-gradient(circle at 80% 0,#44368b 0,transparent 36%),linear-gradient(160deg,#0b1225,#080d1b);color:#f4f6ff}
-.auth-brand-panel{position:relative;overflow:hidden;border:1px solid #7a6bd35c;border-radius:0 0 28px 28px;background:radial-gradient(circle at 80% 0,#8b72ff55 0,transparent 40%),linear-gradient(140deg,#211e4b,#142b50);color:#fff}
-.auth-brand-panel>span,.auth-eyebrow{color:#b9adff;font-size:9px;font-weight:950;letter-spacing:.15em}.auth-brand-panel h1{color:#fff;font-weight:950}.auth-brand-panel p{color:#c2cde6}
-.auth-brand-mark{border:1px solid #ffffff30;border-radius:18px;background:linear-gradient(145deg,#765cf5,#286ee9);box-shadow:0 9px 25px #765cf544}
-.auth-brand-art{opacity:.18}
-.auth-form-panel{border:1px solid #2e3d5e;border-radius:22px;background:linear-gradient(155deg,#17223c,#101a2e);color:#f4f6ff;box-shadow:0 20px 50px #00000035}
-.auth-mobile-brand{color:#fff}.auth-mobile-brand>span{background:linear-gradient(145deg,#765cf5,#286ee9)}
-.auth-heading h2{color:#fff;font-weight:950}.auth-heading p{color:#9ba9c8}.auth-form-panel .form-label{color:#cbd5e9;font-weight:800}
-.auth-form-panel .form-control,.auth-form-panel .input-group-text{border-color:#39496c;background:#0b1428;color:#fff}.auth-form-panel .form-control::placeholder{color:#7888aa}
-.auth-form-panel .input-group-text{color:#c6d1e8}.auth-form-panel .btn-outline-secondary{border-color:#465779;background:#1a2945;color:#c6d1e8}
-.auth-submit{border:1px solid #9b8aff;background:linear-gradient(105deg,#795cf5,#286ee9);box-shadow:0 10px 24px #4f5de944}
-.auth-switch{color:#aebbd5}.auth-switch a,.auth-form-panel a{color:#b8adff}.auth-safety{color:#8292b2}
-.password-meter{background:#0b1428}.gsk-auth-page .alert-danger{border-color:#824252;background:#3c202f;color:#ff9eae}
-@media(max-width:767px){.auth-form-panel{margin:14px;border-radius:22px}}
+.gsk-auth-page {
+  min-height: min-content;
+  background:
+    radial-gradient(circle at 80% 0, #44368b 0, transparent 36%),
+    linear-gradient(160deg, #0b1225, #080d1b);
+  color: #f4f6ff;
+}
+.auth-brand-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #7a6bd35c;
+  border-radius: 0 0 28px 28px;
+  background:
+    radial-gradient(circle at 80% 0, #8b72ff55 0, transparent 40%),
+    linear-gradient(140deg, #211e4b, #142b50);
+  color: #fff;
+}
+.auth-brand-panel > span,
+.auth-eyebrow {
+  color: #b9adff;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.15em;
+}
+.auth-brand-panel h1 {
+  color: #fff;
+  font-weight: 950;
+}
+.auth-brand-panel p {
+  color: #c2cde6;
+}
+.auth-brand-mark {
+  border: 1px solid #ffffff30;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #765cf5, #286ee9);
+  box-shadow: 0 9px 25px #765cf544;
+}
+.auth-brand-art {
+  opacity: 0.18;
+}
+.auth-form-panel {
+  border: 1px solid #2e3d5e;
+  border-radius: 22px;
+  background: linear-gradient(155deg, #17223c, #101a2e);
+  color: #f4f6ff;
+  box-shadow: 0 20px 50px #00000035;
+}
+.auth-mobile-brand {
+  color: #fff;
+}
+.auth-mobile-brand > span {
+  background: linear-gradient(145deg, #765cf5, #286ee9);
+}
+.auth-heading h2 {
+  color: #fff;
+  font-weight: 950;
+}
+.auth-heading p {
+  color: #9ba9c8;
+}
+.auth-form-panel .form-label {
+  color: #cbd5e9;
+  font-weight: 800;
+}
+.auth-form-panel .form-control,
+.auth-form-panel .input-group-text {
+  border-color: #39496c;
+  background: #0b1428;
+  color: #fff;
+}
+.auth-form-panel .form-control::placeholder {
+  color: #7888aa;
+}
+.auth-form-panel .input-group-text {
+  color: #c6d1e8;
+}
+.auth-form-panel .btn-outline-secondary {
+  border-color: #465779;
+  background: #1a2945;
+  color: #c6d1e8;
+}
+.auth-submit {
+  border: 1px solid #9b8aff;
+  background: linear-gradient(105deg, #795cf5, #286ee9);
+  box-shadow: 0 10px 24px #4f5de944;
+}
+.auth-switch {
+  color: #aebbd5;
+}
+.auth-switch a,
+.auth-form-panel a {
+  color: #b8adff;
+}
+.auth-safety {
+  color: #8292b2;
+}
+.password-meter {
+  background: #0b1428;
+}
+.gsk-auth-page .alert-danger {
+  border-color: #824252;
+  background: #3c202f;
+  color: #ff9eae;
+}
+@media (max-width: 767px) {
+  .auth-form-panel {
+    margin: 14px;
+    border-radius: 22px;
+  }
+}
 
 /* Responsive authentication layout: avoid the desktop two-column minimum width on phones. */
 .gsk-auth-page {
@@ -498,7 +595,9 @@ const handleSignUp = async () => {
   padding: clamp(16px, 4vw, 48px);
   box-sizing: border-box;
 }
-.gsk-auth-page > * { min-width: 0; }
+.gsk-auth-page > * {
+  min-width: 0;
+}
 .auth-brand-panel {
   min-width: 0;
   min-height: 100%;
@@ -515,10 +614,19 @@ const handleSignUp = async () => {
 }
 .gsk-auth-form .form-control,
 .gsk-auth-form .input-group-text,
-.gsk-auth-form .input-group .btn { min-height: 46px; }
-.gsk-auth-form .input-group { min-width: 0; }
-.gsk-auth-form .input-group > .form-control { min-width: 0; }
-.auth-submit { min-height: 48px; white-space: normal; }
+.gsk-auth-form .input-group .btn {
+  min-height: 46px;
+}
+.gsk-auth-form .input-group {
+  min-width: 0;
+}
+.gsk-auth-form .input-group > .form-control {
+  min-width: 0;
+}
+.auth-submit {
+  min-height: 48px;
+  white-space: normal;
+}
 @media (max-width: 767.98px) {
   .gsk-auth-page {
     grid-template-columns: minmax(0, 1fr);
@@ -526,7 +634,9 @@ const handleSignUp = async () => {
     gap: 0;
     padding: max(12px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom));
   }
-  .auth-brand-panel { display: none; }
+  .auth-brand-panel {
+    display: none;
+  }
   .auth-form-panel {
     width: min(100%, 480px);
     max-width: 480px;
@@ -534,7 +644,12 @@ const handleSignUp = async () => {
     padding: 22px 18px;
     border-radius: 22px;
   }
-  .auth-mobile-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .auth-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
   .auth-mobile-brand > span {
     display: grid;
     place-items: center;
@@ -543,18 +658,42 @@ const handleSignUp = async () => {
     border-radius: 13px;
     flex: 0 0 42px;
   }
-  .auth-heading { margin-bottom: 20px; }
-  .auth-heading h2 { font-size: clamp(25px, 7vw, 32px); }
-  .gsk-auth-form .mb-3 { margin-bottom: 16px !important; }
-  .auth-switch, .auth-safety { text-align: center; }
+  .auth-heading {
+    margin-bottom: 20px;
+  }
+  .auth-heading h2 {
+    font-size: clamp(25px, 7vw, 32px);
+  }
+  .gsk-auth-form .mb-3 {
+    margin-bottom: 16px !important;
+  }
+  .auth-switch,
+  .auth-safety {
+    text-align: center;
+  }
 }
 @media (max-width: 360px) {
-  .gsk-auth-page { padding-left: 9px; padding-right: 9px; }
-  .auth-form-panel { padding: 18px 14px; }
-  .auth-heading p { font-size: 13px; }
-  .gsk-auth-form .input-group-text { padding: 0 9px; font-size: 12px; }
+  .gsk-auth-page {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+  .auth-form-panel {
+    padding: 18px 14px;
+  }
+  .auth-heading p {
+    font-size: 13px;
+  }
+  .gsk-auth-form .input-group-text {
+    padding: 0 9px;
+    font-size: 12px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .auth-submit, .auth-form-panel, .auth-brand-panel { transition: none !important; animation: none !important; }
+  .auth-submit,
+  .auth-form-panel,
+  .auth-brand-panel {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 </style>

@@ -1,106 +1,220 @@
 <template>
-  <div class="content-area pb-5 history-bg min-vh-100 d-flex flex-column">
-    <div class="container-fluid px-2 px-md-3 py-2 flex-grow-1 d-flex flex-column">
-      <div class="support-banner support-workspace-header">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-          <div class="d-flex align-items-center gap-3">
-            <div
-              class="support-banner-icon">
-              <span class="gsk-emoji-icon" aria-hidden="true">🎧</span></div>
-            <div>
-              <h1 class="fw-bold text-white mb-1">Live support</h1><span class="small text-white-50">{{
-                realtimeConnected ? 'Connected · live messages' : connected ? 'Connected · recovery sync' :
-                  humanSupportRequested ? 'Reconnecting to support…' : 'Browse FAQs before starting a chat' }}</span>
-            </div>
+  <div class="support-page">
+    <div class="support-container">
+      <!-- Header -->
+      <header class="support-header">
+        <div class="support-brand">
+          <div class="support-brand-icon">🎧</div>
+          <div>
+            <h1>Live Support</h1>
+            <p>
+              {{
+                realtimeConnected
+                  ? 'Connected · To Admin'
+                  : connected
+                    ? 'Connected · To Admin'
+                    : 'Connecting to Admin...'
+              }}
+            </p>
           </div>
-          <span class="badge" :class="connected ? 'bg-success' : 'bg-secondary'">{{ realtimeConnected ? 'Live' :
-            connected ? 'Online' : 'Reconnecting' }}</span>
         </div>
-      </div>
-      <section v-if="!humanSupportRequested" class="support-faq-card support-faq-workspace mb-3">
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-            <div>
-              <h6 class="fw-bold mb-1">Find an instant answer</h6>
-              <p class="small text-muted mb-0">Check these FAQs before joining the support queue.</p>
+
+        <div class="connection-status" :class="{ online: connected }">
+          <span class="status-dot"></span>
+          {{ realtimeConnected ? 'Live' : connected ? 'Online' : 'Connecting' }}
+        </div>
+      </header>
+
+      <!-- Chat -->
+      <section class="support-chat">
+        <div class="chat-heading">
+          <div class="agent-avatar">🎧</div>
+          <div class="agent-info">
+            <h3>Support Team</h3>
+            <span>
+              <span class="status-dot"></span>
+              Available for assistance
+            </span>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div ref="chatFeed" class="chat-feed">
+          <div v-if="loading && !messages.length" class="chat-loading">
+            <span class="spinner-border spinner-border-sm"></span>
+            Loading conversation...
+          </div>
+
+          <div v-else-if="!messages.length" class="chat-empty">
+            <div class="empty-icon">💬</div>
+            <h3>Welcome to Live Support</h3>
+            <p>
+              Have a question or need assistance? Send us a message and our support team will help
+              you.
+            </p>
+          </div>
+
+          <div
+            v-for="msg in messages"
+            :key="msg.id"
+            class="message-row"
+            :class="msg.sender === 'user' ? 'message-own' : 'message-support'"
+          >
+            <div
+              class="message-bubble"
+              :class="msg.sender === 'user' ? 'bubble-own' : 'bubble-support'"
+            >
+              <div v-if="msg.sender !== 'user'" class="message-author">
+                <span>🎧</span> Support Team
+              </div>
+
+              <p v-if="msg.body" class="message-text">
+                {{ msg.body }}
+              </p>
+
+              <template v-if="msg.media_url">
+                <img
+                  v-if="(msg.media_mime || '').startsWith('image/')"
+                  :src="msg.display_media_url"
+                  :alt="msg.media_name || 'Attachment'"
+                  class="chat-media"
+                />
+
+                <video
+                  v-else-if="(msg.media_mime || '').startsWith('video/')"
+                  :src="msg.display_media_url"
+                  controls
+                  playsinline
+                  class="chat-media"
+                ></video>
+
+                <audio
+                  v-else-if="(msg.media_mime || '').startsWith('audio/')"
+                  :src="msg.display_media_url"
+                  controls
+                  preload="metadata"
+                  class="chat-audio"
+                ></audio>
+
+                <a
+                  v-else
+                  :href="msg.display_media_url"
+                  target="_blank"
+                  rel="noopener"
+                  class="attachment-link"
+                >
+                  📎 Open attachment
+                </a>
+              </template>
+
+              <div class="message-time">
+                {{ formatTime(msg.created_at) }}
+                <span v-if="msg.sender === 'user' && msg.read_at"> · ✓✓</span>
+              </div>
             </div>
-            <span class="badge bg-warning text-dark">{{ faqs.length }} FAQs</span>
           </div>
-          <div v-if="faqLoading" class="small text-muted py-3">Loading helpful answers…</div>
-          <div v-else-if="faqs.length" class="d-grid gap-2">
-            <div v-for="faq in faqs" :key="faq.id" class="border rounded-3 overflow-hidden">
-              <button type="button"
-                class="btn w-100 text-start fw-semibold d-flex justify-content-between align-items-center"
-                @click="activeFaqId = activeFaqId === faq.id ? null : faq.id">
-                <span>{{ faq.question }}</span><span class="gsk-emoji-icon" aria-hidden="true">✨</span>
-              </button>
-              <div v-if="activeFaqId === faq.id" class="px-3 pb-3 text-muted" style="white-space:pre-line">{{ faq.answer
-                }}</div>
+
+          <div v-if="errorMessage" class="chat-error">
+            {{ errorMessage }}
+            <button type="button" @click="syncMessages">Retry</button>
+          </div>
+        </div>
+
+        <!-- Composer -->
+        <div class="chat-composer">
+          <!-- Attachment / recording preview -->
+          <div v-if="selectedFile" class="attachment-preview">
+            <img
+              v-if="selectedFile.type.startsWith('image/')"
+              :src="selectedFilePreview"
+              class="preview-image"
+              alt="Attachment preview"
+            />
+
+            <video
+              v-else-if="selectedFile.type.startsWith('video/')"
+              :src="selectedFilePreview"
+              class="preview-video"
+              controls
+            ></video>
+
+            <audio
+              v-else-if="selectedFile.type.startsWith('audio/')"
+              :src="selectedFilePreview"
+              controls
+            ></audio>
+
+            <div class="attachment-info">
+              <strong>{{ selectedFile.name }}</strong>
+              <small>{{ (selectedFile.size / 1024).toFixed(1) }} KB</small>
             </div>
+
+            <button
+              type="button"
+              class="remove-attachment"
+              @click="removeSelectedFile"
+              aria-label="Remove attachment"
+            >
+              ✕
+            </button>
           </div>
-          <p v-else class="small text-muted py-2 mb-0">No FAQs are published for this platform yet.</p>
-          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 pt-3 border-top">
-            <span class="small text-muted">Still need help from a person?</span>
-            <button class="btn btn-warning text-dark fw-bold" type="button" @click="openHumanSupport"><span class="gsk-emoji-icon" aria-hidden="true">🎧</span>Contact human support</button>
+
+          <div v-if="recording" class="recording-indicator">
+            <span class="recording-dot"></span>
+            Recording voice message...
           </div>
+
+          <form @submit.prevent="sendMessage" class="composer-form">
+            <input
+              ref="fileInput"
+              type="file"
+              class="d-none"
+              accept="image/*,video/mp4,video/webm,audio/*"
+              @change="onFileSelected"
+            />
+
+            <button
+              type="button"
+              class="composer-action"
+              title="Attach file"
+              @click="fileInput?.click()"
+              :disabled="sending || recording"
+            >
+              📎
+            </button>
+
+            <button
+              type="button"
+              class="composer-action voice-action"
+              :class="{ recording: recording }"
+              :disabled="!canRecord || sending"
+              :title="recording ? 'Stop recording' : 'Record voice'"
+              @click="toggleRecording"
+            >
+              {{ recording ? '■' : '🎙' }}
+            </button>
+
+            <input
+              v-model="newMessage"
+              type="text"
+              class="message-input"
+              placeholder="Type your message..."
+              maxlength="5000"
+              :disabled="sending"
+            />
+
+            <button
+              type="submit"
+              class="send-button"
+              :disabled="sending || (!newMessage.trim() && !selectedFile)"
+            >
+              <span v-if="sending" class="spinner-border spinner-border-sm"></span>
+              <span v-else>➤</span>
+            </button>
+          </form>
+          <p class="composer-hint">Our support team will respond as soon as possible.</p>
         </div>
       </section>
-      <div v-if="humanSupportRequested" class="d-flex justify-content-between align-items-center gap-2 mb-2">
-        <span class="small text-muted">Human support conversation</span><button type="button"
-          class="btn btn-sm btn-outline-secondary" @click="closeHumanSupport">Back to FAQs</button>
-      </div>
-      <div v-if="humanSupportRequested"
-        class="card border-0 shadow-sm rounded-4 bg-white flex-grow-1 d-flex flex-column overflow-hidden mb-2"
-        style="max-height:65vh;min-height:380px">
-        <div ref="chatFeed" class="card-body p-3 overflow-auto d-flex flex-column gap-3 bg-light-subtle">
-          <div v-if="loading && messages.length === 0" class="text-center text-muted py-5"><span
-              class="spinner-border spinner-border-sm me-2"></span>Loading conversation…</div>
-          <div v-for="msg in messages" :key="msg.id" class="d-flex flex-column"
-            :class="msg.sender === 'user' ? 'align-items-end' : 'align-items-start'">
-            <div class="message-bubble p-3 rounded-4 shadow-sm"
-              :class="msg.sender === 'user' ? 'bg-warning text-dark rounded-bottom-right-0' : 'bg-white border text-dark rounded-bottom-left-0'">
-              <div v-if="msg.sender !== 'user'" class="small fw-bold text-danger mb-1"><span class="gsk-emoji-icon" aria-hidden="true">✅</span> Support Desk</div>
-              <p v-if="msg.body" class="mb-1" style="white-space:pre-line">{{ msg.body }}</p>
-              <template v-if="msg.media_url">
-                <img v-if="(msg.media_mime || '').startsWith('image/')" :src="msg.display_media_url"
-                  :alt="msg.media_name || 'Chat attachment'" class="chat-media">
-                <video v-else-if="(msg.media_mime || '').startsWith('video/')" :src="msg.display_media_url" controls
-                  playsinline class="chat-media"></video>
-                <audio v-else-if="(msg.media_mime || '').startsWith('audio/')" :src="msg.display_media_url" controls
-                  preload="metadata"></audio>
-                <a v-else :href="msg.display_media_url" target="_blank" rel="noopener">Open attachment</a>
-              </template>
-            </div>
-            <span class="small text-muted mt-1 px-1">{{ formatTime(msg.created_at) }} <span
-                v-if="msg.sender === 'user' && msg.read_at">· Seen</span></span>
-          </div>
-          <div v-if="errorMessage" class="alert alert-warning py-2 small">{{ errorMessage }} <button
-              class="btn btn-sm btn-link" @click="syncMessages">Retry</button></div>
-        </div>
-        <div class="card-footer bg-white border-top p-2">
-          <form @submit.prevent="sendMessage" class="d-flex align-items-center gap-2">
-            <input ref="fileInput" type="file" class="d-none" accept="image/*,video/mp4,video/webm,audio/*"
-              @change="onFileSelected">
-            <button type="button" class="btn btn-light rounded-circle border" style="width:38px;height:38px"
-              title="Attach image, video, or audio" @click="fileInput?.click()"><span class="gsk-emoji-icon" aria-hidden="true">📎</span></button>
-            <button type="button" class="btn rounded-circle border"
-              :class="recording ? 'btn-danger text-white' : 'btn-light'" style="width:38px;height:38px"
-              :disabled="!canRecord" :title="recording ? 'Stop voice recording' : 'Record voice message'"
-              @click="toggleRecording"><span class="gsk-emoji-icon" aria-hidden="true">✨</span></button>
-            <input v-model="newMessage" type="text"
-              class="form-control form-control-sm border-0 bg-light rounded-pill px-3 py-2 shadow-none"
-              placeholder="Type your message…" maxlength="5000">
-            <button type="submit" class="btn btn-warning text-dark rounded-circle" style="width:38px;height:38px"
-              :disabled="sending || (!newMessage.trim() && !selectedFile)"><span class="gsk-emoji-icon" aria-hidden="true">📨</span></button>
-          </form>
-          <div v-if="selectedFile" class="small text-muted mt-2 d-flex align-items-center justify-content-between">
-            <span><span class="gsk-emoji-icon" aria-hidden="true">📎</span>{{ selectedFile.name }}</span><button
-              class="btn btn-sm btn-link text-danger p-0" @click="selectedFile = null">Remove</button></div>
-          <div v-if="recording" class="small text-danger mt-2"><span
-              class="spinner-grow spinner-grow-sm me-1"></span>Recording
-            voice message…</div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -127,8 +241,13 @@ const faqs = ref([])
 const faqLoading = ref(true)
 const activeFaqId = ref(null)
 const humanSupportRequested = ref(false)
+const selectedFilePreview = ref('')
+let selectedPreviewUrl = null
 const recording = ref(false)
-const canRecord = typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== 'undefined'
+const canRecord =
+  typeof navigator !== 'undefined' &&
+  !!navigator.mediaDevices?.getUserMedia &&
+  typeof MediaRecorder !== 'undefined'
 let pollTimer = null
 let syncInFlight = false
 let syncRequested = false
@@ -155,11 +274,47 @@ const loadFaqs = async () => {
 }
 const scheduleNextSync = () => {
   if (!humanSupportRequested.value || realtimeConnected.value || pollTimer) return
-  const delay = connected.value ? 30000 : Math.min(60000, 5000 * (2 ** Math.min(consecutiveFailures, 3)))
+  const delay = connected.value
+    ? 30000
+    : Math.min(60000, 5000 * 2 ** Math.min(consecutiveFailures, 3))
   pollTimer = setTimeout(() => {
     pollTimer = null
     void syncMessages()
   }, delay)
+}
+
+const removeSelectedFile = () => {
+  selectedFile.value = null
+
+  if (selectedPreviewUrl) {
+    URL.revokeObjectURL(selectedPreviewUrl)
+    selectedPreviewUrl = null
+  }
+
+  selectedFilePreview.value = ''
+
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
+}
+
+const onFileSelected = (event) => {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  if (file.size > 20 * 1024 * 1024) {
+    errorMessage.value = 'Attachments must be 20 MB or smaller.'
+    event.target.value = ''
+    return
+  }
+
+  removeSelectedFile()
+
+  selectedFile.value = file
+  selectedPreviewUrl = URL.createObjectURL(file)
+  selectedFilePreview.value = selectedPreviewUrl
+
+  errorMessage.value = ''
 }
 
 const initRealtime = () => {
@@ -168,7 +323,10 @@ const initRealtime = () => {
       PusherConstructor: window.Pusher,
       key: import.meta.env.VITE_PUSHER_APP_KEY,
       cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-      authEndpoint: new URL('/api/broadcasting/auth', api.defaults.baseURL || window.location.origin).toString(),
+      authEndpoint: new URL(
+        '/api/broadcasting/auth',
+        api.defaults.baseURL || window.location.origin,
+      ).toString(),
       token: getAuthToken(),
       userId: authStore.userId,
       onConnected: () => {
@@ -184,7 +342,7 @@ const initRealtime = () => {
         connected.value = false
         scheduleNextSync()
       },
-      onMessage: payload => {
+      onMessage: (payload) => {
         if (isRelevantSupportMessage(payload, conversationId, humanSupportRequested.value)) {
           void syncMessages()
         }
@@ -206,10 +364,12 @@ const closeHumanSupport = () => {
   pollTimer = null
 }
 const mediaUrlCache = new Map()
-const formatTime = value => {
+const formatTime = (value) => {
   if (!value) return ''
   const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? '' : date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
+  return Number.isNaN(date.getTime())
+    ? ''
+    : date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
 }
 const scrollToBottom = async () => {
   await nextTick()
@@ -221,27 +381,36 @@ const syncMessages = async () => {
     return
   }
   syncInFlight = true
-  const wasNearBottom = !chatFeed.value || (chatFeed.value.scrollHeight - chatFeed.value.scrollTop - chatFeed.value.clientHeight < 100)
+  const wasNearBottom =
+    !chatFeed.value ||
+    chatFeed.value.scrollHeight - chatFeed.value.scrollTop - chatFeed.value.clientHeight < 100
   try {
     const isIncremental = hasLoadedHistory
     const params = isIncremental ? { after_id: lastMessageId } : {}
     const { data } = await api.get('/support-chat', { params, showGlobalLoader: false })
     conversationId = data?.conversation_id || conversationId
     const incoming = Array.isArray(data?.data) ? data.data : []
-    await Promise.all(incoming.filter(message => message.media_url).map(async message => {
-      if (mediaUrlCache.has(message.id)) {
-        message.display_media_url = mediaUrlCache.get(message.id)
-        return
-      }
-      try {
-        const media = await api.get('/support-chat/media/' + message.id, { responseType: 'blob', showGlobalLoader: false })
-        const objectUrl = URL.createObjectURL(media.data)
-        mediaUrlCache.set(message.id, objectUrl)
-        message.display_media_url = objectUrl
-      } catch {
-        message.display_media_url = ''
-      }
-    }))
+    await Promise.all(
+      incoming
+        .filter((message) => message.media_url)
+        .map(async (message) => {
+          if (mediaUrlCache.has(message.id)) {
+            message.display_media_url = mediaUrlCache.get(message.id)
+            return
+          }
+          try {
+            const media = await api.get('/support-chat/media/' + message.id, {
+              responseType: 'blob',
+              showGlobalLoader: false,
+            })
+            const objectUrl = URL.createObjectURL(media.data)
+            mediaUrlCache.set(message.id, objectUrl)
+            message.display_media_url = objectUrl
+          } catch {
+            message.display_media_url = ''
+          }
+        }),
+    )
 
     if (!hasLoadedHistory) {
       messages.value = incoming
@@ -249,11 +418,14 @@ const syncMessages = async () => {
       lastMessageId = incoming.reduce((max, message) => Math.max(max, Number(message.id) || 0), 0)
       await scrollToBottom()
     } else if (incoming.length) {
-      const existingIds = new Set(messages.value.map(message => message.id))
-      const additions = incoming.filter(message => !existingIds.has(message.id))
+      const existingIds = new Set(messages.value.map((message) => message.id))
+      const additions = incoming.filter((message) => !existingIds.has(message.id))
       if (additions.length) {
         messages.value = [...messages.value, ...additions]
-        lastMessageId = Math.max(lastMessageId, ...additions.map(message => Number(message.id) || 0))
+        lastMessageId = Math.max(
+          lastMessageId,
+          ...additions.map((message) => Number(message.id) || 0),
+        )
         if (wasNearBottom) await scrollToBottom()
       }
     }
@@ -264,7 +436,10 @@ const syncMessages = async () => {
   } catch (error) {
     connected.value = false
     consecutiveFailures += 1
-    errorMessage.value = error?.response?.status === 401 ? 'Please sign in again to continue chat.' : 'Connection interrupted. Retrying automatically…'
+    errorMessage.value =
+      error?.response?.status === 401
+        ? 'Please sign in again to continue chat.'
+        : 'Connection interrupted. Retrying automatically…'
   } finally {
     loading.value = false
     syncInFlight = false
@@ -277,16 +452,6 @@ const syncMessages = async () => {
     }
   }
 }
-const onFileSelected = event => {
-  const file = event.target.files?.[0]
-  if (!file) return
-  if (file.size > 20 * 1024 * 1024) {
-    errorMessage.value = 'Attachments must be 20 MB or smaller.'
-    event.target.value = ''
-    return
-  }
-  selectedFile.value = file
-}
 const toggleRecording = async () => {
   if (recording.value && recorder) {
     recorder.stop()
@@ -295,21 +460,30 @@ const toggleRecording = async () => {
   }
   try {
     recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].find(type => MediaRecorder.isTypeSupported(type))
+    const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].find((type) =>
+      MediaRecorder.isTypeSupported(type),
+    )
     recorder = new MediaRecorder(recordingStream, mimeType ? { mimeType } : undefined)
     recordedChunks = []
-    recorder.ondataavailable = event => { if (event.data.size) recordedChunks.push(event.data) }
+    recorder.ondataavailable = (event) => {
+      if (event.data.size) recordedChunks.push(event.data)
+    }
     recorder.onstop = () => {
       const type = recorder?.mimeType || 'audio/webm'
-      selectedFile.value = new File([new Blob(recordedChunks, { type })], 'voice-message.' + (type.includes('mp4') ? 'mp4' : 'webm'), { type })
-      recordingStream?.getTracks().forEach(track => track.stop())
+      selectedFile.value = new File(
+        [new Blob(recordedChunks, { type })],
+        'voice-message.' + (type.includes('mp4') ? 'mp4' : 'webm'),
+        { type },
+      )
+      recordingStream?.getTracks().forEach((track) => track.stop())
       recordingStream = null
     }
     recorder.start()
     recording.value = true
     errorMessage.value = ''
   } catch {
-    errorMessage.value = 'Microphone permission was denied or recording is not supported by this browser.'
+    errorMessage.value =
+      'Microphone permission was denied or recording is not supported by this browser.'
   }
 }
 const sendMessage = async () => {
@@ -319,9 +493,11 @@ const sendMessage = async () => {
   if (newMessage.value.trim()) form.append('body', newMessage.value.trim())
   if (selectedFile.value) form.append('attachment', selectedFile.value)
   try {
-    await api.post('/support-chat/messages', form, { headers: { 'Content-Type': 'multipart/form-data' } })
+    await api.post('/support-chat/messages', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
     newMessage.value = ''
-    selectedFile.value = null
+    removeSelectedFile()
     if (fileInput.value) fileInput.value.value = ''
     await syncMessages()
   } catch (error) {
@@ -331,43 +507,475 @@ const sendMessage = async () => {
   }
 }
 onMounted(() => {
-  void loadFaqs()
   initRealtime()
+  void syncMessages()
 })
 onUnmounted(() => {
   if (pollTimer) clearTimeout(pollTimer)
   realtimeSubscription?.disconnect()
-  if (recorder && recorder.state !== 'inactive') recorder.stop()
-  recordingStream?.getTracks().forEach(track => track.stop())
-  mediaUrlCache.forEach(url => URL.revokeObjectURL(url))
-  mediaUrlCache.clear()
+  if (selectedPreviewUrl) {
+    URL.revokeObjectURL(selectedPreviewUrl)
+  }
 })
-</script><style scoped>
-.content-area.history-bg{min-height:min-content;padding:14px 12px calc(100px + env(safe-area-inset-bottom));background:#f4f7fb}.content-area.history-bg>.container-fluid{max-width:720px;margin:0 auto;padding:0!important}.support-banner{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:16px;border-radius:17px;background:linear-gradient(130deg,#19365e,#315f9f);color:#fff}.support-banner-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:#ffffff1b;font-size:25px}.support-banner h1{margin:0;color:#fff;font-size:17px;font-weight:900}.support-banner .small{color:#d4e0f0!important;font-size:10px}.support-banner .badge{margin-left:auto}.support-faq-card,.card{border:1px solid #e5ebf3!important;border-radius:16px!important;background:#fff;box-shadow:0 7px 20px #1b365d0b!important}.support-faq-card .card-body{padding:15px}.support-faq-card .btn{min-height:42px;font-size:11px}.message-bubble{max-width:84%;word-break:break-word;font-size:12px;line-height:1.5}.message-bubble.bg-warning{background:#e9f1fc!important;color:#203b5e!important}.message-bubble.bg-white{border-color:#e5ebf3!important}.chat-media{display:block;max-width:min(260px,65vw);max-height:260px;margin-top:6px;border-radius:11px}.card-footer form .form-control{min-height:42px}.no-scrollbar{scrollbar-width:none}.no-scrollbar::-webkit-scrollbar{display:none}.rounded-bottom-right-0{border-bottom-right-radius:3px!important}.rounded-bottom-left-0{border-bottom-left-radius:3px!important}
-</style>
-<style scoped>
-.history-bg{background:radial-gradient(ellipse at top right,#eaf2fc 0,transparent 38%),#f4f7fb}.support-workspace-header{padding:18px;border-radius:20px;background:linear-gradient(125deg,#152d4d,#315f9f);box-shadow:0 12px 25px #18385c1c}.support-faq-workspace{max-width:760px;margin:14px auto!important;border:1px solid #e2eaf3;border-radius:18px;background:#fff;box-shadow:0 8px 22px #1b365d0a}.support-faq-workspace .card-body{padding:17px}.support-faq-workspace .border.rounded-3{border-color:#e5ebf3!important;border-radius:13px!important}.support-faq-workspace .border.rounded-3>button{min-height:48px;padding:11px 13px;color:#2d4563;font-size:11px}.support-faq-workspace .border.rounded-3>div{font-size:10px;line-height:1.6}.support-banner-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:#ffffff20;font-size:25px}.support-workspace-header h1{font-size:20px!important}.support-workspace-header .badge{padding:7px 10px}.content-area:has(.message-bubble){padding-bottom:calc(14px + env(safe-area-inset-bottom))}.content-area:has(.message-bubble) .container-fluid{max-width:820px}.content-area:has(.message-bubble) .card.flex-grow-1{max-height:calc(100dvh - 190px)!important;min-height:420px!important;border:1px solid #e3eaf3!important;border-radius:18px!important}.content-area:has(.message-bubble) .card-body.bg-light-subtle{background:#f5f8fc!important}.content-area:has(.message-bubble) .card-footer{position:sticky;bottom:0;padding:11px!important}.message-bubble{max-width:min(88%,520px);font-size:11px;line-height:1.55}.content-area:has(.message-bubble) .card-footer input.form-control{min-height:42px;font-size:12px}.content-area:has(.message-bubble) .card-footer button{flex:0 0 40px!important;width:40px!important;height:40px!important}
-@media(prefers-reduced-motion:reduce){.support-faq-workspace{scroll-behavior:auto}}
-</style>
+</script>
+ <style scoped>
 
-<style scoped>
-.content-area.history-bg{min-height:min-content;padding-bottom:calc(24px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
-.content-area .container-fluid{max-width:760px;margin-inline:auto}
-.support-banner{border:1px solid #7569c05c;border-radius:20px;background:radial-gradient(circle at 100% 0,#765cf533 0,transparent 38%),linear-gradient(140deg,#211e4b,#142b50);box-shadow:0 13px 30px #00000030}
-.support-banner h1{color:#fff}.support-banner .text-white-50{color:#bdc8e2!important}
-.support-faq-card,.content-area .card{border:1px solid #2e3d5e!important;border-radius:17px!important;background:#121b31!important;color:#f4f6ff;box-shadow:0 10px 24px #00000022}
-.support-faq-card h6,.content-area .card h6{color:#fff}.support-faq-card .text-muted,.content-area .card .text-muted{color:#91a0bf!important}
-.support-faq-card .border{border-color:#344361!important;background:#0d172b}
-.support-faq-card .btn{background:#172541;color:#e8edff}.support-faq-card .badge{background:#3b301d!important;color:#ffd17b!important}
-.support-faq-card .text-muted{color:#aab7d3!important}
-.content-area .card-header,.content-area .card-footer{border-color:#2e3d5e!important;background:#111a2e!important;color:#f4f6ff}
-.content-area .form-control,.content-area .form-control-sm{border-color:#39496c;background:#0b1428;color:#fff}
-.content-area .form-control::placeholder{color:#7888aa}
-.message-bubble{border:1px solid #344361;background:#1a2945;color:#e8edff}
-.message-bubble.own,.message-bubble.sent{border-color:#6655ca;background:linear-gradient(120deg,#5e49c8,#2865ca);color:#fff}
-.chat-media{border-color:#39496c}
-.content-area .btn-warning{border-color:#ffd27a;background:linear-gradient(110deg,#ffcb70,#e9a83e);color:#2b2441}
-.content-area .btn-light,.content-area .bg-light,.content-area .bg-white{border-color:#344361!important;background:#182541!important;color:#e8edff!important}
-.content-area .text-dark{color:#f4f6ff!important}
-.content-area .border{border-color:#344361!important}
+.support-page {
+  min-height: 100dvh;
+  padding: 16px 12px calc(20px + env(safe-area-inset-bottom));
+  background: #f3f6fc;
+  color: #17233d;
+}
+
+.support-container {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.support-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(125deg, #172d50, #315fa6);
+  box-shadow: 0 8px 24px rgba(32, 65, 115, .13);
+}
+
+.support-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.support-brand-icon,
+.agent-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 45px;
+  height: 45px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.14);
+  font-size: 22px;
+}
+
+.support-header h1 {
+  margin: 0 0 4px;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.support-header p {
+  margin: 0;
+  color: #dce8fa;
+  font-size: 11px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 30px;
+  background: rgba(255,255,255,.13);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #a0aec0;
+}
+
+.connection-status.online .status-dot,
+.agent-info .status-dot {
+  background: #22c982;
+}
+
+.support-chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 205px);
+  overflow: hidden;
+  border: 1px solid #e4eaf3;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(28, 52, 90, .07);
+}
+
+.chat-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  border-bottom: 1px solid #e9eef5;
+  background: #fff;
+}
+
+.agent-avatar {
+  width: 42px;
+  height: 42px;
+  background: #edf2ff;
+}
+
+.agent-info h3 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1c3152;
+}
+
+.agent-info span {
+  color: #71809a;
+  font-size: 10px;
+}
+
+.chat-feed {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 20px 16px;
+  background: #f7f9fd;
+  overscroll-behavior: contain;
+}
+
+.chat-loading,
+.chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  color: #77849b;
+}
+
+.empty-icon {
+  display: grid;
+  place-items: center;
+  width: 65px;
+  height: 65px;
+  margin-bottom: 15px;
+  border-radius: 22px;
+  background: #e9efff;
+  font-size: 29px;
+}
+
+.chat-empty h3 {
+  margin-bottom: 7px;
+  color: #203758;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.chat-empty p {
+  max-width: 280px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.message-row {
+  display: flex;
+  width: 100%;
+}
+
+.message-own {
+  justify-content: flex-end;
+}
+
+.message-support {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  max-width: min(80%, 520px);
+  padding: 11px 13px 8px;
+  border-radius: 15px;
+  overflow-wrap: anywhere;
+  box-shadow: 0 2px 7px rgba(30, 50, 80, .04);
+}
+
+.bubble-own {
+  color: #fff;
+  background: #315fba;
+  border-bottom-right-radius: 4px;
+}
+
+.bubble-support {
+  color: #263650;
+  background: #fff;
+  border: 1px solid #e7ecf4;
+  border-bottom-left-radius: 4px;
+}
+
+.message-author {
+  margin-bottom: 6px;
+  color: #4669a4;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.message-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.message-time {
+  margin-top: 6px;
+  text-align: right;
+  font-size: 9px;
+  opacity: .72;
+}
+
+.chat-media {
+  display: block;
+  max-width: min(260px, 65vw);
+  max-height: 260px;
+  margin-top: 7px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.chat-audio {
+  display: block;
+  width: min(260px, 65vw);
+  margin-top: 7px;
+}
+
+.attachment-link {
+  display: inline-block;
+  margin-top: 7px;
+  color: #315fba;
+  font-size: 12px;
+}
+
+.chat-error {
+  padding: 10px;
+  border-radius: 9px;
+  background: #fff1f0;
+  color: #b42318;
+  font-size: 11px;
+}
+
+.chat-error button {
+  border: 0;
+  background: transparent;
+  color: #315fba;
+  font-weight: 700;
+}
+
+.chat-composer {
+  flex-shrink: 0;
+  padding: 12px 14px 8px;
+  border-top: 1px solid #e8edf5;
+  background: #fff;
+}
+
+.composer-form {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.composer-action,
+.send-button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #e5eaf2;
+  border-radius: 50%;
+  background: #f4f6fb;
+  color: #425777;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.composer-action:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.voice-action.recording {
+  color: #fff;
+  border-color: #dc3545;
+  background: #dc3545;
+}
+
+.message-input {
+  flex: 1;
+  min-width: 0;
+  height: 43px;
+  padding: 0 16px;
+  border: 1px solid #e6eaf2;
+  border-radius: 30px;
+  outline: none;
+  background: #f7f9fc;
+  color: #263650;
+  font-size: 12px;
+}
+
+.message-input:focus {
+  border-color: #6489d1;
+  background: #fff;
+}
+
+.message-input::placeholder {
+  color: #929db0;
+}
+
+.send-button {
+  border: 0;
+  background: #315fba;
+  color: #fff;
+  font-size: 21px;
+}
+
+.send-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.attachment-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  margin-bottom: 10px;
+  border: 1px solid #e5eaf2;
+  border-radius: 12px;
+  background: #f7f9fd;
+}
+
+.preview-image,
+.preview-video {
+  width: 55px;
+  height: 55px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.attachment-preview audio {
+  width: min(220px, 45vw);
+}
+
+.attachment-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.attachment-info strong {
+  overflow: hidden;
+  color: #293d5b;
+  font-size: 11px;
+  text-overflow: ellipsis;
+}
+
+.attachment-info small {
+  color: #8793a7;
+  font-size: 10px;
+}
+
+.remove-attachment {
+  border: 0;
+  background: transparent;
+  color: #d04444;
+  font-size: 17px;
+}
+
+.recording-indicator {
+  margin-bottom: 10px;
+  color: #d04444;
+  font-size: 11px;
+}
+
+.recording-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: #e33d4c;
+  animation: recording-pulse 1s infinite;
+}
+
+@keyframes recording-pulse {
+  50% { opacity: .3; }
+}
+
+.composer-hint {
+  margin: 8px 0 0;
+  color: #99a3b4;
+  text-align: center;
+  font-size: 9px;
+}
+
+@media (max-width: 576px) {
+  .support-page {
+    padding: 10px 9px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .support-header {
+    padding: 14px;
+    border-radius: 15px;
+  }
+
+  .support-header h1 {
+    font-size: 16px;
+  }
+  .chat-feed {
+    padding: 15px 11px;
+  }
+
+  .message-bubble {
+    max-width: 88%;
+  }
+
+  .chat-composer {
+    padding: 10px 9px 7px;
+  }
+
+  .composer-form {
+    gap: 6px;
+  }
+
+  .composer-action,
+  .send-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .message-input {
+    height: 40px;
+    padding: 0 11px;
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recording-dot {
+    animation: none;
+  }
+}
+
 </style>

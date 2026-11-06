@@ -80,7 +80,7 @@ a { color: inherit; text-decoration: none; }
   background: transparent;
   color: var(--gsk-ink, #f4f6ff);
 }
-.page-content { padding: 14px 13px calc(100px + env(safe-area-inset-bottom)); }
+.page-content { padding: 14px 13px calc(20px + env(safe-area-inset-bottom)); }
 .gsk-page-heading {
   display: flex;
   align-items: flex-start;

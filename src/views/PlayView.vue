@@ -18,20 +18,15 @@
       </section>
 
       <template v-else>
-        <section class="play-step-intro">
-          <div><span>STEP 01 · CHOOSE YOUR PLAY</span><h2>Build your entry</h2><p>Choose a play type, set your amount and select numbers.</p></div>
-          <span class="play-step-number">01</span>
-        </section>
-
-        <section class="play-mode-picker" aria-label="Choose play type">
-          <button type="button" :class="{active:activeTab==='single'}" @click="changeMode('single')">
-            <span class="mode-symbol">🎲</span><span><strong>Jodi</strong><small>00–99 numbers</small></span><b>{{ activeTab==='single'?'✓':'→' }}</b>
+        <section class="play-mode-picker " aria-label="Choose play type">
+          <button class="text-center fw-bold" type="button" :class="{active:activeTab==='single'}" @click="changeMode('single')">
+            <span>Jodi<br><small>00–99 numbers</small></span>
           </button>
-          <button type="button" :class="{active:activeTab==='harup'}" @click="changeMode('harup')">
-            <span class="mode-symbol">🎲</span><span><strong>Harup</strong><small>Ander & Bahar</small></span><b>{{ activeTab==='harup'?'✓':'→' }}</b>
+          <button class="text-center fw-bold" type="button" :class="{active:activeTab==='harup'}" @click="changeMode('harup')">
+            <span>Harup<br><small>Ander & Bahar</small></span>
           </button>
-          <button type="button" :class="{active:activeTab==='crossing'}" @click="changeMode('crossing')">
-            <span class="mode-symbol">🔀</span><span><strong>Crossing</strong><small>Digit combinations</small></span><b>{{ activeTab==='crossing'?'✓':'→' }}</b>
+          <button class="text-center fw-bold" type="button" :class="{active:activeTab==='crossing'}" @click="changeMode('crossing')">
+            <span>Crossing<br><small>Digit combinations</small></span>
           </button>
         </section>
 
@@ -617,7 +612,7 @@ onMounted(() => {
 .play-mode-picker>button{display:grid;grid-template-columns:1fr auto;align-items:center;gap:7px;min-width:0;padding:11px 9px;border:1px solid #2e3d5e;border-radius:15px;background:#121c32;color:#c6d1e8;text-align:left;transition:transform .16s,border-color .16s,background .16s}
 .play-mode-picker>button .mode-symbol{grid-column:1/-1;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#292650;font-size:20px}
 .play-mode-picker>button>span:nth-child(2){display:grid;min-width:0;gap:1px}.play-mode-picker>button strong{color:#f4f6ff;font-size:10px;font-weight:900}.play-mode-picker>button small{color:#91a0bf;font-size:8px}
-.play-mode-picker>button>b{color:#8e9fbe;font-size:14px}.play-mode-picker>button.active{border-color:#8b72ff;background:linear-gradient(145deg,#29234f,#162c4b);box-shadow:0 0 0 2px #8b72ff24,0 9px 20px #00000025}
+.play-mode-picker>button>b{color:#8e9fbe;font-size:14px}.play-mode-picker>button.active{border-color:#8b72ff;background:linear-gradient(145deg, #00c000, #033e01);box-shadow:0 0 0 2px #8b72ff24,0 9px 20px #00000025}
 .play-mode-picker>button.active .mode-symbol{background:linear-gradient(145deg,#765cf5,#326ce5);box-shadow:0 6px 16px #765cf544}
 .play-builder-panel,.play-review-panel{margin:11px 0;padding:15px;border:1px solid #2e3d5e;border-radius:18px;background:linear-gradient(155deg,#17223c,#101a2e);box-shadow:0 10px 25px #00000025}
 .play-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:13px}
@@ -635,7 +630,7 @@ onMounted(() => {
 .play-number-grid button strong,.play-digit-grid button strong{font-size:16px;font-weight:950;font-variant-numeric:tabular-nums}
 .play-number-grid button small,.play-digit-grid button small{color:#bfb4ff;font-size:8px;font-weight:850}
 .play-number-grid button>span,.play-digit-grid button>span{color:#7d8fb3;font-size:10px}
-.play-number-grid button.selected,.play-digit-grid button.selected{border-color:#9c8aff;background:linear-gradient(145deg,#624ce0,#256bdc);color:#fff;box-shadow:0 6px 17px #4f5de944,0 0 0 2px #8b72ff22;animation:play-pick-pop .18s ease-out}
+.play-number-grid button.selected,.play-digit-grid button.selected{border-color:#9c8aff;background:linear-gradient(145deg, #00c000, #033e01);color:#fff;box-shadow:0 6px 17px #4f5de944,0 0 0 2px #8b72ff22;animation:play-pick-pop .18s ease-out}
 .play-number-grid button.selected small,.play-digit-grid button.selected small{color:#fff}
 .play-number-grid button:active,.play-digit-grid button:active{transform:scale(.94)}
 .play-digit-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
@@ -657,7 +652,7 @@ onMounted(() => {
 .play-submit-dock{position:fixed;right:0;bottom:0;left:0;z-index:1015;display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:12px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #51488b;background:#0e1730f5;box-shadow:0 -12px 32px #02061788;backdrop-filter:blur(18px)}
 .play-submit-dock>div{display:grid;gap:1px}.play-submit-dock small{color:#a99bff;font-size:8px;font-weight:950;letter-spacing:.12em}
 .play-submit-dock strong{color:#fff;font-size:20px;font-weight:950;font-variant-numeric:tabular-nums}.play-submit-dock>div>span{color:#91a0bf;font-size:8px}
-.play-submit-dock>button{display:flex;align-items:center;justify-content:center;gap:10px;min-width:155px;min-height:47px;padding:0 14px;border:1px solid #a294ff;border-radius:14px;background:linear-gradient(105deg,#795cf5,#286ee9);color:#fff;font-size:10px;font-weight:950;box-shadow:0 8px 22px #4f5de944}
+.play-submit-dock>button{display:flex;align-items:center;justify-content:center;gap:10px;min-width:155px;min-height:47px;padding:0 14px;border:1px solid #a294ff;border-radius:14px;background:linear-gradient(145deg, #00c000, #033e01);color:#fff;font-size:10px;font-weight:950;box-shadow:0 8px 22px #4f5de944}
 .play-submit-dock>button:disabled{border-color:#39496c;background:#27334b;color:#7f8eae;box-shadow:none}
 .play-closed-panel,.play-state-card{border-color:#34415f;background:#121b31;color:#f4f6ff}
 .play-closed-panel strong,.play-state-card h2{color:#fff}.play-closed-panel p,.play-state-card p{color:#9ba9c8}

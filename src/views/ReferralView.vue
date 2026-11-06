@@ -115,7 +115,7 @@ onMounted(loadData)
 </style>
 
 <style scoped>
-.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;color:#f4f6ff}
+.gsk-screen{min-height:min-content;padding:15px 13px calc(13px + env(safe-area-inset-bottom));background:linear-gradient(105deg,#795cf5,#286ee9);color:#f4f6ff}
 .referral-steps{border:1px solid #2e3d5e;border-radius:17px;background:#121b31;color:#f4f6ff}.referral-steps>div{color:#f4f6ff}.referral-steps>div>span{border-color:#6b5cc5;background:#292650;color:#cfc6ff}.referral-steps strong{color:#fff}.referral-steps small{color:#91a0bf}.referral-steps>i{background:#3a4770}
 .referral-code-card{border:1px solid #7569c05c;border-radius:20px;background:radial-gradient(circle at 100% 0,#765cf533 0,transparent 38%),linear-gradient(145deg,#1b2445,#11203a);color:#f4f6ff;box-shadow:0 15px 32px #00000030}
 .referral-card-kicker{color:#b8aaff}.referral-code-row strong{color:#fff;letter-spacing:.1em}.referral-code-row button{border:1px solid #51488a;background:#292650;color:#d1c9ff}

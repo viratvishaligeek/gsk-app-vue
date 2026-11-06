@@ -120,18 +120,14 @@
       </section>
 
       <nav class="dashboard-action-grid-v3" aria-label="Quick actions">
-        <router-link to="/games"
-          ><span>🎮</span><strong>Play games</strong><small>Explore markets</small></router-link
-        >
-        <router-link to="/wallet/add"
-          ><span>➕</span><strong>Add money</strong><small>Top up wallet</small></router-link
-        >
-        <router-link to="/wallet/withdraw"
-          ><span>🏦</span><strong>Withdraw</strong><small>Request payout</small></router-link
-        >
-        <router-link to="/live-support"
-          ><span>💬</span><strong>Live Chat</strong><small>Get help anytime</small></router-link
-        >
+        <router-link to="/games" class="bg-primary"
+          ><span>🎲</span><strong>Play games</strong></router-link>
+        <router-link to="/wallet/add"class="bg-success"
+          ><span>✚</span><strong>Add money</strong></router-link>
+        <router-link to="/wallet/withdraw"class="bg-danger"
+          ><span>🏦</span><strong>Withdraw</strong></router-link>
+        <router-link to="/live-support" class="bg-info"
+          ><span>👩🏻‍💻</span><strong>Live Chat</strong></router-link>
       </nav>
 
       <section class="featured-result-section-v3">
@@ -191,7 +187,7 @@
           <LoadingState variant="market-list" :count="2" />
         </div>
         <div v-else-if="games.length === 0" class="dashboard-inline-empty">
-          <span>🎲</span>
+          <span>📌</span>
           <h3>No markets available</h3>
           <p>Please check again later.</p>
         </div>
@@ -199,19 +195,19 @@
           <article
             v-for="game in games.slice(0, 6)"
             :key="game.id"
-            class="lobby-preview-card-v3"
+            class="lobby-preview-card-v3 text-center"
             :class="{ 'is-closed': !isGamePlayable(game) }"
           >
             <div class="lobby-preview-top">
-              <span>🎲</span
+              <span><img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Google_Maps_icon_%282026%29.svg/1280px-Google_Maps_icon_%282026%29.svg.png" alt="" style="height: 20px;"></span
               ><small :class="isGamePlayable(game) ? 'is-open' : 'is-closed-label'">{{
                 isGamePlayable(game) ? 'OPEN NOW' : 'CLOSED'
               }}</small>
             </div>
             <h3>{{ game.name }}</h3>
-            <div class="lobby-preview-result">
-              <small>Today's result</small
-              ><strong>{{
+            <div class="lobby-preview-result text-center">
+              <!-- <small>Today's result</small> -->
+               <strong>{{
                 game.latest_result?.date === todayDate ? (game.latest_result?.number ?? '--') : '--'
               }}</strong>
             </div>
@@ -238,9 +234,9 @@
           <div><strong>Monthly charts</strong><small>Explore saved results</small></div>
           <b>→</b></router-link
         >
-        <router-link to="/live-support"
-          ><span>💬</span>
-          <div><strong>Need a hand?</strong><small>Contact live support</small></div>
+        <router-link v-if="whatsappUrl" :href="whatsappUrl" target="_blank" rel="noopener noreferrer"
+          ><span><img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/960px-WhatsApp.svg.png" alt=""></span>
+          <div><strong>Whatsapp Support</strong><small>Contact live agent</small></div>
           <b>→</b></router-link
         >
       </section>
@@ -257,6 +253,8 @@ import api from '../plugins/axios'
 import LoadingState from '@/components/LoadingState.vue'
 import { useAuthStore } from '@/utils/auth'
 import GameCountdown from '@/components/GameCountdown.vue'
+import { useSettings } from '@/composables/useSettings'
+const {getSetting } = useSettings()
 
 const authStore = useAuthStore()
 const games = ref([])
@@ -275,6 +273,17 @@ const errorMessage = ref('')
 const marqueeText = ref('')
 const noticeText = ref('')
 const noticeEnabled = ref(false)
+
+const whatsappUrl = computed(() => {
+  const value = String(getSetting('social_whatsapp', '') || '').trim()
+  try {
+    const url = new URL(value)
+    return ['https:', 'http:'].includes(url.protocol) ? url.href : ''
+  } catch {
+    return ''
+  }
+})
+
 
 /*
 |--------------------------------------------------------------------------
@@ -1222,12 +1231,11 @@ onUnmounted(() => {
   font-weight: 900;
 }
 .lobby-preview-result {
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; */
   padding: 9px 10px;
   border-radius: 10px;
-  background: #f1f5fa;
 }
 .lobby-preview-result small {
   color: #78869a;
@@ -1294,7 +1302,7 @@ onUnmounted(() => {
   --gsk-muted: #9ba9c8;
   min-height: 100dvh;
   padding: 13px 13px calc(13px + env(safe-area-inset-bottom));
-  background: radial-gradient(circle at 100% 0, #ffffff 0, #384aff8f 10%), #028214;
+  background: linear-gradient(105deg,#795cf5,#286ee9);
   color: #f4f6ff;
   overflow-x: clip;
 }
@@ -1460,7 +1468,7 @@ onUnmounted(() => {
   padding: 12px 5px;
   border: 1px solid #2c3b5b;
   border-radius: 15px;
-  background: linear-gradient(155deg, #17223c, #111a2e);
+  /* background: linear-gradient(155deg, #17223c, #111a2e); */
   color: #e8edff;
   text-align: center;
   box-shadow: 0 8px 20px #00000022;
@@ -1580,7 +1588,7 @@ onUnmounted(() => {
 }
 .lobby-preview-card-v3 {
   display: flex;
-  flex: 0 0 min(66vw, 225px);
+  flex: 0 0 min(66vw, 170px);
   flex-direction: column;
   gap: 9px;
   padding: 13px;
@@ -1600,20 +1608,20 @@ onUnmounted(() => {
 .lobby-preview-card-v3 .lobby-preview-top > span {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 26px;
+  height: 26px;
   border-radius: 12px;
   background: #292650;
 }
 .lobby-preview-card-v3 h3 {
   margin: 0;
   color: #f4f6ff;
-  font-size: 13px;
-  font-weight: 950;
+  font-size: 17px;
+  font-weight: 850;
 }
 .lobby-preview-card-v3 .lobby-preview-result {
   border: 1px solid #2d3c5b;
-  background: #0b1428;
+  background:darkgreen;
 }
 .lobby-preview-card-v3 .lobby-preview-result small {
   color: #8d9dbd;

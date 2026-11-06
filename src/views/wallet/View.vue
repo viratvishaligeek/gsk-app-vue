@@ -1,7 +1,5 @@
 <template>
   <main class="gsk-screen">
-    <GskScreenHeader emoji="🗃️" kicker="YOUR MONEY" title="My wallet" subtitle="Balance, payments and transactions." />
-
     <section class="wallet-balance-card">
       <div class="wallet-balance-head"><span>AVAILABLE BALANCE</span><button type="button" @click="isBalanceVisible=!isBalanceVisible">{{ isBalanceVisible?'🙈 Hide':'👁️ Show' }}</button></div>
       <strong class="wallet-balance-amount">₹{{ isBalanceVisible?formatCurrency(walletBalance):'••••••' }}</strong>
