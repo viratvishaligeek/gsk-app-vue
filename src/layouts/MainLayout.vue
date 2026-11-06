@@ -42,7 +42,7 @@
         <button ref="menuButtonElement" class="menu-trigger" type="button" @click="toggleSidebar"
           :aria-label="isSidebarOpen?'Close menu':'Open menu'" :aria-expanded="isSidebarOpen" aria-controls="sidebar">
           <span>{{ isSidebarOpen ? '✕' : '☰' }}</span></button>
-        <router-link to="/dashboard" class="gsk-wordmark"><span>🎮</span><span><strong>GSK Play</strong><small>GAME ZONE</small></span></router-link>
+        <router-link to="/dashboard" class="gsk-wordmark"><img class="gsk-wordmark-logo" :src="gskLogo" alt="GSK Play"><span><strong>GSK Play</strong><small>GAME ZONE</small></span></router-link>
       </div>
       <div class="topbar-actions">
         <router-link to="/notifications" class="topbar-notifications" aria-label="Notifications">🔔</router-link>
@@ -70,6 +70,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import gskLogo from '@/assets/img/logo.png'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/utils/auth'
 import { useSettings } from '@/composables/useSettings'
@@ -186,10 +187,11 @@ const handleLogout = async () => {
 .menu-trigger{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border:1px solid #ffffff1b;border-radius:14px;background:#ffffff09;color:#eaf0ff;font-size:22px;transition:background .18s,transform .18s}
 .menu-trigger:active{transform:scale(.94);background:#765cf52c}
 .gsk-wordmark{display:flex;align-items:center;gap:9px;min-width:0;color:#fff;text-decoration:none}
-.gsk-wordmark>span:first-child{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;border:1px solid #fff50;border-radius:13px;background:linear-gradient(145deg,#765cf5,#2468db);box-shadow:0 7px 22px #5e5af544;font-size:21px}
+.gsk-wordmark-logo{display:block;width:39px;height:39px;flex:0 0 39px;object-fit:contain;padding:2px;border:1px solid #ffffff50;border-radius:12px;background:#fff;box-shadow:0 7px 22px #5e5af544}
 .gsk-wordmark>span:last-child{display:grid;gap:0}
 .gsk-wordmark strong{color:#fff;font-size:14px;font-weight:950;line-height:1.15;letter-spacing:-.02em}
 .gsk-wordmark small{color:#8395bd;font-size:8px;font-weight:900;letter-spacing:.17em}
+.gsk-wordmark-logo{max-width:100%;height:auto;aspect-ratio:1}
 .topbar-actions{gap:8px}
 .topbar-notifications{display:grid;place-items:center;width:40px;height:40px;border:1px solid #ffffff18;border-radius:13px;background:#ffffff08;font-size:19px;text-decoration:none}
 .topbar-wallet{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 11px;border:1px solid #8f9eff40;border-radius:13px;background:linear-gradient(110deg,#6d5df52a,#2563eb24);color:#e9edff;font-size:11px;text-decoration:none}

@@ -264,6 +264,7 @@ const heroCarouselElement = ref(null)
 const dashboardRootElement = ref(null)
 const activeBannerIndex = ref(0)
 let heroCarouselInstance = null
+let bannerCarouselNeedsRefresh = false
 let dashboardAnimationObserver = null
 
 const isLoading = ref(false)
@@ -531,8 +532,7 @@ const fetchGames = async () => {
     if (previousBannerSignature !== nextBannerSignature) {
       banners.value = nextBanners
       activeBannerIndex.value = 0
-      await nextTick()
-      initializeBannerCarousel()
+      bannerCarouselNeedsRefresh = true
     }
     /*
     |--------------------------------------------------------------------------
@@ -566,6 +566,10 @@ const fetchGames = async () => {
     isLoading.value = false
     hasInitialLoadCompleted.value = true
     await nextTick()
+    if (bannerCarouselNeedsRefresh) {
+      initializeBannerCarousel()
+      bannerCarouselNeedsRefresh = false
+    }
     observeDashboardAnimations()
   }
 }
@@ -578,8 +582,8 @@ const fetchGames = async () => {
 
 const initializeBannerCarousel = () => {
   if (!heroCarouselElement.value || banners.value.length < 2) {
-    if (heroCarouselInstance && heroCarouselElement.value) {
-      heroCarouselElement.value.removeEventListener('slid.bs.carousel', handleBannerSlid)
+    if (heroCarouselInstance) {
+      heroCarouselElement.value?.removeEventListener('slid.bs.carousel', handleBannerSlid)
       heroCarouselInstance.dispose()
     }
     heroCarouselInstance = null
@@ -689,8 +693,8 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  if (heroCarouselInstance && heroCarouselElement.value) {
-    heroCarouselElement.value.removeEventListener('slid.bs.carousel', handleBannerSlid)
+  if (heroCarouselInstance) {
+    heroCarouselElement.value?.removeEventListener('slid.bs.carousel', handleBannerSlid)
     heroCarouselInstance.dispose()
   }
   heroCarouselInstance = null
