@@ -191,7 +191,6 @@ const handleLogout = async () => {
 .gsk-wordmark>span:last-child{display:grid;gap:0}
 .gsk-wordmark strong{color:#fff;font-size:14px;font-weight:950;line-height:1.15;letter-spacing:-.02em}
 .gsk-wordmark small{color:#8395bd;font-size:8px;font-weight:900;letter-spacing:.17em}
-.gsk-wordmark-logo{max-width:100%;height:auto;aspect-ratio:1}
 .topbar-actions{gap:8px}
 .topbar-notifications{display:grid;place-items:center;width:40px;height:40px;border:1px solid #ffffff18;border-radius:13px;background:#ffffff08;font-size:19px;text-decoration:none}
 .topbar-wallet{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 11px;border:1px solid #8f9eff40;border-radius:13px;background:linear-gradient(110deg,#6d5df52a,#2563eb24);color:#e9edff;font-size:11px;text-decoration:none}
