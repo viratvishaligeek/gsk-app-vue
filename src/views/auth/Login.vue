@@ -8,8 +8,11 @@
       <div class="auth-brand-art">🏆</div>
     </section>
     <section class="auth-form-panel">
-      <div class="auth-mobile-brand"><span>            <img src="../src/assets/logo.png" alt="">
-</span><b>GSK Play</b></div>
+      <div class="auth-mobile-brand">
+        <span>
+          <img :src="gskLogo" alt="" /> </span
+        ><b>GSK Play</b>
+      </div>
       <div class="auth-heading">
         <span class="auth-eyebrow">WELCOME BACK</span>
         <h2>Sign in</h2>
@@ -91,6 +94,7 @@ import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
 import { useAuthStore } from '@/utils/auth'
 import { isValidIndianPhone } from '@/utils/indianPhone'
+import gskLogo from '@/assets/img/logo.png'
 
 const router = useRouter()
 const route = useRoute()

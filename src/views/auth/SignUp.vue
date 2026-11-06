@@ -8,7 +8,9 @@
       <div class="auth-brand-art">✨</div>
     </section>
     <section class="auth-form-panel">
-      <div class="auth-mobile-brand"><span>🎮</span><b>GSK Play</b></div>
+      <div class="auth-mobile-brand"><span>
+                  <img :src="gskLogo" alt="" />
+      </span><b>GSK Play</b></div>
       <div class="auth-heading">
         <span class="auth-eyebrow">GET STARTED</span>
         <h2>Create account</h2>
@@ -92,6 +94,7 @@
   </main>
 </template>
 <script setup>
+import gskLogo from '@/assets/img/logo.png'
 import { reactive, ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
