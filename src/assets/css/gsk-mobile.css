@@ -90,6 +90,7 @@ a { color: inherit; text-decoration: none; }
 }
 .gsk-page-heading h1 {
   margin: 0;
+  font-family: Outfit, Inter, sans-serif;
   font-size: 22px;
   font-weight: 900;
   letter-spacing: -.03em;
@@ -99,7 +100,7 @@ a { color: inherit; text-decoration: none; }
 .gsk-panel { padding: 15px; }
 .gsk-panel-title { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
 .gsk-panel-title > span { font-size: 24px; }
-.gsk-panel-title h2, .gsk-panel-title h3 { margin: 0; font-size: 14px; font-weight: 850; }
+.gsk-panel-title h2, .gsk-panel-title h3 { margin: 0; font-family: Outfit, Inter, sans-serif; font-size: 14px; font-weight: 850; }
 .gsk-panel-title p { margin: 3px 0 0; color: var(--gsk-muted, #9ba9c8); font-size: 10px; }
 .gsk-emoji-tile {
   display: grid;
